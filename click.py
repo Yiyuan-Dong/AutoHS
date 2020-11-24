@@ -77,6 +77,7 @@ def minion_attack():
         left_click(minion_location, 600)
         time.sleep(OPERATE_INTERVAL)
         left_click(950, 200)
+    right_click(50, 400)
 
 
 def hero_atrack():
