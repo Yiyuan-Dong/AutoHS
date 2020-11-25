@@ -58,13 +58,15 @@ def get_state():
     # else:
     #     return "?"
 
+    # print(im_opencv[495][1515])
+    # print(im_opencv[495][1505])
     if list(im_opencv[1070][1090]) == [8, 18, 24, 255]:
         return "ChoosingHero"
     if list(im_opencv[1070][1090]) == [17, 18, 19, 255]:
         return "Matching"
     if list(im_opencv[860][960]) == [71, 71, 71, 255]:
         return "ChoosingCard"
-    temp_sum = numpy.sum(im_opencv[495][1505][:3])
+    temp_sum = numpy.sum(im_opencv[495][1515][:3])
     if temp_sum < 100:
         return "NotMine"
     elif temp_sum > 370:

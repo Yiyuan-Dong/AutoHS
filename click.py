@@ -5,7 +5,7 @@ import time
 from pynput.mouse import Button, Controller
 import random
 
-OPERATE_INTERVAL = 0.3
+OPERATE_INTERVAL = 0.25
 
 
 def left_click(x, y):
@@ -73,7 +73,7 @@ def use_skill():
 
 
 def minion_attack():
-    for minion_location in range(530, 1450, 100):
+    for minion_location in range(530, 1350, 100):
         left_click(minion_location, 600)
         time.sleep(OPERATE_INTERVAL)
         left_click(950, 200)
@@ -82,6 +82,11 @@ def minion_attack():
 
 def hero_atrack():
     left_click(950, 830)
+    time.sleep(OPERATE_INTERVAL)
+    left_click(950, 200)
+
+def use_task():
+    left_click(700, 1000)
     time.sleep(OPERATE_INTERVAL)
     left_click(950, 200)
 

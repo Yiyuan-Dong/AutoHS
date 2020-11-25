@@ -68,10 +68,7 @@ def main():
     print(im_opencv[860][960])
     print(im_opencv[1070][1090])
     print(im_opencv[495][1505])
-
-    # print(im_opencv[495:505, 1495: 1505])
-
-
+    print(im_opencv[495][1515])
 
     im_opencv = im_opencv
 

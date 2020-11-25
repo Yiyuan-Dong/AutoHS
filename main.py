@@ -7,6 +7,5 @@ import keyboard
 import sys
 
 if __name__ == "__main__":
-    keyboard.add_hotkey("ctrl+alt+q", sys.exit)
-    while 1:
-        eval("FSM_action." + get_screen.get_state() + "Action")()
+    keyboard.add_hotkey("ctrl+q", sys.exit)
+    FSM_action.AutoHS_automata()

@@ -3,69 +3,118 @@ import click
 import time
 import get_screen
 
-FRONT_ROPING_TIME = 3
-BACK_ROPING_TIME = 5
+STRING_CHOOSINGHERO = "ChoosingHero"
+STRING_MATCHING = "Matching"
+STRING_CHOOSINGCARD = "ChoosingCard"
+STRING_NOTMINE = "NotMine"
+STRING_MYTURN = "MyTurn"
+STRING_UNCERTAIN = "Uncertain"
+
+FRONT_ROPING_TIME = 2
+BACK_ROPING_TIME = 2
+STATE_CHECK_INTERVAL = 3
 EMOJ_RATE = 0.2
-game_count = 0
+IF_LOGOUT = 0
+
+state = ""
+turn_num = 0
+
+
+def log_out():
+    global state
+    if IF_LOGOUT:
+        print("Entering " + state)
+    return
 
 
 def ChoosingHeroAction():
-    print("Entering Choosing Hero")
+    log_out()
     click.math_opponent()
     time.sleep(1)
-    MatchingAction()
+    return STRING_MATCHING
 
 
 def MatchingAction():
-    print("Entering matching")
-    while get_screen.get_state() == "Matching":
-        time.sleep(5)
-    ChoosingCardAction()
+    log_out()
+    while get_screen.get_state() == STRING_MATCHING:
+        time.sleep(STATE_CHECK_INTERVAL)
+    return STRING_CHOOSINGCARD
 
 
 def ChoosingCardAction():
-    time.sleep(18)
-    print("Entering choosing card")
+    time.sleep(18)  # 18是一个经验数值...
+    log_out()
     click.choose_card()
-    time.sleep(5)
-    NotMineAction()
+    time.sleep(STATE_CHECK_INTERVAL)
+    return STRING_NOTMINE
 
 
 def NotMineAction():
-    print("Entering not mine")
+    log_out()
     state = ""
     while 1:
-        time.sleep(3)
+        time.sleep(STATE_CHECK_INTERVAL)
         state = get_screen.get_state()
-        if state == "NotMine":
+        if state == STRING_NOTMINE:
             continue
-        if state == "MyTurn":
-            MyTurnAction()
-            break
+        if state == STRING_MYTURN:
+            return STRING_MYTURN
         else:
-            UncertainAction()
-            break
+            return STRING_UNCERTAIN
 
 
 def MyTurnAction():
-    print("Entering my turn")
+    global turn_num
+    turn_num += 1
+    log_out()
     time.sleep(FRONT_ROPING_TIME)
-    state = ""
     if_emoj = random.random()
     if if_emoj < EMOJ_RATE:
         click.emoj()
-
-    click.use_skill()
+    if turn_num == 1:
+        click.use_task()
+    if turn_num >= 8:
+        click.use_skill()
     click.use_card()
-    click.minion_attack()
+    # click.minion_attack()
     click.use_skill()
-    click.hero_atrack()
+    # click.hero_atrack()
+    time.sleep(BACK_ROPING_TIME)
     click.end_turn()
-    # time.sleep(BACK_ROPING_TIME)
-    NotMineAction()
+
+    return STRING_NOTMINE
 
 
 def UncertainAction():
-    print("Entering uncertain")
-    time.sleep(3)
+    log_out()
+    time.sleep(STATE_CHECK_INTERVAL)
     click.flush_uncertain()
+    return ""
+
+
+def show_time(time_last):
+    print("Now the time is " +
+          time.strftime("%m-%d %H:%M:%S", time.localtime()))
+    time_now = time.time()
+    if time_last > 0:
+        print("The last game last for : {} mins {} secs"
+              .format((time_now - time_last) // 60,
+                      int(time_now - time_last) % 60))
+    return time.time()
+
+
+def AutoHS_automata():
+    global state
+    global turn_num
+    time_snap = 0.0
+    game_count = 1
+    while 1:
+        if state == "":
+            state = get_screen.get_state()
+
+        if state == STRING_MATCHING:
+            print("The " + str(game_count) + "game begins")
+            turn_num = 0
+            time_snap = show_time(time_snap)
+
+        state = eval(state + "Action")()
