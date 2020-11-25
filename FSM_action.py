@@ -83,7 +83,7 @@ def MyTurnAction():
     if turn_num >= 8:
         click.use_skill()
     click.use_card()
-    # click.minion_attack()
+    click.minion_attack()
     click.use_skill()
     click.hero_atrack()
     time.sleep(BACK_ROPING_TIME)
