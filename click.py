@@ -42,7 +42,7 @@ def flush_uncertain():
 
 
 def end_turn():
-    left_click(1500, 500)
+    left_click(1550, 500)
 
 
 def choose_card():
@@ -84,6 +84,7 @@ def hero_atrack():
     left_click(950, 830)
     time.sleep(OPERATE_INTERVAL)
     left_click(950, 200)
+
 
 def use_task():
     left_click(700, 1000)

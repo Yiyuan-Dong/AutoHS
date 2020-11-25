@@ -8,13 +8,13 @@ STRING_MATCHING = "Matching"
 STRING_CHOOSINGCARD = "ChoosingCard"
 STRING_NOTMINE = "NotMine"
 STRING_MYTURN = "MyTurn"
-STRING_UNCERTAIN = "Uncertain"
+# STRING_UNCERTAIN = "Uncertain"
 
 FRONT_ROPING_TIME = 2
 BACK_ROPING_TIME = 2
 STATE_CHECK_INTERVAL = 3
 EMOJ_RATE = 0.2
-IF_LOGOUT = 0
+IF_LOGOUT = 1
 
 state = ""
 turn_num = 0
@@ -22,8 +22,13 @@ turn_num = 0
 
 def log_out():
     global state
+    global turn_num
     if IF_LOGOUT:
         print("Entering " + state)
+    if state == STRING_MYTURN:
+        print("It is turn " + str(turn_num))
+    if state == STRING_CHOOSINGCARD:
+        print("Please wait 18 secs")
     return
 
 
@@ -42,8 +47,8 @@ def MatchingAction():
 
 
 def ChoosingCardAction():
-    time.sleep(18)  # 18是一个经验数值...
     log_out()
+    time.sleep(18)  # 18是一个经验数值...
     click.choose_card()
     time.sleep(STATE_CHECK_INTERVAL)
     return STRING_NOTMINE
@@ -51,16 +56,15 @@ def ChoosingCardAction():
 
 def NotMineAction():
     log_out()
-    state = ""
+    global state
     while 1:
+        click.flush_uncertain()
         time.sleep(STATE_CHECK_INTERVAL)
         state = get_screen.get_state()
         if state == STRING_NOTMINE:
             continue
-        if state == STRING_MYTURN:
-            return STRING_MYTURN
         else:
-            return STRING_UNCERTAIN
+            return state
 
 
 def MyTurnAction():
@@ -78,18 +82,18 @@ def MyTurnAction():
     click.use_card()
     # click.minion_attack()
     click.use_skill()
-    # click.hero_atrack()
+    click.hero_atrack()
     time.sleep(BACK_ROPING_TIME)
     click.end_turn()
 
     return STRING_NOTMINE
 
 
-def UncertainAction():
-    log_out()
-    time.sleep(STATE_CHECK_INTERVAL)
-    click.flush_uncertain()
-    return ""
+# def UncertainAction():
+#     log_out()
+#     time.sleep(STATE_CHECK_INTERVAL)
+#     click.flush_uncertain()
+#     return ""
 
 
 def show_time(time_last):
@@ -113,7 +117,7 @@ def AutoHS_automata():
             state = get_screen.get_state()
 
         if state == STRING_MATCHING:
-            print("The " + str(game_count) + "game begins")
+            print("The " + str(game_count) + " game begins")
             turn_num = 0
             time_snap = show_time(time_snap)
 

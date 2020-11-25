@@ -15,6 +15,7 @@ from pynput.mouse import Button, Controller
 WIDTH = 1920
 HEIGHT = 1080
 NAME = "炉石传说"
+POINT_LIST = [(960, 860), (1090, 1070), (1515, 495), (1550, 480), (1550, 510)]
 
 
 def add_line(img, width, height):
@@ -27,6 +28,13 @@ def add_line(img, width, height):
         cv2.putText(img, str(i * 100), (0, i * 100), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
 
     return img
+
+
+def add_point(img, point_list):
+    for pair in point_list:
+        print(str(pair) + " has color: " + str(img[pair[1]][pair[0]]))
+        cv2.circle(img, pair, 2, (255, 0, 0), 2, 0)
+
 
 
 def main():
@@ -64,13 +72,7 @@ def main():
     im_opencv.shape = (height, width, 4)
 
     add_line(im_opencv, 1920, 1080)
-
-    print(im_opencv[860][960])
-    print(im_opencv[1070][1090])
-    print(im_opencv[495][1505])
-    print(im_opencv[495][1515])
-
-    im_opencv = im_opencv
+    add_point(im_opencv, POINT_LIST)
 
     cv2.namedWindow('im_opencv')  # 命名窗口
     cv2.imshow("im_opencv", im_opencv)  # 显示

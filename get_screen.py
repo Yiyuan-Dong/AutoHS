@@ -9,6 +9,9 @@ import win32api
 import cv2
 import numpy
 import time
+import FSM_action
+
+last_sum = 0
 
 
 def get_state():
@@ -61,15 +64,15 @@ def get_state():
     # print(im_opencv[495][1515])
     # print(im_opencv[495][1505])
     if list(im_opencv[1070][1090]) == [8, 18, 24, 255]:
-        return "ChoosingHero"
+        return FSM_action.STRING_CHOOSINGHERO
     if list(im_opencv[1070][1090]) == [17, 18, 19, 255]:
-        return "Matching"
+        return FSM_action.STRING_MATCHING
     if list(im_opencv[860][960]) == [71, 71, 71, 255]:
-        return "ChoosingCard"
-    temp_sum = numpy.sum(im_opencv[495][1515][:3])
-    if temp_sum < 100:
-        return "NotMine"
-    elif temp_sum > 370:
-        return "MyTurn"
+        return FSM_action.STRING_CHOOSINGCARD
+    # temp_sum = numpy.sum(im_opencv[495][1515][:3])
+    diff = abs(int(im_opencv[510][1550][1]) -
+               int(im_opencv[510][1550][0]))  # 好像这里有可能发生整形溢出
+    if diff < 50:
+        return FSM_action.STRING_NOTMINE
     else:
-        return "Uncertain"
+        return FSM_action.STRING_MYTURN
