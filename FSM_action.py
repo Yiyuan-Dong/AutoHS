@@ -24,11 +24,11 @@ def log_out():
     global state
     global turn_num
     if IF_LOGOUT:
-        print("Entering " + state)
+        print("  Entering " + state)
     if state == STRING_MYTURN:
-        print("It is turn " + str(turn_num))
+        print("    It is turn " + str(turn_num))
     if state == STRING_CHOOSINGCARD:
-        print("Please wait 18 secs")
+        print("    Please wait 18 secs")
     return
 
 

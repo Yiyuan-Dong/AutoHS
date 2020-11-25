@@ -11,7 +11,16 @@ import numpy
 import time
 import FSM_action
 
-last_sum = 0
+
+def max_diff(img, pixel_list):
+    ans = 0
+    for pair in pixel_list:
+        diff = abs(int(img[pair[0]][pair[1]][1]) -
+                   int(img[pair[0]][pair[1]][0]))
+        ans = max(ans, diff)
+        # print(img[pair[0]][pair[1]])
+
+    return ans
 
 
 def get_state():
@@ -61,9 +70,6 @@ def get_state():
     # else:
     #     return "?"
 
-    # print(im_opencv[495][1515])
-    # print(im_opencv[495][1505])
-    print(im_opencv[501][1555])
     if list(im_opencv[1070][1090]) == [8, 18, 24, 255]:
         return FSM_action.STRING_CHOOSINGHERO
     if list(im_opencv[1070][1090]) == [17, 18, 19, 255]:
@@ -71,8 +77,7 @@ def get_state():
     if list(im_opencv[860][960]) == [71, 71, 71, 255]:
         return FSM_action.STRING_CHOOSINGCARD
     # temp_sum = numpy.sum(im_opencv[495][1515][:3])
-    diff = abs(int(im_opencv[501][1555][1]) -
-               int(im_opencv[501][1555][0]))  # 好像这里有可能发生整形溢出
+    diff = max_diff(im_opencv, [(501, 1555), (503, 1555), (501, 1560), (503, 1560)])
     if diff < 50:
         return FSM_action.STRING_NOTMINE
     else:
