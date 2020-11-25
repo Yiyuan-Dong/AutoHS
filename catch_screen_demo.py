@@ -13,9 +13,10 @@ import math
 from pynput.mouse import Button, Controller
 
 WIDTH = 1920
+
 HEIGHT = 1080
 NAME = "炉石传说"
-POINT_LIST = [(960, 860), (1090, 1070), (1515, 495), (1550, 480), (1550, 510)]
+POINT_LIST = [(960, 860), (1090, 1070), (1515, 495), (1550, 480), (1555, 501)]
 
 
 def add_line(img, width, height):

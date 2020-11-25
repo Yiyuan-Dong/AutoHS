@@ -77,6 +77,9 @@ def MyTurnAction():
         click.emoj()
     if turn_num == 1:
         click.use_task()
+        click.emoj()
+        click.end_turn()
+        return STRING_NOTMINE
     if turn_num >= 8:
         click.use_skill()
     click.use_card()

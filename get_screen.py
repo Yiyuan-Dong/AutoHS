@@ -63,6 +63,7 @@ def get_state():
 
     # print(im_opencv[495][1515])
     # print(im_opencv[495][1505])
+    print(im_opencv[501][1555])
     if list(im_opencv[1070][1090]) == [8, 18, 24, 255]:
         return FSM_action.STRING_CHOOSINGHERO
     if list(im_opencv[1070][1090]) == [17, 18, 19, 255]:
@@ -70,8 +71,8 @@ def get_state():
     if list(im_opencv[860][960]) == [71, 71, 71, 255]:
         return FSM_action.STRING_CHOOSINGCARD
     # temp_sum = numpy.sum(im_opencv[495][1515][:3])
-    diff = abs(int(im_opencv[510][1550][1]) -
-               int(im_opencv[510][1550][0]))  # 好像这里有可能发生整形溢出
+    diff = abs(int(im_opencv[501][1555][1]) -
+               int(im_opencv[501][1555][0]))  # 好像这里有可能发生整形溢出
     if diff < 50:
         return FSM_action.STRING_NOTMINE
     else:
