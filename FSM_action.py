@@ -2,6 +2,7 @@ import random
 import click
 import time
 import get_screen
+import sys
 
 STRING_CHOOSINGHERO = "ChoosingHero"
 STRING_MATCHING = "Matching"
@@ -9,6 +10,7 @@ STRING_CHOOSINGCARD = "ChoosingCard"
 STRING_NOTMINE = "NotMine"
 STRING_MYTURN = "MyTurn"
 # STRING_UNCERTAIN = "Uncertain"
+STRING_LEAVEHS = "LeaveHS"
 
 FRONT_ROPING_TIME = 2
 BACK_ROPING_TIME = 2
@@ -29,6 +31,10 @@ def log_out():
         print("    It is turn " + str(turn_num))
     if state == STRING_CHOOSINGCARD:
         print("    Please wait 18 secs")
+    if state == STRING_LEAVEHS:
+        print("Wow, What happened?")
+        show_time(0.0)
+        print("Try to go back to HS")
     return
 
 
@@ -41,8 +47,10 @@ def ChoosingHeroAction():
 
 def MatchingAction():
     log_out()
-    while get_screen.get_state() == STRING_MATCHING:
+    local_state = STRING_MATCHING
+    while local_state == STRING_MATCHING:
         time.sleep(STATE_CHECK_INTERVAL)
+        local_state = get_screen.get_state()
     return STRING_CHOOSINGCARD
 
 
@@ -98,6 +106,19 @@ def MyTurnAction():
 #     click.flush_uncertain()
 #     return ""
 
+def LeaveHSAction():
+    log_out()
+    global state
+    while state == STRING_LEAVEHS:
+        click.enter_HS()
+        time.sleep(15)
+        state = get_screen.get_state()
+    while state != STRING_CHOOSINGHERO:
+        click.enter_battle_mode()
+        time.sleep(10)
+        state = get_screen.get_state()
+    return state
+
 
 def show_time(time_last):
     print("Now the time is " +
@@ -105,7 +126,7 @@ def show_time(time_last):
     time_now = time.time()
     if time_last > 0:
         print("The last game last for : {} mins {} secs"
-              .format((time_now - time_last) // 60,
+              .format(int((time_now - time_last) // 60),
                       int(time_now - time_last) % 60))
     return time.time()
 
@@ -121,6 +142,7 @@ def AutoHS_automata():
 
         if state == STRING_MATCHING:
             print("The " + str(game_count) + " game begins")
+            game_count += 1
             turn_num = 0
             time_snap = show_time(time_snap)
 

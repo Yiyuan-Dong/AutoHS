@@ -93,5 +93,13 @@ def use_task():
     left_click(950, 200)
 
 
+def enter_HS():
+    left_click(350, 970)
+
+
+def enter_battle_mode():
+    left_click(950, 320)
+
+
 if __name__ == "__main__":
-    left_click(1400, 900)
+    left_click(350, 970)

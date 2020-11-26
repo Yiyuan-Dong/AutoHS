@@ -27,7 +27,7 @@ def get_state():
     # 第一个参数是类名，第二个参数是窗口名字
     hwnd = win32gui.FindWindow(None, "炉石传说")
     if hwnd == 0:
-        return "wtf"
+        return FSM_action.STRING_LEAVEHS
     width = 1960
     height = 1080
     # 返回句柄窗口的设备环境，覆盖整个窗口，包括非客户区，标题栏，菜单，边框 DC device context
