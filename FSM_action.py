@@ -12,29 +12,43 @@ STRING_MYTURN = "MyTurn"
 # STRING_UNCERTAIN = "Uncertain"
 STRING_LEAVEHS = "LeaveHS"
 
-FRONT_ROPING_TIME = 2
-BACK_ROPING_TIME = 2
+FRONT_ROPING_TIME = 1
+BACK_ROPING_TIME = 1
 STATE_CHECK_INTERVAL = 3
 EMOJ_RATE = 0.2
-IF_LOGOUT = 1
+IF_LOGOUT = 0
 
 state = ""
 turn_num = 0
-
+time_snap = 0.0
+game_count = 1
 
 def log_out():
     global state
     global turn_num
+    global time_snap
+    global game_count
+
     if IF_LOGOUT:
         print("  Entering " + state)
-    if state == STRING_MYTURN:
-        print("    It is turn " + str(turn_num))
-    if state == STRING_CHOOSINGCARD:
-        print("    Please wait 18 secs")
+        if state == STRING_MYTURN:
+            print("    It is turn " + str(turn_num))
+        if state == STRING_CHOOSINGCARD:
+            print("    Please wait 18 secs")
+
     if state == STRING_LEAVEHS:
         print("Wow, What happened?")
         show_time(0.0)
         print("Try to go back to HS")
+        print()
+
+    if state == STRING_MATCHING:
+        print("The " + str(game_count) + " game begins")
+        game_count += 1
+        turn_num = 0
+        time_snap = show_time(time_snap)
+        print()
+
     return
 
 
@@ -88,7 +102,7 @@ def MyTurnAction():
         click.emoj()
         click.end_turn()
         return STRING_NOTMINE
-    if turn_num >= 8:
+    if turn_num >= 10:
         click.use_skill()
     click.use_card()
     click.minion_attack()
@@ -134,16 +148,8 @@ def show_time(time_last):
 def AutoHS_automata():
     global state
     global turn_num
-    time_snap = 0.0
-    game_count = 1
+
     while 1:
         if state == "":
             state = get_screen.get_state()
-
-        if state == STRING_MATCHING:
-            print("The " + str(game_count) + " game begins")
-            game_count += 1
-            turn_num = 0
-            time_snap = show_time(time_snap)
-
         state = eval(state + "Action")()
