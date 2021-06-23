@@ -3,6 +3,7 @@ import click
 import time
 import get_screen
 import sys
+import cv2
 
 STRING_CHOOSINGHERO = "ChoosingHero"
 STRING_MATCHING = "Matching"
@@ -12,16 +13,17 @@ STRING_MYTURN = "MyTurn"
 # STRING_UNCERTAIN = "Uncertain"
 STRING_LEAVEHS = "LeaveHS"
 
-FRONT_ROPING_TIME = 1
-BACK_ROPING_TIME = 1
+FRONT_ROPING_TIME = 3
+BACK_ROPING_TIME = 2
 STATE_CHECK_INTERVAL = 3
 EMOJ_RATE = 0.2
-IF_LOGOUT = 0
+IF_LOGOUT = 1
 
 state = ""
 turn_num = 0
 time_snap = 0.0
 game_count = 1
+
 
 def log_out():
     global state
@@ -33,8 +35,6 @@ def log_out():
         print("  Entering " + state)
         if state == STRING_MYTURN:
             print("    It is turn " + str(turn_num))
-        if state == STRING_CHOOSINGCARD:
-            print("    Please wait 18 secs")
 
     if state == STRING_LEAVEHS:
         print("Wow, What happened?")
@@ -54,7 +54,7 @@ def log_out():
 
 def ChoosingHeroAction():
     log_out()
-    click.math_opponent()
+    click.match_opponent()
     time.sleep(1)
     return STRING_MATCHING
 
@@ -65,12 +65,12 @@ def MatchingAction():
     while local_state == STRING_MATCHING:
         time.sleep(STATE_CHECK_INTERVAL)
         local_state = get_screen.get_state()
+    time.sleep(18)  # 18是一个经验数值...
     return STRING_CHOOSINGCARD
 
 
 def ChoosingCardAction():
     log_out()
-    time.sleep(18)  # 18是一个经验数值...
     click.choose_card()
     time.sleep(STATE_CHECK_INTERVAL)
     return STRING_NOTMINE
@@ -110,6 +110,7 @@ def MyTurnAction():
     click.hero_atrack()
     time.sleep(BACK_ROPING_TIME)
     click.end_turn()
+    time.sleep(STATE_CHECK_INTERVAL)
 
     return STRING_NOTMINE
 
@@ -149,7 +150,18 @@ def AutoHS_automata():
     global state
     global turn_num
 
+    def increase():
+        i = 0
+        while True:
+            yield i
+            i += 1
+
+    i = increase()
+
     while 1:
         if state == "":
             state = get_screen.get_state()
+        cv2.imwrite("./img/" + state + "/" +
+                    time.strftime("%m_%d_%H_%M_%S", time.localtime()) + ".jpg"
+                    , get_screen.catch_screen())
         state = eval(state + "Action")()

@@ -32,8 +32,7 @@ def right_click(x, y):
     mouse.release(Button.right)
 
 
-def math_opponent():
-    left_click(1400, 900)
+def match_opponent():
     left_click(1400, 900)
 
 

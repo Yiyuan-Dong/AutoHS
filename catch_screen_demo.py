@@ -16,7 +16,12 @@ WIDTH = 1920
 
 HEIGHT = 1080
 NAME = "炉石传说"
-POINT_LIST = [(960, 860), (1090, 1070), (1515, 495), (1550, 480), (1555, 501)]
+POINT_LIST = [(1560, 510)]
+AREA_LIST = [((1500, 470), (1580, 530))]
+
+
+def get_sum(x):
+    return int(x[0]) + int(x[1]) + int(x[2])
 
 
 def add_line(img, width, height):
@@ -34,9 +39,31 @@ def add_line(img, width, height):
 def add_point(img, point_list):
     for pair in point_list:
         print(str(pair) + " has color: " + str(img[pair[1]][pair[0]]))
-        cv2.circle(img, pair, 2, (255, 0, 0), 2, 0)
+        cv2.circle(img, pair, 1, (255, 0, 0), 2, 0)
 
 
+def show_area(img, left_top, right_bottom):
+    x1, y1 = left_top
+    x2, y2 = right_bottom
+    tmp_img = img[y1:y2, x1:x2]
+    tmp_img = tmp_img.copy()
+    resized_x_length = (x2 - x1) * 10
+    resized_y_length = int(resized_x_length * ((y2 - y1) / (x2 - x1)))
+    tmp_img = cv2.resize(tmp_img, (resized_x_length, resized_y_length))
+
+    for x in range(x1, x2, 10):
+
+        temp_x = int(resized_x_length / (x2 - x1) * (x - x1))
+        cv2.line(tmp_img, pt1=(temp_x, 0), pt2=(temp_x, resized_y_length), color=(200, 200, 200), thickness=1)
+        cv2.putText(tmp_img, str(x), (temp_x - 20, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255), 1)
+
+    for y in range(y1, y2, 10):
+        temp_y = int(resized_y_length * (y - y1) / (y2 - y1))
+        cv2.line(tmp_img, pt1=(0, temp_y), pt2=(resized_x_length, temp_y), color=(200, 200, 200), thickness=1)
+        cv2.putText(tmp_img, str(y), (0, temp_y + 5), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0), 1)
+
+    # cv2.imshow("im_opencv_3", tmp_img)
+    # cv2.waitKey(0)
 
 def main():
     # 第一个参数是类名，第二个参数是窗口名字
@@ -75,9 +102,13 @@ def main():
     add_line(im_opencv, 1920, 1080)
     add_point(im_opencv, POINT_LIST)
 
-    cv2.namedWindow('im_opencv')  # 命名窗口
     cv2.imshow("im_opencv", im_opencv)  # 显示
     cv2.waitKey(0)
+
+    for area in AREA_LIST:
+        top_left, right_bottom = area
+        show_area(im_opencv, top_left, right_bottom)
+
     cv2.destroyAllWindows()
 
 

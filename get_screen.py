@@ -23,11 +23,12 @@ def max_diff(img, pixel_list):
     return ans
 
 
-def get_state():
+def catch_screen():
     # 第一个参数是类名，第二个参数是窗口名字
     hwnd = win32gui.FindWindow(None, "炉石传说")
     if hwnd == 0:
-        return FSM_action.STRING_LEAVEHS
+        return
+
     width = 1960
     height = 1080
     # 返回句柄窗口的设备环境，覆盖整个窗口，包括非客户区，标题栏，菜单，边框 DC device context
@@ -56,19 +57,15 @@ def get_state():
     im_opencv = numpy.frombuffer(signedIntsArray, dtype='uint8')
     im_opencv.shape = (height, width, 4)
 
-    # if im_opencv[860][960][0] == im_opencv[860][960][1] == im_opencv[860][960][2]:
-    #     return "choose"
-    # if list(im_opencv[400][200]) == [60, 25, 9, 255]:
-    #     if list(im_opencv[495][1505]) == [108, 185, 149, 255]:
-    #         return "goon"
-    #     elif list(im_opencv[495][1505]) == [133, 188, 107, 255]:
-    #         return "end"
-    #     else:
-    #         return "their"
-    # elif im_opencv[400][200][0] < 30:
-    #     return "start"
-    # else:
-    #     return "?"
+    return im_opencv
+
+
+def get_state():
+    hwnd = win32gui.FindWindow(None, "炉石传说")
+    if hwnd == 0:
+        return FSM_action.STRING_LEAVEHS
+
+    im_opencv = catch_screen()
 
     if list(im_opencv[1070][1090]) == [8, 18, 24, 255]:
         return FSM_action.STRING_CHOOSINGHERO
@@ -77,7 +74,7 @@ def get_state():
     if list(im_opencv[860][960]) == [71, 71, 71, 255]:
         return FSM_action.STRING_CHOOSINGCARD
     # temp_sum = numpy.sum(im_opencv[495][1515][:3])
-    diff = max_diff(im_opencv, [(501, 1555), (503, 1555), (501, 1560), (503, 1560)])
+    diff = max_diff(im_opencv, [(510, 1560), (510, 1550)])
     if diff < 50:
         return FSM_action.STRING_NOTMINE
     else:
