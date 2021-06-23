@@ -52,7 +52,6 @@ def show_area(img, left_top, right_bottom):
     tmp_img = cv2.resize(tmp_img, (resized_x_length, resized_y_length))
 
     for x in range(x1, x2, 10):
-
         temp_x = int(resized_x_length / (x2 - x1) * (x - x1))
         cv2.line(tmp_img, pt1=(temp_x, 0), pt2=(temp_x, resized_y_length), color=(200, 200, 200), thickness=1)
         cv2.putText(tmp_img, str(x), (temp_x - 20, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255), 1)
@@ -64,6 +63,7 @@ def show_area(img, left_top, right_bottom):
 
     # cv2.imshow("im_opencv_3", tmp_img)
     # cv2.waitKey(0)
+
 
 def main():
     # 第一个参数是类名，第二个参数是窗口名字

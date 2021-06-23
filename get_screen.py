@@ -73,7 +73,17 @@ def get_state():
         return FSM_action.STRING_MATCHING
     if list(im_opencv[860][960]) == [71, 71, 71, 255]:
         return FSM_action.STRING_CHOOSINGCARD
-    # temp_sum = numpy.sum(im_opencv[495][1515][:3])
+
+    # 我觉得这里有必要解释一下
+    # (1560, 510) / (1550, 510) 这两个点在 结束回合/对手回合 那个按钮的下方
+    # 它大概有四种情况:
+    # 像素值(B, G, R)
+    # 1.卡牌特效/选牌阶段: 整个屏幕边缘都是灰暗的, 像素值约为 (30~, 30~, 30~)
+    # 2.结束回合(黄): 像素值为(0~, 120+, 130+)
+    # 3.结束回合(绿):像素值为(0~, 100+, 20+)
+    # 4.对手回合:像素值为(70+, 90+, 100~)
+    # 所以通过蓝像素与红像素的差值判断
+
     diff = max_diff(im_opencv, [(510, 1560), (510, 1550)])
     if diff < 50:
         return FSM_action.STRING_NOTMINE
