@@ -21,6 +21,7 @@ AREA_LIST = [((1500, 470), (1580, 530))]
 
 
 def get_sum(x):
+
     return int(x[0]) + int(x[1]) + int(x[2])
 
 
@@ -61,8 +62,8 @@ def show_area(img, left_top, right_bottom):
         cv2.line(tmp_img, pt1=(0, temp_y), pt2=(resized_x_length, temp_y), color=(200, 200, 200), thickness=1)
         cv2.putText(tmp_img, str(y), (0, temp_y + 5), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0), 1)
 
-    # cv2.imshow("im_opencv_3", tmp_img)
-    # cv2.waitKey(0)
+    cv2.imshow("im_opencv_3", tmp_img)
+    cv2.waitKey(0)
 
 
 def main():
@@ -110,6 +111,7 @@ def main():
         show_area(im_opencv, top_left, right_bottom)
 
     cv2.destroyAllWindows()
+
 
 
 if __name__ == "__main__":

@@ -7,9 +7,13 @@ import win32ui
 import win32con
 import win32api
 import cv2
-import numpy
 import time
 import FSM_action
+import time
+import numpy
+import imagehash
+from PIL import Image
+from pynput.mouse import Button, Controller
 
 
 def max_diff(img, pixel_list):
@@ -89,3 +93,49 @@ def get_state():
         return FSM_action.STRING_NOTMINE
     else:
         return FSM_action.STRING_MYTURN
+
+
+def get_card_with_x(img, x, step, show_img = False):
+    left_part = img[600:800, x - 100 - step: x + 100 - step]
+    right_part = img[600:800, x - 100:x + 100]
+
+    if show_img:
+        cv2.imshow("left", left_part)
+        cv2.imshow("right", right_part)
+        cv2.waitKey()
+
+    return left_part[:, :, :3], right_part[:, :, :3]
+
+
+def count_my_cards():
+    mouse = Controller()
+    last_part = numpy.zeros((200, 200, 3))
+    last_part = last_part.astype(numpy.uint8)
+    count = 0
+
+    for x in range(500, 1301, 40):
+        mouse.position = (x, 1030)
+
+        # 必须睡眠一小会儿,否则手牌详情还没跳出来就开始了截图
+        time.sleep(0.1)
+
+        img = catch_screen()
+
+        left_part, right_part = get_card_with_x(img, x, 40)
+
+        last_image = Image.fromarray(last_part)
+        last_hash = imagehash.phash(last_image)
+        curr_image = Image.fromarray(left_part)
+        curr_hash = imagehash.phash(curr_image)
+
+        # 使用图片哈希去判断上一个位置的右图片与当前位置的左图片是否一样,
+        # 如果哈希值很接近,认为这是来自同一张卡牌的,否则认为有两张牌
+        if last_hash - curr_hash > 6:
+            count += 1
+
+        last_part = right_part
+
+    cv2.destroyAllWindows()
+
+    # 减二因为: 从0矩阵到棋盘背景会加一; 从最后一张图到棋盘背景也会加一
+    return count - 2
