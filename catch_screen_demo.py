@@ -14,8 +14,13 @@ from pynput.mouse import Button, Controller
 
 import get_screen
 
-AREA_LIST = [((1495, 465), (1620, 522))]
+# AREA_LIST = [((1495, 465), (1620, 522))]
+
+AREA_LIST = [((610, 320), (750, 490)), ((890, 510), (1030, 680))]
+# AREA_LIST = [((680, 320), (820, 490)), ((820, 320), (960, 490)), ((960, 320), (1100, 490))]
+
 POINT_LIST = [(1560, 510)]
+
 
 
 def get_sum(x):

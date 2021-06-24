@@ -7,8 +7,6 @@
 目前手牌识别只能识别这幅套牌里的牌（需要自行测试哈希然后记下来）
 AAEDAYoWArahBNyhBA6hlgTAlgTMlgT4lgSxlwSBoQS0oQS9oQTRoQTuoQTKogTNogTPogTDowQA
 
-
-
 ### 如何运行
 运行 main.py 即可，注意本脚本需要屏幕分辨率为 1920 * 1080、炉石全屏，在运行时按下 Ctrl+Q 可以退出脚本。
 需要把炉石放在最前台。
@@ -24,7 +22,9 @@ AAEDAYoWArahBNyhBA6hlgTAlgTMlgT4lgSxlwSBoQS0oQS9oQTRoQTuoQTKogTNogTPogTDowQA
 ### 待办列表
 - [ ] 补全注释
 - [ ] 补全Readme
-- [ ] 画出状态转移关系……
+- [X] 识别手牌
+- [ ] 识别场面
+- [ ] 更有脑子的瞎打
 - [X] 随机化点击
 - [X] 多样化表情
 - [X] 英雄打脸 
