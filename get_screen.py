@@ -133,9 +133,9 @@ def get_card_hash(total_num, index):
 
 
 def count_my_cards():
-    res_list = [count_my_cards_epoch(), count_my_cards_epoch(),  count_my_cards_epoch()]
+    res_list = [count_my_cards_epoch(), count_my_cards_epoch()]
 
-    while not res_list[-3] == res_list[-2] == res_list[-1] and len(res_list) < 10:
+    while not res_list[-2] == res_list[-1] and len(res_list) < 10:
         res_list.append(count_my_cards_epoch())
 
     return res_list[-1]

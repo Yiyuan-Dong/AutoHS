@@ -60,6 +60,6 @@ if __name__ == "__main__":
             if temp_diff < min_diff:
                 min_diff = temp_diff
                 name = v
-        print(f"The name of the card at [{i}] is {name}")
+        print(f"The name of the card at [{i}] may be {name}, diff is {min_diff}")
 
     cv2.destroyAllWindows()

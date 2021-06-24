@@ -3,9 +3,10 @@
 
 在FSM_action.py里有一些参数可以设置...
 
-### 我目前用的挂机卡组 (任务战)
+### 我目前用的挂机卡组 (经典模式-快攻猎)
+目前手牌识别只能识别这幅套牌里的牌（需要自行测试哈希然后记下来）
+AAEDAYoWArahBNyhBA6hlgTAlgTMlgT4lgSxlwSBoQS0oQS9oQTRoQTuoQTKogTNogTPogTDowQA
 
-AAEBAYwWBtPDAt/EAqSkA6ikA7i5A+a+AwxL/g2QDsrDAp77ApWUA5ykA/KlA9e+A5LQA7XeA7beAwA=
 
 
 ### 如何运行
