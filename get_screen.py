@@ -14,6 +14,10 @@ import numpy
 import imagehash
 from PIL import Image
 from pynput.mouse import Button, Controller
+from constants.constants import *
+
+step = STEP
+start = START
 
 
 def max_diff(img, pixel_list):
@@ -96,7 +100,7 @@ def get_state():
         return FSM_action.STRING_MYTURN
 
 
-def get_card_with_x(img, x, step, show_img = False):
+def test_card_with_x(img, x, step, show_img=False):
     left_part = img[600:800, x - 100 - step: x + 100 - step]
     right_part = img[600:800, x - 100:x + 100]
 
@@ -108,21 +112,51 @@ def get_card_with_x(img, x, step, show_img = False):
     return left_part[:, :, :3], right_part[:, :, :3]
 
 
-def count_cards_in_my_hand():
+def get_card_hash(total_num, index):
+    mouse = Controller()
+
+    x1 = start[total_num] + index * step[total_num]
+    x2 = start[total_num] + index * step[total_num] + 200
+    mouse_pos = (x1 + 65, 1000)
+
+    mouse.position = mouse_pos
+    time.sleep(CARD_APPEAR_INTERVAL)
+    img = catch_screen()
+
+    card_img = img[600:800, x1:x2, ]
+
+    # cv2.imshow("test", card_img)
+    # cv2.waitKey()
+
+    card_img = Image.fromarray(card_img)
+    return imagehash.phash(card_img)
+
+
+def count_my_cards():
+    res_list = [count_my_cards_epoch(), count_my_cards_epoch(),  count_my_cards_epoch()]
+
+    while not res_list[-3] == res_list[-2] == res_list[-1] and len(res_list) < 10:
+        res_list.append(count_my_cards_epoch())
+
+    return res_list[-1]
+
+
+def count_my_cards_epoch():
     mouse = Controller()
     last_part = numpy.zeros((200, 200, 3))
     last_part = last_part.astype(numpy.uint8)
     count = 0
 
-    for x in range(590, 1281, 30):
+    step = 30
+    for x in range(590, 1281, step):
         mouse.position = (x, 1030)
 
         # 必须睡眠一小会儿,否则手牌详情还没跳出来就开始了截图
-        time.sleep(0.05)
+        time.sleep(CARD_APPEAR_INTERVAL)
 
         img = catch_screen()
 
-        left_part, right_part = get_card_with_x(img, x, 40)
+        left_part, right_part = test_card_with_x(img, x, step)
 
         last_image = Image.fromarray(last_part)
         last_hash = imagehash.phash(last_image)
@@ -131,12 +165,13 @@ def count_cards_in_my_hand():
 
         # 使用图片哈希去判断上一个位置的右图片与当前位置的左图片是否一样,
         # 如果哈希值很接近,认为这是来自同一张卡牌的,否则认为有两张牌
-        if last_hash - curr_hash > 24:
+        if last_hash - curr_hash > 18:
             count += 1
 
         last_part = right_part
 
     cv2.destroyAllWindows()
 
+    # print(count - 2)
     # 减二因为: 从0矩阵到棋盘背景会加一; 从最后一张图到棋盘背景也会加一
     return count - 2

@@ -40,9 +40,9 @@ def add_point(img, point_list):
         cv2.circle(img, pair, 1, (255, 0, 0), 2, 0)
 
 
-def show_area(img, left_top, right_bottom, ratio=5):
-    x1, y1 = left_top
-    x2, y2 = right_bottom
+def show_area(img, top_left, bottom_right, ratio=5):
+    x1, y1 = top_left
+    x2, y2 = bottom_right
     tmp_img = img[y1:y2, x1:x2]
     tmp_img = tmp_img.copy()
     resized_x_length = (x2 - x1) * int(ratio)
@@ -76,12 +76,11 @@ def main():
     cv2.destroyWindow("total")
     time.sleep(0.2)
 
-    mouse = Controller()
     for area in AREA_LIST:
         if len(area) < 2 or len(area) > 3:
             print("[Usage]: ((left-top), (botton-right), [mouse-position])")
-        top_left, right_bottom = area
-        show_area(im_opencv, top_left, right_bottom)
+        top_left, bottom_right = area
+        show_area(im_opencv, top_left, bottom_right)
 
     cv2.destroyAllWindows()
 
