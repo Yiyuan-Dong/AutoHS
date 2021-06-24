@@ -29,6 +29,7 @@ def max_diff(img, pixel_list):
 
 def catch_screen():
     # 第一个参数是类名，第二个参数是窗口名字
+    # hwnd -> Handle to a Window !
     hwnd = win32gui.FindWindow(None, "炉石传说")
     if hwnd == 0:
         return
@@ -107,17 +108,17 @@ def get_card_with_x(img, x, step, show_img = False):
     return left_part[:, :, :3], right_part[:, :, :3]
 
 
-def count_my_cards():
+def count_cards_in_my_hand():
     mouse = Controller()
     last_part = numpy.zeros((200, 200, 3))
     last_part = last_part.astype(numpy.uint8)
     count = 0
 
-    for x in range(500, 1301, 40):
+    for x in range(590, 1281, 30):
         mouse.position = (x, 1030)
 
         # 必须睡眠一小会儿,否则手牌详情还没跳出来就开始了截图
-        time.sleep(0.1)
+        time.sleep(0.05)
 
         img = catch_screen()
 
@@ -130,7 +131,7 @@ def count_my_cards():
 
         # 使用图片哈希去判断上一个位置的右图片与当前位置的左图片是否一样,
         # 如果哈希值很接近,认为这是来自同一张卡牌的,否则认为有两张牌
-        if last_hash - curr_hash > 6:
+        if last_hash - curr_hash > 24:
             count += 1
 
         last_part = right_part
