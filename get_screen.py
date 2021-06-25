@@ -274,6 +274,10 @@ def test_taunt(img, oppo_num, mine_num):
                 # 猜测是炉石游戏画面放缩时搞出来的问题
                 if pixel[0] == pixel[1] == pixel[2]:
                     continue
+                # 因为红色佳绿色会变成黄色,而炉石棋盘背景色是黄的,所以
+                # 绿色色素(pixel[1])会比蓝色色素(pixel[0])要多,但是
+                # 如果是嘲讽随从,会多出一圈灰色的边框,这个边框上三种像素
+                # 较为平均
                 if pixel[1] - pixel[0] < 40:
                     count += 1
         return count >= 5
