@@ -16,11 +16,10 @@ import get_screen
 
 # AREA_LIST = [((1495, 465), (1620, 522))]
 
-AREA_LIST = [((890, 510), (1030, 680)), ((910, 624), (938, 652)),
-             ((890, 320), (1030, 490)), ((910, 438), (938, 466))]
+AREA_LIST = [((890, 320), (1030, 420)), ((890, 500), (1030, 670))]
 # AREA_LIST = [((680, 320), (820, 490)), ((820, 320), (960, 490)), ((960, 320), (1100, 490))]
 
-POINT_LIST = [(1560, 510)]
+POINT_LIST = [(1560, 510), (898, 340), (898, 520)]
 
 
 def get_sum(x):
@@ -50,6 +49,7 @@ def show_area(img, top_left, bottom_right, ratio=5):
     x2, y2 = bottom_right
     tmp_img = img[y1:y2, x1:x2]
     tmp_img = tmp_img.copy()
+
     resized_x_length = (x2 - x1) * int(ratio)
     resized_y_length = int(resized_x_length * ((y2 - y1) / (x2 - x1)))
     tmp_img = cv2.resize(tmp_img, (resized_x_length, resized_y_length))

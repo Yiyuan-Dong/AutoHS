@@ -27,18 +27,16 @@ def find_closest(img_hash, hash_dict):
 
 
 if __name__ == "__main__":
-    oppos, mine = get_screen.count_minions()
-    print(oppos, mine)
+    img = get_screen.catch_screen()
+    oppo, mine = get_screen.count_minions(img)
+    print(oppo, mine)
 
     img = get_screen.catch_screen()
 
     mine_baseline = 960 - int((mine - 1) * steps_mine[mine] / 2)
-    oppos_baseline = 960 - int((oppos - 1) * steps_oppos[oppos] / 2)
+    oppo_baseline = 960 - int((oppo - 1) * steps_oppos[oppo] / 2)
 
-    with open("SVC_poly", "rb") as f:
-        svc = pickle.load(f)
-
-    for i in range(mine + oppos):
+    for i in range(mine + oppo):
         if i < mine:
             print(f"Mine[{i}]:")
             baseline = mine_baseline + i * steps_mine[mine]
@@ -47,7 +45,7 @@ if __name__ == "__main__":
 
         else:
             print(f"Oppos[{i - mine}]:")
-            baseline = oppos_baseline + (i - mine) * steps_oppos[oppos]
+            baseline = oppo_baseline + (i - mine) * steps_oppos[oppo]
             print(baseline)
             attack_img = img[438:464, baseline - 47:baseline - 28]
             health_img = img[438:464, baseline + 29:baseline + 48]

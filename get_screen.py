@@ -182,10 +182,9 @@ def count_my_cards_epoch():
     return count - 2
 
 
-def count_minions():
-    img = catch_screen()
-    img = cv2.GaussianBlur(img, (3, 3), 0)
-    canny = cv2.Canny(img, 50, 150)
+def count_minions(img):
+    gauss_img = cv2.GaussianBlur(img, (3, 3), 0)
+    canny = cv2.Canny(gauss_img, 50, 150)
 
     flag_opponent = 0
     for i in range(7, 0, -1):
@@ -258,3 +257,35 @@ def health_attack_number_in_img(img):
     if sum(sum(ret_img == 255)) < 20:
         ret_img = try_get_number_in_img(img, 180)
     return ret_img
+
+
+def test_taunt(img, oppo_num, mine_num):
+    oppo_baseline = 960 - 70 * (oppo_num - 1)
+    mine_baseline = 960 - 70 * (mine_num - 1)
+
+    oppo_res = []
+    mine_res = []
+
+    def test_card(card_part):
+        count = 0
+        for line in card_part:
+            for pixel in line:
+                # 有时会出现这种像素,在图上表现为一条意义不明的白线
+                # 猜测是炉石游戏画面放缩时搞出来的问题
+                if pixel[0] == pixel[1] == pixel[2]:
+                    continue
+                if pixel[1] - pixel[0] < 40:
+                    count += 1
+        return count >= 5
+
+    for i in range(oppo_num):
+        card_baseline = oppo_baseline + 140 * i
+        tmp = img[340:343, card_baseline - 62: card_baseline - 59]
+        oppo_res.append(test_card(tmp))
+
+    for i in range(mine_num):
+        card_baseline = mine_baseline + 140 * i
+        tmp = img[520:523, card_baseline - 62: card_baseline - 59]
+        mine_res.append(test_card(tmp))
+
+    return oppo_res, mine_res
