@@ -5,7 +5,7 @@ import catch_screen_demo
 import time
 import cv2
 from constants.constants import *
-from constants.cards_info import *
+from constants.hash_vals import *
 
 # AREA_LIST_4 = [((622, 600), (822, 800), (722, 1000)),
 #                ((753, 600), (953, 800), (853, 1000)),
@@ -41,25 +41,22 @@ if __name__ == "__main__":
 
     for i in range(len(area_list)):
         area = area_list[i]
-        if len(area) < 2 or len(area) > 3:
-            print("[Usage]: ((left-top), (botton-right), [mouse-position])")
-        if len(area) == 2:
-            top_left, bottom_right = area
-        else:
-            top_left, bottom_right, mouse_pos = area
-            mouse.position = mouse_pos
-            time.sleep(0.1)
-            im_opencv = get_screen.catch_screen()
+        top_left, bottom_right, mouse_pos = area
+        mouse.position = mouse_pos
+        time.sleep(CARD_APPEAR_INTERVAL)
+        im_opencv = get_screen.catch_screen()
         # catch_screen_demo.show_area(im_opencv, top_left, bottom_right, 4)
 
-        hash = get_screen.get_card_hash(card_num, i)
+        card_hash = get_screen.get_card_hash(card_num, i)
+
         min_diff = 64
         name = "?"
         for k, v in CARD_HASH_INFO.items():
-            temp_diff = bin(int(k, 16) ^ int(str(hash), 16))[2:].count("1")
+            temp_diff = bin(int(k, 16) ^ int(str(card_hash), 16))[2:].count("1")
             if temp_diff < min_diff:
                 min_diff = temp_diff
                 name = v
-        print(f"The name of the card at [{i}] may be {name}, diff is {min_diff}")
+        print(f"The name of the card[{i}] may be {name}, diff is {min_diff}")
+        print(f"  Its hash is {card_hash}")
 
     cv2.destroyAllWindows()

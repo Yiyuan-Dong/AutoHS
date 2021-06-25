@@ -15,6 +15,7 @@ import imagehash
 from PIL import Image
 from pynput.mouse import Button, Controller
 from constants.constants import *
+from constants.hash_vals import *
 
 step = STEP
 start = START
@@ -95,7 +96,7 @@ def get_state():
 
     diff = max_diff(im_opencv, [(510, 1560), (510, 1550)])
     if diff < 50:
-        return FSM_action.STRING_NOTMINE
+        return FSM_action.STRING_NOTMYTURN
     else:
         return FSM_action.STRING_MYTURN
 
@@ -110,6 +111,11 @@ def test_card_with_x(img, x, step, show_img=False):
         cv2.waitKey()
 
     return left_part[:, :, :3], right_part[:, :, :3]
+
+
+def image_hash(img):
+    img = Image.fromarray(img)
+    return imagehash.phash(img)
 
 
 def get_card_hash(total_num, index):
@@ -128,8 +134,7 @@ def get_card_hash(total_num, index):
     # cv2.imshow("test", card_img)
     # cv2.waitKey()
 
-    card_img = Image.fromarray(card_img)
-    return imagehash.phash(card_img)
+    return image_hash(card_img)
 
 
 def count_my_cards():
@@ -175,3 +180,81 @@ def count_my_cards_epoch():
     # print(count - 2)
     # 减二因为: 从0矩阵到棋盘背景会加一; 从最后一张图到棋盘背景也会加一
     return count - 2
+
+
+def count_minions():
+    img = catch_screen()
+    img = cv2.GaussianBlur(img, (3, 3), 0)
+    canny = cv2.Canny(img, 50, 150)
+
+    flag_opponent = 0
+    for i in range(7, 0, -1):
+        baseline = 960 - i * 70
+        part_canny = canny[390:490, baseline:baseline + 40]
+        if sum(sum(part_canny > 0)) > 100:
+            flag_opponent = i
+            break
+
+    flag_mine = 0
+    for i in range(7, 0, -1):
+        baseline = 960 - i * 70
+        part_canny = canny[510:610, baseline:baseline + 40]
+        if sum(sum(part_canny > 0)) > 100:
+            flag_mine = i
+            break
+
+    return flag_opponent, flag_mine
+
+
+def hash_diff(str1, str2):
+    return bin(int(str1, 16) ^ int(str2, 16))[2:].count("1")
+
+
+def identify_cards(card_num):
+    area_list = [((start[card_num] + step[card_num] * i, 600),
+                  (start[card_num] + 200 + step[card_num] * i, 800),
+                  (start[card_num] + 65 + step[card_num] * i, 1000)
+                  ) for i in range(card_num)]
+
+    result = []
+    mouse = Controller()
+
+    for i in range(len(area_list)):
+        area = area_list[i]
+        top_left, bottom_right, mouse_pos = area
+        mouse.position = mouse_pos
+        time.sleep(CARD_APPEAR_INTERVAL)
+
+        card_hash = get_card_hash(card_num, i)
+        min_diff = 64
+        name = ""
+        for k, v in CARD_HASH_INFO.items():
+            temp_diff = hash_diff(k, str(card_hash))
+            if temp_diff < min_diff:
+                min_diff = temp_diff
+                name = v
+
+        result.append(name)
+
+    return result
+
+
+# 输入的彩色攻击/血量数字图,返回黑白的数字图片.
+# 可以识别纯红色受伤血量和纯绿色buff过的数值
+def try_get_number_in_img(img, threshold):
+    grey_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    green_mask = cv2.inRange(img, (0, threshold, 0, 255), (0, 255, 0, 255))
+    red_mask = cv2.inRange(img, (0, 0, threshold, 255), (0, 0, 255, 255))
+    _, ret_img = cv2.threshold(grey_img, threshold, 255, cv2.THRESH_BINARY)
+    ret_img = ret_img + red_mask + green_mask
+
+    return ret_img
+
+
+def health_attack_number_in_img(img):
+    ret_img = try_get_number_in_img(img, 254)
+    if sum(sum(ret_img == 255)) < 20:
+        ret_img = try_get_number_in_img(img, 200)
+    if sum(sum(ret_img == 255)) < 20:
+        ret_img = try_get_number_in_img(img, 180)
+    return ret_img

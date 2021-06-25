@@ -23,7 +23,6 @@ AREA_LIST = [((890, 510), (1030, 680)), ((910, 624), (938, 652)),
 POINT_LIST = [(1560, 510)]
 
 
-
 def get_sum(x):
     return int(x[0]) + int(x[1]) + int(x[2])
 

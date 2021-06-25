@@ -8,7 +8,7 @@ import cv2
 STRING_CHOOSINGHERO = "ChoosingHero"
 STRING_MATCHING = "Matching"
 STRING_CHOOSINGCARD = "ChoosingCard"
-STRING_NOTMINE = "NotMine"
+STRING_NOTMYTURN = "NotMyTurn"
 STRING_MYTURN = "MyTurn"
 # STRING_UNCERTAIN = "Uncertain"
 STRING_LEAVEHS = "LeaveHS"
@@ -73,7 +73,7 @@ def ChoosingCardAction():
     log_out()
     click.choose_card()
     time.sleep(STATE_CHECK_INTERVAL)
-    return STRING_NOTMINE
+    return STRING_NOTMYTURN
 
 
 def NotMineAction():
@@ -83,7 +83,7 @@ def NotMineAction():
         click.flush_uncertain()
         time.sleep(STATE_CHECK_INTERVAL)
         state = get_screen.get_state()
-        if state == STRING_NOTMINE:
+        if state == STRING_NOTMYTURN:
             continue
         else:
             return state
@@ -101,7 +101,7 @@ def MyTurnAction():
         click.use_task()
         click.emoj()
         click.end_turn()
-        return STRING_NOTMINE
+        return STRING_NOTMYTURN
     if turn_num >= 10:
         click.use_skill()
     click.use_card()
@@ -112,7 +112,7 @@ def MyTurnAction():
     click.end_turn()
     time.sleep(STATE_CHECK_INTERVAL)
 
-    return STRING_NOTMINE
+    return STRING_NOTMYTURN
 
 
 # def UncertainAction():
