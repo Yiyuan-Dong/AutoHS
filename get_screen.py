@@ -278,7 +278,7 @@ def test_taunt(img, oppo_num, mine_num):
                 # 绿色色素(pixel[1])会比蓝色色素(pixel[0])要多,但是
                 # 如果是嘲讽随从,会多出一圈灰色的边框,这个边框上三种像素
                 # 较为平均
-                if pixel[1] - pixel[0] < 40:
+                if int(pixel[1]) - int(pixel[0]) < 40:
                     count += 1
         return count >= 5
 
@@ -289,7 +289,49 @@ def test_taunt(img, oppo_num, mine_num):
 
     for i in range(mine_num):
         card_baseline = mine_baseline + 140 * i
-        tmp = img[520:523, card_baseline - 62: card_baseline - 59]
+        tmp = img[528:531, card_baseline - 62: card_baseline - 59]
         mine_res.append(test_card(tmp))
+
+    return oppo_res, mine_res
+
+
+def test_divine_shield():
+    img = catch_screen()
+    oppo_num, mine_num = count_minions(img)
+    oppo_res_1, mine_res_1 = test_divine_shield_epoch(img, oppo_num, mine_num)
+
+    time.sleep(0.6)
+    img = catch_screen()
+    oppo_res_2, mine_res_2 = test_divine_shield_epoch(img, oppo_num, mine_num)
+
+    time.sleep(0.6)
+    img = catch_screen()
+    oppo_res_3, mine_res_3 = test_divine_shield_epoch(img, oppo_num, mine_num)
+
+    def combine(arr1, arr2, arr3):
+        return [arr1[i] == arr2[i] == arr3[i] == True for i in range(len(arr1))]
+
+    return combine(oppo_res_1, oppo_res_2, oppo_res_3), combine(mine_res_1, mine_res_2, mine_res_3)
+
+
+def test_divine_shield_epoch(img, oppo_num, mine_num):
+    oppo_baseline = 960 - 70 * (oppo_num - 1)
+    mine_baseline = 960 - 70 * (mine_num - 1)
+
+    oppo_res = []
+    mine_res = []
+
+    def test_pixel(pixel):
+        return int(pixel[1]) - int(pixel[0]) > 80
+
+    for i in range(oppo_num):
+        card_baseline = oppo_baseline + i * 140
+        pixel = img[452, card_baseline - 60]
+        oppo_res.append(test_pixel(pixel))
+
+    for i in range(mine_num):
+        card_baseline = mine_baseline + i * 140
+        pixel = img[640, card_baseline - 60]
+        mine_res.append(test_pixel(pixel))
 
     return oppo_res, mine_res
