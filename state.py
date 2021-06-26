@@ -70,15 +70,15 @@ class State:
             else:
                 print("不能动")
 
-    # 用卡费体系来算启发值
+    # 用攻血点数之和算启发值(方卡费体系里就是卡费乘2)
     @property
     def oppo_heuristic_value(self):
         h_val = 0
         for minion in self.oppos:
             h_val += minion.attack + minion.health
             if minion.has_divine_shield:
-                h_val += minion.health
-        return h_val / 2
+                h_val += minion.attack
+        return h_val
 
     @property
     def mine_heuristic_value(self):
@@ -86,8 +86,8 @@ class State:
         for minion in self.mines:
             h_val += minion.attack + minion.health
             if minion.has_divine_shield:
-                h_val += minion.health
-        return h_val / 2
+                h_val += minion.attack
+        return h_val
 
     @property
     def heuristic_value(self):
@@ -111,8 +111,69 @@ class State:
             if mine_minion.health <= 0:
                 self.mines.pop(mine_index)
 
+    def get_best_action(self):
+        could_attack_oppos = []
+        has_taunt = False
+
+        for i in range(len(self.oppos)):
+            if self.oppos[i].is_taunt:
+                could_attack_oppos.append(i)
+                has_taunt = True
+
+        if not has_taunt:
+            could_attack_oppos = [i for i in range(len(self.oppos))]
+
+        max_delta_h_val = 0
+        max_my_index = -1
+        max_oppo_index = -1
+
+        for my_index in range(len(self.mines)):
+            if self.available[my_index] == 0:
+                continue
+            my_minion = self.mines[my_index]
+
+            for oppo_index in could_attack_oppos:
+                oppo_minion = self.oppos[oppo_index]
+                tmp_delta_h_val = 0
+
+                if my_minion.has_divine_shield:
+                    tmp_delta_h_val -= my_minion.attack
+                else:
+                    if my_minion.health <= oppo_minion.attack:
+                        tmp_delta_h_val -= my_minion.attack + my_minion.health
+                    else:
+                        tmp_delta_h_val -= oppo_minion.attack
+
+                if oppo_minion.has_divine_shield:
+                    tmp_delta_h_val += oppo_minion.attack
+                else:
+                    if oppo_minion.health <= my_minion.attack:
+                        tmp_delta_h_val += oppo_minion.attack + oppo_minion.health
+                    else:
+                        tmp_delta_h_val += oppo_minion.health
+
+                # 想给过墙行为加一点补正
+                if oppo_minion.is_taunt:
+                    tmp_delta_h_val += min(oppo_minion.health, my_minion.attack) * 0.5
+
+                if tmp_delta_h_val > max_delta_h_val:
+                    max_delta_h_val = tmp_delta_h_val
+                    max_my_index = my_index
+                    max_oppo_index = oppo_index
+
+            # 如果没有墙,自己又能打脸,应该试一试
+            if not has_taunt:
+                if self.available[my_index] == 2 and \
+                        my_minion.attack * 0.75 > max_delta_h_val:
+                    # *0.75 因为场面更重要
+                    max_delta_h_val = my_minion.attack * 0.75
+                    max_my_index = my_index
+                    max_oppo_index = -1
+
+        return max_my_index, max_oppo_index
 
 if __name__ == "__main__":
     state = State()
     state.print_out()
-    print(state.heuristic_value)
+    print(state.get_best_action())
+    print(state.mine_heuristic_value, state.oppo_heuristic_value, state.heuristic_value)

@@ -5,7 +5,32 @@ import time
 from pynput.mouse import Button, Controller
 import random
 
-OPERATE_INTERVAL = 0.25
+OPERATE_INTERVAL = 0.2
+SMALL_OPERATE_INTERVAL = 0.1
+
+
+def choose_my_minion(mine_index, mine_num):
+    time.sleep(OPERATE_INTERVAL)
+    x = 960 - (mine_num - 1) * 70 + mine_index * 140
+    y = 600
+    right_click(x, y)
+
+
+def choose_opponent_minion(oppo_index, oppo_num):
+    time.sleep(OPERATE_INTERVAL)
+    x = 960 - (oppo_num - 1) * 70 + oppo_index * 140
+    y = 400
+    right_click(x, y)
+
+
+def choose_oppo_hero():
+    time.sleep(OPERATE_INTERVAL)
+    right_click(960, 200)
+
+
+def cancel_click():
+    time.sleep(SMALL_OPERATE_INTERVAL)
+    left_click(50, 400)
 
 
 def left_click(x, y):
@@ -34,10 +59,6 @@ def right_click(x, y):
 
 def match_opponent():
     left_click(1400, 900)
-
-
-def flush_uncertain():
-    left_click(50, 400)
 
 
 def end_turn():
@@ -71,6 +92,7 @@ def use_skill():
     left_click(1150, 850)
 
 
+# TODO: delete it
 def minion_attack():
     for minion_location in range(800, 1101, 100):
         left_click(minion_location, 600)
@@ -79,11 +101,23 @@ def minion_attack():
     right_click(50, 400)
 
 
+def minion_beat_minion(mine_index, mine_number, oppo_index, oppo_num):
+    choose_my_minion(mine_index, mine_number)
+    choose_opponent_minion(oppo_index, oppo_num)
+    cancel_click()
+
+
+def minion_beat_hero(mine_index, mine_number):
+    choose_my_minion(mine_index, mine_number)
+    choose_oppo_hero()
+    cancel_click()
+
+
 def hero_attack():
     left_click(950, 830)
     time.sleep(OPERATE_INTERVAL)
     left_click(950, 200)
-    right_click(50, 400)
+    cancel_click()
 
 
 def use_task():

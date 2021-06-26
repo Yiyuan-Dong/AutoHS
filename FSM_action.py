@@ -67,7 +67,7 @@ def NotMineAction():
     print_out()
     global state
     while 1:
-        click.flush_uncertain()
+        click.cancel_click()
         time.sleep(STATE_CHECK_INTERVAL)
         state = get_screen.get_state()
         if state == STRING_NOTMYTURN:
@@ -92,7 +92,7 @@ def MyTurnAction():
     if turn_num >= 10:
         click.use_skill()
     click.use_card()
-    click.minion_attack()
+    click. minion_attack()
     click.use_skill()
     click.hero_attack()
     time.sleep(BACK_ROPING_TIME)

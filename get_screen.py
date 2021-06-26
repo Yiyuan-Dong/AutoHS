@@ -255,9 +255,11 @@ def try_get_number_in_img(img, threshold):
 
 def health_attack_number_in_img(img):
     ret_img = try_get_number_in_img(img, 254)
-    if sum(sum(ret_img == 255)) < 20:
+    if sum(sum(ret_img == 255)) < 80:
+        ret_img = try_get_number_in_img(img, 230)
+    if sum(sum(ret_img == 255)) < 80:
         ret_img = try_get_number_in_img(img, 200)
-    if sum(sum(ret_img == 255)) < 20:
+    if sum(sum(ret_img == 255)) < 80:
         ret_img = try_get_number_in_img(img, 180)
     return ret_img
 
