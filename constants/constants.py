@@ -1,6 +1,5 @@
-# 关于截屏分析
 # 把鼠标移到卡牌上到试图截图所需的时间
-CARD_APPEAR_INTERVAL = 0.05
+CARD_APPEAR_INTERVAL = 0.02
 DEBUG = False
 
 STEP = [0, 0, 140, 139, 131, 105, 88, 75, 66, 58, 52]

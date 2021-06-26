@@ -90,8 +90,8 @@ def get_state():
     # 像素值(B, G, R)
     # 1.卡牌特效/选牌阶段: 整个屏幕边缘都是灰暗的, 像素值约为 (30~, 30~, 30~)
     # 2.结束回合(黄): 像素值为(0~, 120+, 130+)
-    # 3.结束回合(绿):像素值为(0~, 100+, 20+)
-    # 4.对手回合:像素值为(70+, 90+, 100~)
+    # 3.结束回合(绿): 像素值为(0~, 100+, 20+)
+    # 4.对手回合: 像素值为(70+, 90+, 100~)
     # 所以通过蓝像素与红像素的差值判断
 
     diff = max_diff(im_opencv, [(510, 1560), (510, 1550)])
@@ -281,8 +281,9 @@ def test_taunt(img, oppo_num, mine_num):
                 # 绿色色素(pixel[1])会比蓝色色素(pixel[0])要多,但是
                 # 如果是嘲讽随从,会多出一圈灰色的边框,这个边框上三种像素
                 # 较为平均
-                if int(pixel[1]) - int(pixel[0]) < 40:
+                if int(pixel[1]) - int(pixel[0]) < 30:
                     count += 1
+        # print(count)
         return count >= 5
 
     for i in range(oppo_num):
@@ -357,7 +358,7 @@ def find_closest(img_hash, hash_dict):
     return flag, min_diff
 
 
-def get_health_attack(img, oppo, mine):
+def get_attack_health(img, oppo, mine):
     steps_oppos = [0, 140, 140, 139, 139, 139, 139, 139]
     steps_mine = [0, 140, 140, 140, 140, 140, 140, 140]
 
@@ -386,7 +387,7 @@ def get_health_attack(img, oppo, mine):
         health_hash = image_hash(grey_health_img)
         # print(f"health: {health_hash}, {find_closest(health_hash, NUMBER_HASH)}")
 
-        temp = (find_closest(attack_hash, NUMBER_HASH), find_closest(health_hash, NUMBER_HASH))
+        temp = (find_closest(attack_hash, NUMBER_HASH)[0], find_closest(health_hash, NUMBER_HASH)[0])
 
         if i < mine:
             mine_res.append(temp)

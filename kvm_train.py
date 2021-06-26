@@ -1,3 +1,5 @@
+# 效果完全不行, 放在这里当失败案例
+
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.datasets import mnist
 from sklearn import svm
