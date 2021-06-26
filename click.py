@@ -13,24 +13,24 @@ def choose_my_minion(mine_index, mine_num):
     time.sleep(OPERATE_INTERVAL)
     x = 960 - (mine_num - 1) * 70 + mine_index * 140
     y = 600
-    right_click(x, y)
+    left_click(x, y)
 
 
 def choose_opponent_minion(oppo_index, oppo_num):
     time.sleep(OPERATE_INTERVAL)
     x = 960 - (oppo_num - 1) * 70 + oppo_index * 140
     y = 400
-    right_click(x, y)
+    left_click(x, y)
 
 
 def choose_oppo_hero():
     time.sleep(OPERATE_INTERVAL)
-    right_click(960, 200)
+    left_click(960, 200)
 
 
 def cancel_click():
     time.sleep(SMALL_OPERATE_INTERVAL)
-    left_click(50, 400)
+    right_click(50, 400)
 
 
 def left_click(x, y):

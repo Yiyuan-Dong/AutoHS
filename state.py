@@ -1,6 +1,10 @@
 import copy
+import time
 
+import click
 import get_screen
+import keyboard
+import sys
 
 
 class Minion:
@@ -21,6 +25,18 @@ class Minion:
 
 class State:
     def __init__(self):
+        self.oppo_num = 0
+        self.mine_num = 0
+        self.available = []
+        self.oppos = []
+        self.mines = []
+
+        self.update_minions()
+
+        self.card_num = get_screen.count_my_cards()
+        self.cards = get_screen.identify_cards(self.card_num)
+
+    def update_minions(self):
         img = get_screen.catch_screen()
         self.oppo_num, self.mine_num = get_screen.count_minions(img)
         oppo_ah, mine_ah = get_screen.get_attack_health(img, self.oppo_num, self.mine_num)
@@ -49,9 +65,6 @@ class State:
                     mine_ds[i]
                 )
             )
-
-        self.card_num = get_screen.count_my_cards()
-        self.cards = get_screen.identify_cards(self.card_num)
 
     def print_out(self):
         print(f"我有{self.card_num}张手牌,它们分别是")
@@ -150,7 +163,7 @@ class State:
                     if oppo_minion.health <= my_minion.attack:
                         tmp_delta_h_val += oppo_minion.attack + oppo_minion.health
                     else:
-                        tmp_delta_h_val += oppo_minion.health
+                        tmp_delta_h_val += my_minion.attack
 
                 # 想给过墙行为加一点补正
                 if oppo_minion.is_taunt:
@@ -172,8 +185,25 @@ class State:
 
         return max_my_index, max_oppo_index
 
+
 if __name__ == "__main__":
+    keyboard.add_hotkey("ctrl+q", sys.exit)
+
     state = State()
-    state.print_out()
-    print(state.get_best_action())
-    print(state.mine_heuristic_value, state.oppo_heuristic_value, state.heuristic_value)
+    while True:
+        state.print_out()
+        print(state.mine_heuristic_value, state.oppo_heuristic_value, state.heuristic_value)
+        mine_index, oppo_index = state.get_best_action()
+        print(mine_index, oppo_index)
+
+        time.sleep(2)
+
+        if mine_index == -1:
+            break
+        if oppo_index == -1:
+            click.minion_beat_hero(mine_index, state.mine_num)
+        else:
+            click.minion_beat_minion(mine_index, state.mine_num, oppo_index, state.oppo_num)
+
+        time.sleep(2)
+        state.update_minions()
