@@ -2,15 +2,10 @@
 主体代码引自 Demon_Hunter 的CSDN博客, 博客URL:https://blog.csdn.net/zhuisui_woxin/article/details/84345036
 """
 
-import win32gui
-import win32ui
-import win32con
-import win32api
+import add_parent_dir
 import cv2
-import numpy
 import time
 import math
-from pynput.mouse import Button, Controller
 
 import get_screen
 

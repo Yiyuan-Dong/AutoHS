@@ -1,7 +1,6 @@
-import imagehash
-from pynput.mouse import Button, Controller
+import add_parent_dir
+from pynput.mouse import Controller
 import get_screen
-import catch_screen_demo
 import time
 import cv2
 from constants.constants import *

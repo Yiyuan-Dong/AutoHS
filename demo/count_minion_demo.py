@@ -1,11 +1,6 @@
-import imagehash
-from pynput.mouse import Button, Controller
+import add_parent_dir
 import get_screen
-import catch_screen_demo
-import time
 import cv2
-from constants.constants import *
-from constants.hash_vals import *
 
 if __name__ == "__main__":
     img = get_screen.catch_screen()
@@ -15,6 +10,6 @@ if __name__ == "__main__":
     cv2.waitKey()
     cv2.destroyAllWindows()
 
-    print(get_screen.count_minions())
+    print(get_screen.count_minions(img))
 
     cv2.destroyAllWindows()

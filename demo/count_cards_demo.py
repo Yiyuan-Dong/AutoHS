@@ -1,10 +1,5 @@
-import cv2
-from pynput.mouse import Button, Controller
+import add_parent_dir
 import get_screen
-import time
-import numpy
-import imagehash
-from PIL import Image
 import sys
 
 if __name__ == "__main__":

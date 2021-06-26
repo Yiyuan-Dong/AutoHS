@@ -1,16 +1,6 @@
-import pickle
 import sys
-
-import imagehash
-from pynput.mouse import Button, Controller
+import add_parent_dir
 import get_screen
-import catch_screen_demo
-import time
-import cv2
-from constants.constants import *
-from constants.hash_vals import *
-import sklearn
-import numpy
 
 steps_oppos = [0, 140, 140, 139, 139, 139, 139, 139]
 steps_mine = [0, 140, 140, 140, 140, 140, 140, 140]

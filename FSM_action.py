@@ -4,20 +4,7 @@ import time
 import get_screen
 import sys
 import cv2
-
-STRING_CHOOSINGHERO = "ChoosingHero"
-STRING_MATCHING = "Matching"
-STRING_CHOOSINGCARD = "ChoosingCard"
-STRING_NOTMYTURN = "NotMyTurn"
-STRING_MYTURN = "MyTurn"
-# STRING_UNCERTAIN = "Uncertain"
-STRING_LEAVEHS = "LeaveHS"
-
-FRONT_ROPING_TIME = 3
-BACK_ROPING_TIME = 2
-STATE_CHECK_INTERVAL = 3
-EMOJ_RATE = 0.2
-IF_LOGOUT = 1
+from constants.constants import *
 
 state = ""
 turn_num = 0
@@ -25,13 +12,13 @@ time_snap = 0.0
 game_count = 1
 
 
-def log_out():
+def print_out():
     global state
     global turn_num
     global time_snap
     global game_count
 
-    if IF_LOGOUT:
+    if IF_PRINTOUT:
         print("  Entering " + state)
         if state == STRING_MYTURN:
             print("    It is turn " + str(turn_num))
@@ -53,14 +40,14 @@ def log_out():
 
 
 def ChoosingHeroAction():
-    log_out()
+    print_out()
     click.match_opponent()
     time.sleep(1)
     return STRING_MATCHING
 
 
 def MatchingAction():
-    log_out()
+    print_out()
     local_state = STRING_MATCHING
     while local_state == STRING_MATCHING:
         time.sleep(STATE_CHECK_INTERVAL)
@@ -70,14 +57,14 @@ def MatchingAction():
 
 
 def ChoosingCardAction():
-    log_out()
+    print_out()
     click.choose_card()
     time.sleep(STATE_CHECK_INTERVAL)
     return STRING_NOTMYTURN
 
 
 def NotMineAction():
-    log_out()
+    print_out()
     global state
     while 1:
         click.flush_uncertain()
@@ -92,7 +79,7 @@ def NotMineAction():
 def MyTurnAction():
     global turn_num
     turn_num += 1
-    log_out()
+    print_out()
     time.sleep(FRONT_ROPING_TIME)
     if_emoj = random.random()
     if if_emoj < EMOJ_RATE:
@@ -107,7 +94,7 @@ def MyTurnAction():
     click.use_card()
     click.minion_attack()
     click.use_skill()
-    click.hero_atrack()
+    click.hero_attack()
     time.sleep(BACK_ROPING_TIME)
     click.end_turn()
     time.sleep(STATE_CHECK_INTERVAL)
@@ -122,7 +109,7 @@ def MyTurnAction():
 #     return ""
 
 def LeaveHSAction():
-    log_out()
+    print_out()
     global state
     while state == STRING_LEAVEHS:
         click.enter_HS()
@@ -149,14 +136,6 @@ def show_time(time_last):
 def AutoHS_automata():
     global state
     global turn_num
-
-    def increase():
-        i = 0
-        while True:
-            yield i
-            i += 1
-
-    i = increase()
 
     while 1:
         if state == "":
