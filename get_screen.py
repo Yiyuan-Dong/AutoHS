@@ -138,12 +138,13 @@ def get_card_hash(total_num, index):
 
 
 def count_my_cards():
-    res_list = [count_my_cards_epoch(), count_my_cards_epoch()]
-
-    while not res_list[-2] == res_list[-1] and len(res_list) < 10:
-        res_list.append(count_my_cards_epoch())
-
-    return res_list[-1]
+    # res_list = [count_my_cards_epoch(), count_my_cards_epoch()]
+    #
+    # while not res_list[-2] == res_list[-1] and len(res_list) < 10:
+    #     res_list.append(count_my_cards_epoch())
+    #
+    # return res_list[-1]
+    return count_my_cards_epoch()
 
 
 def count_my_cards_epoch():
@@ -179,6 +180,8 @@ def count_my_cards_epoch():
 
     # print(count - 2)
     # 减二因为: 从0矩阵到棋盘背景会加一; 从最后一张图到棋盘背景也会加一
+    if count == 1:
+        return 0
     return count - 2
 
 
@@ -296,6 +299,8 @@ def test_taunt(img, oppo_num, mine_num):
 
 
 def test_divine_shield():
+    # 为什么要搞个循环呢,因为光环(比如团队领袖的加攻光环)也是黄色的,
+    # 有时会影响圣盾的判断,所以多测几次,如果是光环的话不会每次都有光环
     img = catch_screen()
     oppo_num, mine_num = count_minions(img)
     oppo_res_1, mine_res_1 = test_divine_shield_epoch(img, oppo_num, mine_num)
@@ -322,10 +327,14 @@ def test_divine_shield_epoch(img, oppo_num, mine_num):
     mine_res = []
 
     def test_pixel(pixel):
+        # 圣盾是明黄色的,pixel[1]与pixel[0]差距很大
         return int(pixel[1]) - int(pixel[0]) > 80
 
     for i in range(oppo_num):
         card_baseline = oppo_baseline + i * 140
+        # 这个点在攻击力的左边一点,选这个位置主要为了:
+        # 1. 有圣盾是在圣盾里面
+        # 2. 不在嘲讽框里面
         pixel = img[452, card_baseline - 60]
         oppo_res.append(test_pixel(pixel))
 
@@ -335,3 +344,54 @@ def test_divine_shield_epoch(img, oppo_num, mine_num):
         mine_res.append(test_pixel(pixel))
 
     return oppo_res, mine_res
+
+
+def find_closest(img_hash, hash_dict):
+    min_diff = 64
+    flag = -1
+    for k, v in hash_dict.items():
+        if hash_diff(k, str(img_hash)) < min_diff:
+            min_diff = hash_diff(k, str(img_hash))
+            flag = v
+
+    return flag, min_diff
+
+
+def get_health_attack(img, oppo, mine):
+    steps_oppos = [0, 140, 140, 139, 139, 139, 139, 139]
+    steps_mine = [0, 140, 140, 140, 140, 140, 140, 140]
+
+    mine_baseline = 960 - int((mine - 1) * steps_mine[mine] / 2)
+    oppo_baseline = 960 - int((oppo - 1) * steps_oppos[oppo] / 2)
+
+    oppo_res = []
+    mine_res = []
+
+    for i in range(mine + oppo):
+        if i < mine:
+            baseline = mine_baseline + i * steps_mine[mine]
+            attack_img = img[626:652, baseline - 47:baseline - 28]
+            health_img = img[626:652, baseline + 29:baseline + 48]
+
+        else:
+            baseline = oppo_baseline + (i - mine) * steps_oppos[oppo]
+            attack_img = img[438:464, baseline - 47:baseline - 28]
+            health_img = img[438:464, baseline + 29:baseline + 48]
+
+        grey_health_img = health_attack_number_in_img(health_img)
+        grey_attack_img = health_attack_number_in_img(attack_img)
+
+        attack_hash = image_hash(grey_attack_img)
+        # print(f"attack: {attack_hash}, {find_closest(attack_hash, NUMBER_HASH)}")
+        health_hash = image_hash(grey_health_img)
+        # print(f"health: {health_hash}, {find_closest(health_hash, NUMBER_HASH)}")
+
+        temp = (find_closest(attack_hash, NUMBER_HASH), find_closest(health_hash, NUMBER_HASH))
+
+        if i < mine:
+            mine_res.append(temp)
+        else:
+            oppo_res.append(temp)
+
+    return oppo_res, mine_res
+

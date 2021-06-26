@@ -26,8 +26,8 @@ CARD_HASH_INFO = {
     "9496836db56e4e26": "火车王"
 }
 
-# 不同的攻击数字的哈希
-ATTACK_NUMBER_HASH = {
+# 不同的攻击血量数字的哈希
+NUMBER_HASH = {
     "98613739342c67cf": 1,
     "85b21d1d5bc46cb3": 2,
     "959bc2a50fc2397a": 3,
@@ -38,10 +38,4 @@ ATTACK_NUMBER_HASH = {
     "85975ae11ace6cb1": 8,
     "84b15b0f4ae63dc9": 9,
     "b45769ab43565255": 10,
-}
-
-# 不同的血量数字的哈希
-HEALTH_NUMBER_HASH = {
-    "94d24a257b5a63e6": 3,
-    "9b66646364996d99": 1,
 }
