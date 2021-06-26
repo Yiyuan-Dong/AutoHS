@@ -11,10 +11,12 @@ import get_screen
 
 # AREA_LIST = [((1495, 465), (1620, 522))]
 
-AREA_LIST = [((680, 520), (720, 550))]
+AREA_LIST = []
+PRINT_ALL_AREA_LIST = [((870 - 140, 508), (910 - 140, 512)), ((870, 508), (910, 512)), ((1010, 508), (1050, 512)), ((1150, 508), (1190, 512))]
+# PRINT_ALL_AREA_LIST = [((950, 508), (990, 512))]
 # AREA_LIST = [((680, 320), (820, 490)), ((820, 320), (960, 490)), ((960, 320), (1100, 490))]
 
-POINT_LIST = [(1560, 510), (960, 320), (970, 640), (1030, 676), (830, 640)]
+POINT_LIST = [(965, 510)]
 
 
 def get_sum(x):
@@ -39,11 +41,19 @@ def add_point(img, point_list):
         cv2.circle(img, pair, 1, (255, 0, 0), 2, 0)
 
 
-def show_area(img, top_left, bottom_right, ratio=5):
+def show_area(img, top_left, bottom_right, ratio=5, print_out=False):
     x1, y1 = top_left
     x2, y2 = bottom_right
     tmp_img = img[y1:y2, x1:x2]
     tmp_img = tmp_img.copy()
+
+    if print_out:
+        count = 0
+        for line in tmp_img:
+            for pixel in line:
+                if pixel[1] > 230:
+                    count += 1
+        print(count)
 
     resized_x_length = (x2 - x1) * int(ratio)
     resized_y_length = int(resized_x_length * ((y2 - y1) / (x2 - x1)))
@@ -81,6 +91,12 @@ def main():
             print("[Usage]: ((left-top), (botton-right), [mouse-position])")
         top_left, bottom_right = area
         show_area(im_opencv, top_left, bottom_right)
+
+    for area in PRINT_ALL_AREA_LIST:
+        if len(area) < 2 or len(area) > 3:
+            print("[Usage]: ((left-top), (botton-right), [mouse-position])")
+        top_left, bottom_right = area
+        show_area(im_opencv, top_left, bottom_right, print_out=True)
 
     cv2.destroyAllWindows()
 

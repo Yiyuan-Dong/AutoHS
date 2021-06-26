@@ -104,8 +104,6 @@ class State:
                 self.mines.pop(mine_index)
 
 
-
-
 if __name__ == "__main__":
     state = State()
     print(state.heuristic_value)

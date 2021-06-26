@@ -396,3 +396,22 @@ def get_attack_health(img, oppo, mine):
 
     return oppo_res, mine_res
 
+
+def test_available(img, mine_num):
+    baseline = 960 - (mine_num - 1) * 70
+
+    res = []
+    for i in range(mine_num):
+        card_baseline = baseline + 140 * i
+        tmp_img = img[508:512, card_baseline - 20: card_baseline + 20]
+        count = 0
+        for line in tmp_img:
+            for pixel in line:
+                if pixel[1] > 230:
+                    count += 1
+        if count > 30:
+            res.append(True)
+        else:
+            res.append(False)
+
+    return res
