@@ -281,19 +281,20 @@ def test_taunt(img, oppo_num, mine_num):
                 # 绿色色素(pixel[1])会比蓝色色素(pixel[0])要多,但是
                 # 如果是嘲讽随从,会多出一圈灰色的边框,这个边框上三种像素
                 # 较为平均
-                if int(pixel[1]) - int(pixel[0]) < 30:
+                # print(pixel[1], pixel[0])
+                if int(pixel[1]) - int(pixel[0]) < 25:
                     count += 1
         # print(count)
         return count >= 5
 
     for i in range(oppo_num):
         card_baseline = oppo_baseline + 140 * i
-        tmp = img[340:343, card_baseline - 62: card_baseline - 59]
+        tmp = img[337:340, card_baseline - 53: card_baseline - 50]
         oppo_res.append(test_card(tmp))
 
     for i in range(mine_num):
         card_baseline = mine_baseline + 140 * i
-        tmp = img[528:531, card_baseline - 62: card_baseline - 59]
+        tmp = img[525:528, card_baseline - 53: card_baseline - 50]
         mine_res.append(test_card(tmp))
 
     return oppo_res, mine_res
@@ -405,13 +406,17 @@ def test_available(img, mine_num):
         card_baseline = baseline + 140 * i
         tmp_img = img[508:512, card_baseline - 20: card_baseline + 20]
         count = 0
+        # 能动的随从都有绿色的边框,检测这个绿色的边框
+        # 突袭绿色没有冲锋多
         for line in tmp_img:
             for pixel in line:
                 if pixel[1] > 230:
                     count += 1
-        if count > 30:
-            res.append(True)
+        if count > 100:
+            res.append(2)
+        elif count > 30:
+            res.append(1)
         else:
-            res.append(False)
+            res.append(0)
 
     return res

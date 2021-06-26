@@ -26,6 +26,7 @@ class State:
         oppo_ah, mine_ah = get_screen.get_attack_health(img, self.oppo_num, self.mine_num)
         oppo_t, mine_t = get_screen.test_taunt(img, self.oppo_num, self.mine_num)
         oppo_ds, mine_ds = get_screen.test_divine_shield()
+        self.available = get_screen.test_available(img, self.mine_num)
 
         self.oppos = []
         for i in range(self.oppo_num):
@@ -59,8 +60,15 @@ class State:
         for minion in self.oppos:
             print("  " + str(minion))
         print(f"我有{self.mine_num}个随从")
-        for minion in self.mines:
-            print("  " + str(minion))
+        for i in range(len(self.mines)):
+            minion = self.mines[i]
+            print("  " + str(minion), end=" ")
+            if self.available[i] == 2:
+                print("能打脸")
+            elif self.available[i] == 1:
+                print("是突袭")
+            else:
+                print("不能动")
 
     # 用卡费体系来算启发值
     @property
@@ -106,4 +114,5 @@ class State:
 
 if __name__ == "__main__":
     state = State()
+    state.print_out()
     print(state.heuristic_value)
