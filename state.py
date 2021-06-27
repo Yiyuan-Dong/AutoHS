@@ -22,6 +22,15 @@ class Minion:
             temp += " 圣盾"
         return temp
 
+    def delta_h_after_damage(self, damage):
+        if self.has_divine_shield:
+            return self.attack
+        else:
+            if damage >= self.health:
+                return self.attack + self.health
+            else:
+                return damage
+
 
 class State:
     def __init__(self):
@@ -149,21 +158,8 @@ class State:
                 oppo_minion = self.oppos[oppo_index]
                 tmp_delta_h_val = 0
 
-                if my_minion.has_divine_shield:
-                    tmp_delta_h_val -= my_minion.attack
-                else:
-                    if my_minion.health <= oppo_minion.attack:
-                        tmp_delta_h_val -= my_minion.attack + my_minion.health
-                    else:
-                        tmp_delta_h_val -= oppo_minion.attack
-
-                if oppo_minion.has_divine_shield:
-                    tmp_delta_h_val += oppo_minion.attack
-                else:
-                    if oppo_minion.health <= my_minion.attack:
-                        tmp_delta_h_val += oppo_minion.attack + oppo_minion.health
-                    else:
-                        tmp_delta_h_val += my_minion.attack
+                tmp_delta_h_val -= my_minion.delta_h_after_damage(oppo_minion.attack)
+                tmp_delta_h_val += oppo_minion.delta_h_after_damage(my_minion.attack)
 
                 # 想给过墙行为加一点补正
                 if oppo_minion.is_taunt:

@@ -4,9 +4,8 @@ import win32con
 import time
 from pynput.mouse import Button, Controller
 import random
-
-OPERATE_INTERVAL = 0.2
-SMALL_OPERATE_INTERVAL = 0.1
+from constants.constants import *
+from print_info import *
 
 
 def choose_my_minion(mine_index, mine_num):
@@ -33,28 +32,43 @@ def cancel_click():
     right_click(50, 400)
 
 
-def left_click(x, y):
+def choose_card(card_index, card_num):
+    x = START[card_num] + 65 + STEP[card_num] * card_index
+    y = 900
+    left_click(x, y)
+    time.sleep(OPERATE_INTERVAL)
+
+
+# 第[i]个随从左边那个空隙记为第[i]个gap
+def put_minion(gap_index, minion_num):
+    if minion_num >= 7:
+        warning_print(f"Try to put a minion but there has already been {minion_num} minions")
+
+    x = 960 - (minion_num - 1) * 70 + 140 * gap_index - 70
+    y = 600
+    left_click(x, y)
+    time.sleep(OPERATE_INTERVAL)
+    cancel_click()
+
+
+def click_button(x, y, button):
     x += random.randint(-5, 5)
     y += random.randint(-5, 5)
     mouse = Controller()
-    time.sleep(0.2)
+    time.sleep(0.1)
     mouse.position = (x, y)
-    time.sleep(0.2)
-    mouse.press(Button.left)
-    time.sleep(0.2)
-    mouse.release(Button.left)
+    time.sleep(0.1)
+    mouse.press(button)
+    time.sleep(0.1)
+    mouse.release(button)
+
+
+def left_click(x, y):
+    click_button(x, y, Button.left)
 
 
 def right_click(x, y):
-    x += random.randint(-5, 5)
-    y += random.randint(-5, 5)
-    mouse = Controller()
-    time.sleep(0.2)
-    mouse.position = (x, y)
-    time.sleep(0.2)
-    mouse.press(Button.right)
-    time.sleep(0.2)
-    mouse.release(Button.right)
+    click_button(x, y, Button.right)
 
 
 def match_opponent():

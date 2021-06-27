@@ -23,7 +23,7 @@ AAEDAYoWArahBNyhBA6hlgTAlgTMlgT4lgSxlwSBoQS0oQS9oQTRoQTuoQTKogTNogTPogTDowQA
 - [ ] 补全注释
 - [ ] 补全Readme
 - [X] 识别手牌
-- [ ] 识别场面
+- [X] 识别场面
 - [ ] 更有脑子的瞎打
 - [X] 随机化点击
 - [X] 多样化表情
