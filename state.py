@@ -60,14 +60,14 @@ class State:
                 )
             )
 
-    def debug_print_out(self):
+    def debug_print_battlefield(self):
         if not DEBUG:
             return
-        debug_print(f"我有{self.card_num}张手牌,它们分别是")
-        debug_print("    " + ", ".join(self.cards))
+
         debug_print(f"对手有{self.oppo_num}个随从")
         for minion in self.oppos:
             debug_print("    " + str(minion))
+
         debug_print(f"我有{self.mine_num}个随从")
         for i in range(len(self.mines)):
             minion = self.mines[i]
@@ -79,6 +79,14 @@ class State:
             else:
                 tmp_str += " 不能动"
             debug_print(tmp_str)
+
+    def debug_print_out(self):
+        if not DEBUG:
+            return
+        debug_print(f"我有{self.card_num}张手牌,它们分别是")
+        debug_print("    " + ", ".join(self.cards))
+        self.debug_print_battlefield()
+
 
     @property
     def oppo_num(self):
@@ -251,9 +259,9 @@ class State:
             res = self.best_h_and_arg_within_mana(curr_mana + 1, full_use=True)[0] \
                   - self.best_h_and_arg_within_mana(curr_mana)[0] > 3
         if res:
-            debug_print("Should use the coin")
+            debug_print("需要用硬币")
         else:
-            debug_print("Should not use the coin")
+            debug_print("不需要用硬币")
 
         return res
 

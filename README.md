@@ -3,9 +3,31 @@
 
 在FSM_action.py里有一些参数可以设置...
 
-### 我目前用的挂机卡组 (经典模式-快攻猎)
+### 我目前用的挂机卡组 (标准模式-解解拖拖牧)
 目前手牌识别只能识别这幅套牌里的牌（需要自行测试哈希然后记下来）
-AAEDAYoWArahBNyhBA6hlgTAlgTMlgT4lgSxlwSBoQS0oQS9oQTRoQTuoQTKogTNogTPogTDowQA
+
+- 2x (1) 倦怠光波
+- 2x (1) 护甲商贩
+- 2x (1) 神圣惩击
+- 2x (2) 噬骨殴斗者
+- 1x (2) 暗言术：灭
+- 2x (3) 亡首教徒
+- 2x (3) 噬灵疫病
+- 2x (3) 狂傲的兽人
+- 2x (3) 神圣化身
+- 1x (4) 暗言术：毁
+- 2x (4) 狂乱
+- 2x (4) 神圣新星
+- 1x (5) 泰兰·弗丁
+- 2x (5) 锈骑劫匪
+- 1x (5) 除奇致胜
+- 1x (6) 凯恩·血蹄
+- 1x (7) 吞噬者穆坦努斯
+- 1x (7) 灵魂之镜
+- 1x (9) 戈霍恩之血
+AAECAa0GCMi+A/rfA/PuA6bvA6iKBMGfBPCfBKOgBAuvugPXvgPcvgPmvgPLzQP44wOS5AOY6gOb6wOEnwSFnwQA
+
+
 
 ### 如何运行
 运行 main.py 即可，注意本脚本需要屏幕分辨率为 1920 * 1080、炉石全屏，在运行时按下 Ctrl+Q 可以退出脚本。

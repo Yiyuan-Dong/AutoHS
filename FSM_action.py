@@ -22,18 +22,18 @@ def print_out():
     global game_count
 
     if IF_PRINTOUT:
-        print("  Entering " + FSM_state)
+        sys_print("Entering " + FSM_state)
         if FSM_state == STRING_MYTURN:
-            print("    It is turn " + str(turn_num))
+            sys_print("    It is turn " + str(turn_num))
 
     if FSM_state == STRING_LEAVEHS:
-        print("Wow, What happened?")
+        warning_print("Wow, What happened?")
         show_time(0.0)
-        print("Try to go back to HS")
+        warning_print("Try to go back to HS")
         print()
 
     if FSM_state == STRING_MATCHING:
-        print("The " + str(game_count) + " game begins")
+        sys_print("The " + str(game_count) + " game begins")
         game_count += 1
         turn_num = 0
         time_snap = show_time(time_snap)
@@ -100,7 +100,7 @@ def MyTurnAction():
 
         delta_h, index, args = state.best_h_and_arg_within_mana(mana_last)
         if delta_h == 0:
-            debug_print("Do not want ot use card")
+            debug_print("不需要出牌")
             break
         mana_last -= state.use_card(index, *args)
 
@@ -110,18 +110,20 @@ def MyTurnAction():
     if mana_last >= 2:
         click.use_skill_point()
 
+    last_index = -1
     for i in range(7):
         state.update_minions()
-        state.debug_print_out()
+        state.debug_print_battlefield()
         mine_index, oppo_index = state.get_best_action()
-        debug_print(f"decision: mine_index: {mine_index}, oppo_index: {oppo_index}")
+        debug_print(f"我的决策是: mine_index: {mine_index}, oppo_index: {oppo_index}")
 
-        if mine_index == -1:
+        if mine_index == -1 or last_index == mine_index:
             break
         if oppo_index == -1:
             click.minion_beat_hero(mine_index, state.mine_num)
         else:
             click.minion_beat_minion(mine_index, state.mine_num, oppo_index, state.oppo_num)
+        last_index = mine_index
 
         time.sleep(1.5)
 
@@ -153,13 +155,13 @@ def LeaveHSAction():
 
 
 def show_time(time_last):
-    print("Now the time is " +
-          time.strftime("%m-%d %H:%M:%S", time.localtime()))
+    info_print("Now the time is " +
+               time.strftime("%m-%d %H:%M:%S", time.localtime()))
     time_now = time.time()
     if time_last > 0:
-        print("The last game last for : {} mins {} secs"
-              .format(int((time_now - time_last) // 60),
-                      int(time_now - time_last) % 60))
+        info_print("The last game last for : {} mins {} secs"
+                   .format(int((time_now - time_last) // 60),
+                           int(time_now - time_last) % 60))
     return time.time()
 
 
@@ -170,9 +172,9 @@ def AutoHS_automata():
     while 1:
         if FSM_state == "":
             FSM_state = get_screen.get_state()
-        cv2.imwrite("./img/" + FSM_state + "/" +
-                    time.strftime("%m_%d_%H_%M_%S", time.localtime()) + ".jpg"
-                    , get_screen.catch_screen())
+        # cv2.imwrite("./img/" + FSM_state + "/" +
+        #             time.strftime("%m_%d_%H_%M_%S", time.localtime()) + ".jpg"
+        #             , get_screen.catch_screen())
         FSM_state = eval(FSM_state + "Action")()
 
 
