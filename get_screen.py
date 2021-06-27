@@ -14,6 +14,8 @@ import numpy
 import imagehash
 from PIL import Image
 from pynput.mouse import Button, Controller
+
+import click
 from constants.constants import *
 from constants.hash_vals import *
 
@@ -155,7 +157,7 @@ def count_my_cards_epoch():
 
     step = 30
     for x in range(590, 1281, step):
-        mouse.position = (x, 1030)
+        mouse.position = (x, 1050)
 
         # 必须睡眠一小会儿,否则手牌详情还没跳出来就开始了截图
         time.sleep(CARD_APPEAR_INTERVAL)
@@ -193,7 +195,8 @@ def count_minions(img):
     for i in range(7, 0, -1):
         baseline = 960 - i * 70
         part_canny = canny[390:490, baseline:baseline + 40]
-        if sum(sum(part_canny > 0)) > 100:
+        # print(sum(sum(part_canny > 0)))
+        if sum(sum(part_canny > 0)) > 400:
             flag_opponent = i
             break
 
@@ -201,6 +204,7 @@ def count_minions(img):
     for i in range(7, 0, -1):
         baseline = 960 - i * 70
         part_canny = canny[510:610, baseline:baseline + 40]
+        # print(sum(sum(part_canny > 0)))
         if sum(sum(part_canny > 0)) > 100:
             flag_mine = i
             break
@@ -238,6 +242,7 @@ def identify_cards(card_num):
 
         result.append(name)
 
+    click.cancel_click()
     return result
 
 
@@ -414,7 +419,8 @@ def test_available(img, mine_num):
             for pixel in line:
                 if pixel[1] > 230:
                     count += 1
-        if count > 100:
+        # print(count)
+        if count > 50:
             res.append(2)
         elif count > 30:
             res.append(1)

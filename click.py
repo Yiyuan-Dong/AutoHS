@@ -32,9 +32,14 @@ def cancel_click():
     right_click(50, 400)
 
 
+def test_click():
+    time.sleep(SMALL_OPERATE_INTERVAL)
+    left_click(50, 400)
+
+
 def choose_card(card_index, card_num):
     x = START[card_num] + 65 + STEP[card_num] * card_index
-    y = 900
+    y = 980
     left_click(x, y)
     time.sleep(OPERATE_INTERVAL)
 
@@ -83,45 +88,34 @@ def right_click(x, y):
 def match_opponent():
     left_click(1400, 900)
 
+def commit_choose_card():
+    left_click(960, 850)
 
 def end_turn():
     left_click(1550, 500)
 
 
-def choose_card():
-    left_click(950, 500)
-    left_click(960, 860)
-
-
 def emoj():
     emoj_list = [(800, 780), (1140, 780), (800, 680), (1150, 680)]
-    right_click(950, 830)
+    right_click(960, 830)
     time.sleep(OPERATE_INTERVAL)
     x, y = emoj_list[random.randint(0, 3)]
     left_click(x, y)
     time.sleep(OPERATE_INTERVAL)
 
 
-def use_card():
-    card_list = [(700, 1060), (800, 1060), (880, 1060), (950, 1060), (1050, 1060), (1150, 1060)]
-    card_list.reverse()
-    for coor_tuple in card_list:
-        left_click(coor_tuple[0], coor_tuple[1])
-        time.sleep(OPERATE_INTERVAL)
-        left_click(950, 200)
-
-
 def use_skill():
     left_click(1150, 850)
+    cancel_click()
+    time.sleep(1)
 
 
-# TODO: delete it
-def minion_attack():
-    for minion_location in range(800, 1101, 100):
-        left_click(minion_location, 600)
-        time.sleep(OPERATE_INTERVAL)
-        left_click(950, 200)
-    right_click(50, 400)
+def use_skill_point():
+    left_click(1150, 850)
+    time.sleep(OPERATE_INTERVAL)
+    left_click(960, 850)
+    cancel_click()
+    time.sleep(1.5)
 
 
 def minion_beat_minion(mine_index, mine_number, oppo_index, oppo_num):
@@ -137,20 +131,14 @@ def minion_beat_hero(mine_index, mine_number):
 
 
 def hero_attack():
-    left_click(950, 830)
+    left_click(960, 830)
     time.sleep(OPERATE_INTERVAL)
-    left_click(950, 200)
+    left_click(960, 200)
     cancel_click()
 
 
-def use_task():
-    left_click(700, 1000)
-    time.sleep(OPERATE_INTERVAL)
-    left_click(950, 200)
-
-
 def enter_HS():
-    left_click(350, 970)
+    left_click(180, 910)
 
 
 def enter_battle_mode():

@@ -15,6 +15,8 @@ class Minion:
 
     def delta_h_after_damage(self, damage):
         if self.has_divine_shield:
+            if damage == 0:
+                return 0
             return self.attack
         else:
             if damage >= self.health:
@@ -24,7 +26,8 @@ class Minion:
 
     def get_damaged(self, damage):
         if self.has_divine_shield:
-            self.has_divine_shield = False
+            if damage > 0:
+                self.has_divine_shield = False
         else:
             self.health -= damage
             if self.health <= 0:

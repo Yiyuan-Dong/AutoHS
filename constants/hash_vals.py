@@ -1,8 +1,9 @@
 # 记录了每张卡图哈希值对应着哪张卡
 # 请使用 identify_cards_demo.py 获取哈希值
+from constants.card_name import *
 
 CARD_HASH_INFO = {
-    "c1cd1e56646b3a0f": "幸运币",
+    "c1cd1e56646b3a0f": NAME_THE_COIN,
     "e9b7934026cd445f": "香蕉",
 
     # T7猎
@@ -54,6 +55,8 @@ CARD_HASH_INFO = {
     "96729b3e646569c4": "吃手手鱼",
 
     "94c64f69ca629f34": "娜塔莉塞林",
+
+    "e962938d37d09e0e": "戈霍恩之血",
 }
 
 # 不同的攻击血量数字的哈希

@@ -1,10 +1,9 @@
 import time
 
 import click
-from state import State, Minion
 from constants.constants import *
 from print_info import *
-
+from constants.card_name import *
 
 class Card:
     def __init__(self):
@@ -15,10 +14,10 @@ class Card:
     # 之后是是用这张卡的最佳参数,参数数目不定
     # 参数是什么呢,比如一张火球术,参数就是指示你
     # 是要打脸还是打怪
-    def h_and_best_arg(self, state: State):
+    def best_h_and_arg(self, state):
         return -1
 
-    def use_with_arg(self, state: State, card_index, *args):
+    def use_with_arg(self, state, card_index, *args):
         return None
 
     @property
@@ -34,7 +33,7 @@ class SpellCard(Card):
     def card_type(self):
         return CARD_SPELL
 
-    def use_with_arg(self, state: State, card_index, *args):
+    def use_with_arg(self, state, card_index, *args):
         if self.spell_type == "":
             warning_print(f"Spell card {self.name} does not been assigned spell type!")
             return
@@ -68,6 +67,13 @@ class SpellCard(Card):
 
         warning_print(f"{self.name} has unknown spell type: {self.spell_type}")
 
+
+class Coin(SpellCard):
+    def __init__(self):
+        super(Coin, self).__init__()
+        self.spell_type = SPELL_NO_POINT
+
+
 class MinionCard(Card):
     def card_type(self):
         return CARD_MINION
@@ -78,7 +84,7 @@ class BasicMinionCard(MinionCard):
         super(BasicMinionCard, self).__init__()
         self.value = 0
 
-    def h_and_best_arg(self, state: State):
+    def best_h_and_arg(self, state):
         # 格子满了
         if state.mine_num == 7:
             return -1, 0
@@ -86,7 +92,7 @@ class BasicMinionCard(MinionCard):
             # 默认放到最右边
             return self.value, state.mine_num
 
-    def use_with_arg(self, state: State, card_index, *args):
+    def use_with_arg(self, state, card_index, *args):
         gap_index = args[0]
         click.choose_card(card_index, state.card_num)
         click.put_minion(gap_index, state.mine_num)
@@ -113,9 +119,9 @@ class HolySmite(SpellCard):
         self.spell_type = SPELL_POINT_OPPO
         self.wait_time = 2
         # 加个bias,一是包含了消耗的水晶的代价，二是包含了消耗了手牌的代价
-        self.bias = -4
+        self.bias = -2
 
-    def h_and_best_arg(self, state: State):
+    def best_h_and_arg(self, state):
         best_oppo_index = -1
         best_delta_h = 0
 
@@ -138,12 +144,11 @@ class WaveOfApathy(SpellCard):
         self.wait_time = 2
         self.bias = -4
 
-    def h_and_best_arg(self, state: State):
-
+    def best_h_and_arg(self, state):
         tmp = 0
 
         for minion in state.oppos:
-            tmp += minion - 1
+            tmp += minion.attack - 1
 
         return tmp + self.bias,
 
@@ -165,7 +170,7 @@ class ShadowWordDeath(SpellCard):
         self.wait_time = 1.5
         self.bias = -6
 
-    def h_and_best_arg(self, state: State):
+    def best_h_and_arg(self, state):
         best_oppo_index = -1
         best_delta_h = 0
 
@@ -191,7 +196,7 @@ class Apotheosis(SpellCard):
         self.spell_type = SPELL_POINT_MINE
         self.bias = -6
 
-    def h_and_best_arg(self, state: State):
+    def best_h_and_arg(self, state):
         best_delta_h = 0
         best_mine_index = -1
 
@@ -224,7 +229,7 @@ class DevouringPlague(SpellCard):
         self.wait_time = 4
         self.bias = -4  # 把吸的血直接算进bias
 
-    def h_and_best_arg(self, state: State):
+    def best_h_and_arg(self, state):
         h = state.heuristic_value
 
         sum = 0
@@ -235,9 +240,9 @@ class DevouringPlague(SpellCard):
             for j in range(4):
                 tmp_state.random_distribute_damage(1, [i for i in range(tmp_state.oppo_num)], [])
 
-            sum += h - tmp_state.heuristic_value
+            sum += tmp_state.heuristic_value - h
 
-        return sum / sample_times + self.bias
+        return sum / sample_times + self.bias,
 
 
 class OverconfidentOrc(BasicMinionCard):
@@ -256,9 +261,9 @@ class HolyNova(SpellCard):
         self.spell_type = SPELL_NO_POINT
         self.bias = -8
 
-    def h_and_best_arg(self, state: State):
+    def best_h_and_arg(self, state):
         return self.bias + sum([minion.delta_h_after_damage(2)
-                                for minion in state.oppos])
+                                for minion in state.oppos]),
 
 
 class Hysteria(SpellCard):
@@ -270,7 +275,7 @@ class Hysteria(SpellCard):
         self.spell_type = SPELL_POINT_OPPO
         self.bias = -10  # 我觉得狂乱应该要能力挽狂澜
 
-    def h_and_best_arg(self, state: State):
+    def best_h_and_arg(self, state):
         # TODO: 感觉有点麻烦,以后再写
         return 0, 0
 
@@ -283,10 +288,10 @@ class ShadowWordRuin(SpellCard):
         self.spell_type = SPELL_NO_POINT
         self.bias = -8
 
-    def h_and_best_arg(self, state: State):
+    def best_h_and_arg(self, state):
         return self.bias + sum([minion.attack + minion.health
                                 for minion in state.oppos
-                                if minion.attack >= 5])
+                                if minion.attack >= 5]),
 
 
 class AgainstAllOdds(SpellCard):
@@ -297,10 +302,14 @@ class AgainstAllOdds(SpellCard):
         self.spell_type = SPELL_NO_POINT
         self.bias = -9
 
-    def h_and_best_arg(self, state: State):
-        return self.bias + sum([minion.attack + minion.health
-                                for minion in state.oppos
-                                if minion.attack % 2 == 1])
+    def best_h_and_arg(self, state):
+        return self.bias + \
+               sum([minion.attack + minion.health
+                    for minion in state.oppos
+                    if minion.attack % 2 == 1]) - \
+               sum([minion.attack + minion.health
+                    for minion in state.mines
+                    if minion.attack % 2 == 1]),
 
 
 class RuststeedRaider(BasicMinionCard):
@@ -345,18 +354,18 @@ class SoulMirror(SpellCard):
         self.wait_time = 5
         self.bias = -16
 
-    def h_and_best_arg(self, state: State):
+    def best_h_and_arg(self, state):
         copy_number = min(7 - state.mine_num, state.oppo_num)
         sum = 0
         for i in range(copy_number):
             sum += state.oppos[i].attack + state.oppos[i].health
 
-        return sum + self.bias
+        return sum + self.bias,
 
 
 class BloodOfGhuun(BasicMinionCard):
     def __init__(self):
         super(BloodOfGhuun, self).__init__()
-        self.name = "霍戈恩之血"
+        self.name = "戈霍恩之血"
         self.cost = 9
         self.value = 8
