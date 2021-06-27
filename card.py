@@ -25,7 +25,6 @@ class Card:
     def card_type(self):
         return ""
 
-
 class SpellCard(Card):
     def __init__(self):
         super(SpellCard, self).__init__()
@@ -219,7 +218,7 @@ class DeathsHeadCultist(BasicMinionCard):
 class DevouringPlague(SpellCard):
     def __init__(self):
         super().__init__()
-        self.name = "嗜灵疫病"
+        self.name = "噬灵疫病"
         self.cost = 3
         self.spell_type = SPELL_NO_POINT
         self.wait_time = 4
