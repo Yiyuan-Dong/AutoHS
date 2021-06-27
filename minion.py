@@ -22,3 +22,11 @@ class Minion:
             else:
                 return damage
 
+    def get_damaged(self, damage):
+        if self.has_divine_shield:
+            self.has_divine_shield = False
+        else:
+            self.health -= damage
+            if self.health <= 0:
+                return True
+        return False

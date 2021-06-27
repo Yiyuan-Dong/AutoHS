@@ -5,11 +5,10 @@ import click
 import get_screen
 import keyboard
 import sys
+import random
 
 class State:
     def __init__(self):
-        self.oppo_num = 0
-        self.mine_num = 0
         self.available = []
         self.oppos = []
         self.mines = []
@@ -21,14 +20,14 @@ class State:
 
     def update_minions(self):
         img = get_screen.catch_screen()
-        self.oppo_num, self.mine_num = get_screen.count_minions(img)
-        oppo_ah, mine_ah = get_screen.get_attack_health(img, self.oppo_num, self.mine_num)
-        oppo_t, mine_t = get_screen.test_taunt(img, self.oppo_num, self.mine_num)
+        tmp_oppo_num, tmp_mine_num = get_screen.count_minions(img)
+        oppo_ah, mine_ah = get_screen.get_attack_health(img, tmp_oppo_num, tmp_mine_num)
+        oppo_t, mine_t = get_screen.test_taunt(img, tmp_oppo_num, tmp_mine_num)
         oppo_ds, mine_ds = get_screen.test_divine_shield()
-        self.available = get_screen.test_available(img, self.mine_num)
+        self.available = get_screen.test_available(img, tmp_mine_num)
 
         self.oppos = []
-        for i in range(self.oppo_num):
+        for i in range(tmp_oppo_num):
             self.oppos.append(
                 Minion(
                     oppo_ah[i][0],
@@ -39,7 +38,7 @@ class State:
             )
 
         self.mines = []
-        for i in range(self.mine_num):
+        for i in range(tmp_mine_num):
             self.mines.append(
                 Minion(
                     mine_ah[i][0],
@@ -65,6 +64,14 @@ class State:
                 print("是突袭")
             else:
                 print("不能动")
+
+    @property
+    def oppo_num(self):
+        return len(self.oppos)
+
+    @property
+    def mine_num(self):
+        return len(self.mines)
 
     # 用攻血点数之和算启发值(方卡费体系里就是卡费乘2)
     @property
@@ -105,6 +112,23 @@ class State:
         else:
             mine_minion.health -= oppo_minion.attack
             if mine_minion.health <= 0:
+                self.mines.pop(mine_index)
+
+    def random_distribute_damage(self, damage, oppo_index_list, mine_index_list):
+        if len(oppo_index_list) == len(mine_index_list) == 0:
+            return
+
+        random_x = random.randint(0, len(oppo_index_list) + len(mine_index_list))
+
+        if random_x < len(oppo_index_list):
+            oppo_index = oppo_index_list[random_x]
+            minion = self.oppos[oppo_index]
+            if minion.get_damaged(damage):
+                self.oppos.pop(oppo_index)
+        else:
+            mine_index = mine_index_list[random_x - len(oppo_index_list)]
+            minion = self.mines[mine_index]
+            if minion.get_damaged(damage):
                 self.mines.pop(mine_index)
 
     def get_best_action(self):
@@ -154,6 +178,14 @@ class State:
                     max_oppo_index = -1
 
         return max_my_index, max_oppo_index
+
+    def copy_new_one(self):
+        tmp = copy.deepcopy(self)
+        for i in range(self.oppo_num):
+            tmp.oppos[i] = copy.deepcopy(self.oppos[i])
+        for i in range(self.mine_num):
+            tmp.mines[i] = copy.deepcopy(self.mines[i])
+        return tmp
 
 
 if __name__ == "__main__":
