@@ -22,9 +22,12 @@ IF_PRINTOUT = 1
 OPERATE_INTERVAL = 0.2
 SMALL_OPERATE_INTERVAL = 0.1
 
-CARD_SPELL = "spell"
-CARD_MINION = "minion"
-CARD_WEAPON = "weapon"
+CARD_SPELL = "Spell"
+CARD_MINION = "Minion"
+CARD_WEAPON = "Weapon"
+SPELL_NO_POINT = "SpellNoPoint"
+SPELL_POINT_OPPO = "SpellPointOppo"
+SPELL_POINT_MINE = "SpellPointMine"
 
 
 

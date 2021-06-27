@@ -39,6 +39,15 @@ def choose_card(card_index, card_num):
     time.sleep(OPERATE_INTERVAL)
 
 
+def click_middle():
+    left_click(960, 500)
+
+
+def choose_and_use_spell(card_index, card_num):
+    choose_card(card_index, card_num)
+    click_middle()
+
+
 # 第[i]个随从左边那个空隙记为第[i]个gap
 def put_minion(gap_index, minion_num):
     if minion_num >= 7:
