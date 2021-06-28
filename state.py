@@ -204,7 +204,7 @@ class State:
                     max_my_index = my_index
                     max_oppo_index = oppo_index
 
-                print(my_index, oppo_index, tmp_delta_h_val)
+                # print(my_index, oppo_index, tmp_delta_h_val)
             # 如果没有墙,自己又能打脸,应该试一试
             if not has_taunt:
                 if self.available[my_index] == 2 and \

@@ -4,6 +4,8 @@ import click
 from constants.constants import *
 from print_info import *
 from constants.card_name import *
+import numpy
+
 
 class Card:
     def __init__(self):
@@ -24,6 +26,7 @@ class Card:
     def card_type(self):
         return ""
 
+
 class SpellCard(Card):
     def __init__(self):
         super(SpellCard, self).__init__()
@@ -40,6 +43,7 @@ class SpellCard(Card):
 
         if self.spell_type == SPELL_NO_POINT:
             click.choose_and_use_spell(card_index, state.card_num)
+            click.cancel_click()
             time.sleep(self.wait_time)
             return
 
@@ -51,6 +55,7 @@ class SpellCard(Card):
             oppo_index = args[0]
             click.choose_card(card_index, state.card_num)
             click.choose_opponent_minion(oppo_index, state.oppo_num)
+            click.cancel_click()
             time.sleep(self.wait_time)
             return
 
@@ -62,6 +67,7 @@ class SpellCard(Card):
             mine_index = args[0]
             click.choose_card(card_index, state.card_num)
             click.choose_my_minion(mine_index, state.oppo_num)
+            click.cancel_click()
             time.sleep(self.wait_time)
             return
 
@@ -96,6 +102,7 @@ class BasicMinionCard(MinionCard):
         gap_index = args[0]
         click.choose_card(card_index, state.card_num)
         click.put_minion(gap_index, state.mine_num)
+        click.cancel_click()
 
 
 class WeaponCard(Card):
@@ -276,8 +283,41 @@ class Hysteria(SpellCard):
         self.bias = -10  # 我觉得狂乱应该要能力挽狂澜
 
     def best_h_and_arg(self, state):
-        # TODO: 感觉有点麻烦,以后再写
-        return 0, 0
+        best_delta_h = 0
+        best_arg = 0
+        sample_times = 5
+
+        for chosen_index in range(state.oppo_num):
+            chosen_minion = state.oppos[chosen_index]
+            delta_h_count = 0
+
+            for i in range(sample_times):
+                tmp_state = state.copy_new_one()
+
+                while True:
+                    another_index_list = [j for j in range(tmp_state.oppo_num + tmp_state.mine_num)].pop(chosen_index)
+                    another_index = numpy.random.choice(another_index_list)
+                    if another_index >= tmp_state.oppo_num:
+                        another_minion = tmp_state.mines[another_index - tmp_state.oppo_num]
+                        if another_minion.get_damaged(chosen_minion.attack):
+                            tmp_state.mines.pop(another_index - tmp_state.oppo_num)
+                    else:
+                        another_minion = tmp_state.oppos[another_index]
+                        if another_minion.get_damaged(chosen_minion.attack):
+                            tmp_state.oppos.pop(another_index)
+
+                    if chosen_minion.get_damaged(another_minion.attack):
+                        tmp_state.oppos.pop(chosen_index)
+                        break
+
+                delta_h_count += tmp_state.heuristic_value - state.heuristic_value
+
+            delta_h_count /= sample_times
+            if delta_h_count > best_delta_h:
+                best_delta_h = delta_h_count
+                best_arg = chosen_index
+
+        return best_delta_h + self.bias, best_arg
 
 
 class ShadowWordRuin(SpellCard):

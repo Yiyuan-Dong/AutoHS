@@ -14,7 +14,7 @@ import numpy
 import imagehash
 from PIL import Image
 from pynput.mouse import Button, Controller
-
+from print_info import *
 import click
 from constants.constants import *
 from constants.hash_vals import *
@@ -217,6 +217,10 @@ def hash_diff(str1, str2):
 
 
 def identify_cards(card_num):
+    if card_num > 10:
+        warning_print(f"Invalid card unm {card_num}")
+        card_num = 10
+
     area_list = [((start[card_num] + step[card_num] * i, 600),
                   (start[card_num] + 200 + step[card_num] * i, 800),
                   (start[card_num] + 65 + step[card_num] * i, 1000)
