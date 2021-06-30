@@ -86,6 +86,8 @@ class State:
         debug_print(f"我有{self.card_num}张手牌,它们分别是")
         debug_print("    " + ", ".join(self.cards))
         self.debug_print_battlefield()
+        debug_print(f"h_val: {self.heuristic_value}")
+        print()
 
 
     @property
@@ -284,33 +286,8 @@ class State:
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", sys.exit)
 
-    current_mana = 7
-    while True:
-        time.sleep(0.5)
-        state = State()
-        if state.test_use_coin(current_mana):
-            state.use_coin()
-            continue
+    state = State()
+    state_2 = state.copy_new_one()
 
-        delta_h, index, args = state.best_h_and_arg_within_mana(current_mana)
-        if delta_h == 0:
-            debug_print("Do not want ot use card")
-            break
-        current_mana -= state.use_card(index, *args)
-
-    while True:
-        state.debug_print_out()
-        mine_index, oppo_index = state.get_best_action()
-        print(f"mine_index: {mine_index}, oppo_index: {oppo_index}")
-
-        time.sleep(2)
-
-        if mine_index == -1:
-            break
-        if oppo_index == -1:
-            click.minion_beat_hero(mine_index, state.mine_num)
-        else:
-            click.minion_beat_minion(mine_index, state.mine_num, oppo_index, state.oppo_num)
-
-        time.sleep(2)
-        state.update_minions()
+    state_2.mines[0].attack = 1000
+    state.debug_print_out()

@@ -1,10 +1,10 @@
+import random
 import time
 
 import click
 from constants.constants import *
 from print_info import *
 from constants.card_name import *
-import numpy
 
 
 class Card:
@@ -103,11 +103,14 @@ class BasicMinionCard(MinionCard):
         click.choose_card(card_index, state.card_num)
         click.put_minion(gap_index, state.mine_num)
         click.cancel_click()
+        time.sleep(BASIC_MINION_PUT_INTERVAL)
 
 
 class WeaponCard(Card):
     def card_type(self):
         return CARD_WEAPON
+
+    # TODO: 还什么都没实现...
 
 
 class ArmorVendor(BasicMinionCard):
@@ -280,23 +283,32 @@ class Hysteria(SpellCard):
         self.cost = 4
         self.wait_time = 5
         self.spell_type = SPELL_POINT_OPPO
-        self.bias = -10  # 我觉得狂乱应该要能力挽狂澜
+        self.bias = -9  # 我觉得狂乱应该要能力挽狂澜
 
     def best_h_and_arg(self, state):
         best_delta_h = 0
         best_arg = 0
-        sample_times = 5
+        sample_times = 10
+
+        if state.oppo_num == 0 or state.oppo_num + state.mine_num == 1:
+            return 0, -1
 
         for chosen_index in range(state.oppo_num):
-            chosen_minion = state.oppos[chosen_index]
             delta_h_count = 0
 
             for i in range(sample_times):
                 tmp_state = state.copy_new_one()
+                chosen_minion = tmp_state.oppos[chosen_index]
+                tmp_chosen_index = chosen_index
 
                 while True:
-                    another_index_list = [j for j in range(tmp_state.oppo_num + tmp_state.mine_num)].pop(chosen_index)
-                    another_index = numpy.random.choice(another_index_list)
+                    another_index_list = [j for j in range(tmp_state.oppo_num + tmp_state.mine_num)]
+                    another_index_list.pop(tmp_chosen_index)
+                    if len(another_index_list) == 0:
+                        break
+                    another_index = another_index_list[random.randint(0, len(another_index_list) - 1)]
+
+                    # print("another index: ", another_index)
                     if another_index >= tmp_state.oppo_num:
                         another_minion = tmp_state.mines[another_index - tmp_state.oppo_num]
                         if another_minion.get_damaged(chosen_minion.attack):
@@ -305,14 +317,20 @@ class Hysteria(SpellCard):
                         another_minion = tmp_state.oppos[another_index]
                         if another_minion.get_damaged(chosen_minion.attack):
                             tmp_state.oppos.pop(another_index)
+                            if another_index < tmp_chosen_index:
+                                tmp_chosen_index -= 1
 
                     if chosen_minion.get_damaged(another_minion.attack):
-                        tmp_state.oppos.pop(chosen_index)
+                        # print("h:", tmp_state.heuristic_value, state.heuristic_value)
+                        tmp_state.oppos.pop(tmp_chosen_index)
                         break
+
+                    # print("h:", tmp_state.heuristic_value, state.heuristic_value)
 
                 delta_h_count += tmp_state.heuristic_value - state.heuristic_value
 
             delta_h_count /= sample_times
+            # print("average delta_h:", delta_h_count)
             if delta_h_count > best_delta_h:
                 best_delta_h = delta_h_count
                 best_arg = chosen_index

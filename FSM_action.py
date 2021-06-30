@@ -1,4 +1,6 @@
 import random
+
+import card
 import click
 import time
 import get_screen
@@ -180,5 +182,11 @@ def AutoHS_automata():
 
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", sys.exit)
+
+    state = State()
+    card.Hysteria().best_h_and_arg(state)
+
+    sys.exit(0)
+
     FSM_state = get_screen.get_state()
     eval(FSM_state + "Action")()
