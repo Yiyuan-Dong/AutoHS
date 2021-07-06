@@ -3,7 +3,7 @@
 
 在 `constants/constants` 里有一些参数可以设置...
 
-可以先跑一跑`demo/`下的一些文件
+可以先跑一跑 `demo/` 下的一些文件
 
 ### 我目前用的挂机卡组 (标准模式-解解拖拖牧)
 目前手牌识别只能识别这幅套牌里的牌(需要自行测试哈希然后记下来)
@@ -28,8 +28,11 @@
 - 1x (7) 吞噬者穆坦努斯
 - 1x (7) 灵魂之镜
 - 1x (9) 戈霍恩之血
-AAECAa0GCMi+A/rfA/PuA6bvA6iKBMGfBPCfBKOgBAuvugPXvgPcvgPmvgPLzQP44wOS5AOY6gOb6wOEnwSFnwQA
 
+神秘代码:
+```
+AAECAa0GCMi+A/rfA/PuA6bvA6iKBMGfBPCfBKOgBAuvugPXvgPcvgPmvgPLzQP44wOS5AOY6gOb6wOEnwSFnwQA
+```
 
 
 ### 如何运行
