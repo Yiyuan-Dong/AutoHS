@@ -12,10 +12,10 @@ import get_screen
 # AREA_LIST = [((1495, 465), (1620, 522))]
 
 # AREA_LIST = []
-PRINT_ALL_AREA_LIST = [((950, 508), (990, 512))]
-AREA_LIST = [((680, 320), (820, 490)), ((820, 320), (960, 490)), ((960, 320), (1100, 490))]
+PRINT_ALL_AREA_LIST = []
+AREA_LIST = []
 
-POINT_LIST = [(965, 510)]
+POINT_LIST = [(960, 650)]
 
 
 def get_sum(x):

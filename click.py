@@ -87,6 +87,9 @@ def right_click(x, y):
 
 def match_opponent():
     left_click(1400, 900)
+    time.sleep(OPERATE_INTERVAL)
+    # 一些奇怪的错误提示
+    left_click(960, 650)
 
 def commit_choose_card():
     left_click(960, 850)
