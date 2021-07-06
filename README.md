@@ -44,8 +44,12 @@ AAECAa0GCMi+A/rfA/PuA6bvA6iKBMGfBPCfBKOgBAuvugPXvgPcvgPmvgPLzQP44wOS5AOY6gOb6wOE
 - `demo/count_cards_demo.py`: 数出有几张手牌,需要在对战界面调用
 - `demo/count_minion_demo.py`: 数出有几个随从,需要在对战界面调用
 - `demo/find_avaiable_demo.py`: 测试一下场上的我的怪都能不能动,需要在对战界面调用
-- `demo/mouse_control_demo.py` : 一个样例程序展现了如何控制鼠标
+- `demo/get_minion_attack_and_health.demo.py`: 测出场上的怪的攻击和血量,需要在对战界面调用
+- `demo/get_taunt_and_divin_shield_demo.py`: 测出场上的怪是否是嘲讽或者圣盾,需要在对战界面调用
 - `demo/get_window_name.py` : 显示当前所有窗口的名称和编号,可以用来看炉石传说叫什么名字……
+- `demo/identify_cards_demo.py`: 测出手里的手牌都是什么,需要在对战界面调用
+- `demo/mouse_control_demo.py` : 一个样例程序展现了如何控制鼠标
+
 
 ### 待办列表
 - [ ] 补全注释
@@ -54,10 +58,10 @@ AAECAa0GCMi+A/rfA/PuA6bvA6iKBMGfBPCfBKOgBAuvugPXvgPcvgPmvgPLzQP44wOS5AOY6gOb6wOE
 - [X] 识别场面
 - [ ] 更有脑子的瞎打
 - [X] 随机化点击
-- [X] 多样化表情
-- [X] 英雄打脸 
-- [X] 卡组研发 (任务战.) 
-- [X] 换起始手牌
+- [ ] 智能表情
+- [ ] 英雄打脸 
+- [X] 卡组研发 (牧师) 
+- [ ] 换起始手牌
 - [X] 一键退出
 - [X] 重写FSM(为什么会用递归实现...)
 - [ ] 什么时候试一试 Replay-Attack
