@@ -34,6 +34,18 @@
 AAECAa0GCMi+A/rfA/PuA6bvA6iKBMGfBPCfBKOgBAuvugPXvgPcvgPmvgPLzQP44wOS5AOY6gOb6wOEnwSFnwQA
 ```
 
+### 如果想要用自己的卡组
+我觉得需要经过一下几步:
+
+- 你需要能认出每一张手牌, AutoHS使用图片哈希来识别图片, 
+   你需要录入新卡的哈希, 可以通过 `demo/identify_cards.py` 
+   去读取手牌卡画哈希
+- 把哈希和对应名称录入到 `constants/hash_vals.py` 中
+- 写出卡牌逻辑, 可以参照 `card.py`
+- 把卡牌和中文名对应, 需要更新 `name2card.py`
+
+好像有点麻烦...
+
 
 ### 如何运行
 运行 `main.py` 即可，注意本脚本需要屏幕分辨率为 1920 * 1080、炉石全屏，在运行时按下 Ctrl+Q 可以退出脚本。
