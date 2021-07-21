@@ -1,8 +1,9 @@
 # 关于信息打印的设置
-DEBUG = False
-WARNING = True
-SYS = True
-INFO = True
+DEBUG_PRINT = False
+WARNING_PRINT = True
+SYS_PRINT = True
+INFO_PRINT = True
+ERROR_PRINT = True
 
 # 把鼠标移到卡牌上到试图截图所需的时间
 CARD_APPEAR_INTERVAL = 0.02

@@ -61,7 +61,7 @@ class State:
             )
 
     def debug_print_battlefield(self):
-        if not DEBUG:
+        if not DEBUG_PRINT:
             return
 
         debug_print(f"对手有{self.oppo_num}个随从")
@@ -81,7 +81,7 @@ class State:
             debug_print(tmp_str)
 
     def debug_print_out(self):
-        if not DEBUG:
+        if not DEBUG_PRINT:
             return
         debug_print(f"我有{self.card_num}张手牌,它们分别是")
         debug_print("    " + ", ".join(self.cards))
