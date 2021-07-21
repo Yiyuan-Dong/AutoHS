@@ -6,6 +6,7 @@ from pynput.mouse import Button, Controller
 import random
 from constants.constants import *
 from print_info import *
+import sys
 
 
 def choose_my_minion(mine_index, mine_num):
@@ -141,7 +142,20 @@ def hero_attack():
 
 
 def enter_HS():
+    hwnd = win32gui.FindWindow(None, "战网")
+
+    if hwnd == 0:
+        error_print("未找到应用战网")
+        sys.exit()
+
     left_click(180, 910)
+    # 把战网客户端拉回前台以便点击
+    win32gui.SetForegroundWindow(hwnd)
+    win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
+    time.sleep(1)
+
+    left, top, right, bottom = win32gui.GetWindowRect(hwnd)
+    left_click(left + 180, bottom - 110)
 
 
 def enter_battle_mode():
@@ -149,4 +163,4 @@ def enter_battle_mode():
 
 
 if __name__ == "__main__":
-    left_click(350, 970)
+    enter_HS()
