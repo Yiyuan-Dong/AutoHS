@@ -4,7 +4,7 @@ import win32con
 import time
 
 hwnd_title = {}
-NAME = "炉石传说"
+NAME = "战网"
 
 
 def get_all_hwnd(hwnd, mouse):
@@ -19,14 +19,11 @@ if __name__ == "__main__":
         if t is not "":
             print(h, ":", t)
 
-    # hwnd = win32gui.FindWindow(None, NAME)
-    # print()
-    # title = win32gui.GetWindowText(hwnd)
-    # clsname = win32gui.GetClassName(hwnd)
-    # print(title, ":", clsname)
-    # hwndChildList = []
-    # win32gui.EnumChildWindows(hwnd, lambda handle, param: param.append(handle), hwndChildList)
-    # print(hwndChildList)
+    hwnd = win32gui.FindWindow(None, NAME)
+    print()
+    title = win32gui.GetWindowText(hwnd)
+    clsname = win32gui.GetClassName(hwnd)
+    print(title, ":", clsname)
 
-    # left, top, right, bottom = win32gui.GetWindowRect(hwnd)
-    # print("\n", left, top, right, bottom)
+    left, top, right, bottom = win32gui.GetWindowRect(hwnd)
+    print("\n", left, top, right, bottom)

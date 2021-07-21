@@ -37,6 +37,7 @@ def max_diff(img, pixel_list):
 def catch_screen():
     # 第一个参数是类名，第二个参数是窗口名字
     # hwnd -> Handle to a Window !
+    # 如果找不到对应名字的窗口，返回0
     hwnd = win32gui.FindWindow(None, "炉石传说")
     if hwnd == 0:
         return
