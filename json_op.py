@@ -30,4 +30,5 @@ def read_json():
 
 
 if __name__ == "__main__":
-    read_json()
+    json_list = read_json()
+    print(json_list[2000])
