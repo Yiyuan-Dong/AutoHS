@@ -4,3 +4,4 @@ venv/
 img/
 backup.md
 test*
+*json
