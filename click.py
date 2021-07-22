@@ -87,13 +87,22 @@ def right_click(x, y):
 
 
 def match_opponent():
-    left_click(1400, 900)
-    time.sleep(OPERATE_INTERVAL)
     # 一些奇怪的错误提示
     left_click(960, 650)
+    time.sleep(OPERATE_INTERVAL)
+    left_click(1400, 900)
+
+
+def enter_battle_mode():
+    # 一些奇怪的错误提示
+    left_click(960, 650)
+    time.sleep(OPERATE_INTERVAL)
+    left_click(950, 320)
+
 
 def commit_choose_card():
     left_click(960, 850)
+
 
 def end_turn():
     left_click(1550, 500)
@@ -156,10 +165,6 @@ def enter_HS():
 
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)
     left_click(left + 180, bottom - 110)
-
-
-def enter_battle_mode():
-    left_click(950, 320)
 
 
 if __name__ == "__main__":

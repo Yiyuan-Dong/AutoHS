@@ -1,3 +1,5 @@
+HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
+
 # 关于信息打印的设置
 DEBUG_PRINT = False
 WARNING_PRINT = True
@@ -10,13 +12,14 @@ CARD_APPEAR_INTERVAL = 0.02
 STEP = [0, 0, 140, 139, 131, 105, 88, 75, 66, 58, 52]
 START = [0, 819, 749, 679, 622, 608, 599, 593, 588, 585, 582]
 
-STRING_CHOOSINGHERO = "ChoosingHero"
-STRING_MATCHING = "Matching"
-STRING_CHOOSINGCARD = "ChoosingCard"
-STRING_NOTMYTURN = "NotMyTurn"
-STRING_MYTURN = "MyTurn"
+FSM_CHOOSINGHERO = "ChoosingHero"
+FSM_MATCHING = "Matching"
+FSM = "ChoosingCard"
+FSM_NOTMYTURN = "NotMyTurn"
+FSM_MYTURN = "MyTurn"
 # STRING_UNCERTAIN = "Uncertain"
-STRING_LEAVEHS = "LeaveHS"
+FSM_LEAVEHS = "LeaveHS"
+FSM_MAIN_MENU = "MainMenu"
 
 FRONT_ROPING_TIME = 1.5
 BACK_ROPING_TIME = 1
@@ -33,6 +36,3 @@ CARD_WEAPON = "Weapon"
 SPELL_NO_POINT = "SpellNoPoint"
 SPELL_POINT_OPPO = "SpellPointOppo"
 SPELL_POINT_MINE = "SpellPointMine"
-
-
-

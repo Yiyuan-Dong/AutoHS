@@ -76,16 +76,18 @@ def catch_screen():
 def get_state():
     hwnd = win32gui.FindWindow(None, "炉石传说")
     if hwnd == 0:
-        return FSM_action.STRING_LEAVEHS
+        return FSM_action.FSM_LEAVEHS
 
     im_opencv = catch_screen()
 
+    if list(im_opencv[1070][1090]) == [23, 52, 105, 255]:
+        return FSM_action.FSM_MAIN_MENU
     if list(im_opencv[1070][1090]) == [8, 18, 24, 255]:
-        return FSM_action.STRING_CHOOSINGHERO
+        return FSM_action.FSM_CHOOSINGHERO
     if list(im_opencv[1070][1090]) == [17, 18, 19, 255]:
-        return FSM_action.STRING_MATCHING
+        return FSM_action.FSM_MATCHING
     if list(im_opencv[860][960]) == [71, 71, 71, 255]:
-        return FSM_action.STRING_CHOOSINGCARD
+        return FSM_action.FSM
 
     # 我觉得这里有必要解释一下
     # (1560, 510) / (1550, 510) 这两个点在 结束回合/对手回合 那个按钮的下方
@@ -99,9 +101,9 @@ def get_state():
 
     diff = max_diff(im_opencv, [(510, 1560), (510, 1550)])
     if diff < 50:
-        return FSM_action.STRING_NOTMYTURN
+        return FSM_action.FSM_NOTMYTURN
     else:
-        return FSM_action.STRING_MYTURN
+        return FSM_action.FSM_MYTURN
 
 
 def test_card_with_x(img, x, step, show_img=False):

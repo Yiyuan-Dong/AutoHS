@@ -25,16 +25,16 @@ def print_out():
 
     if IF_PRINTOUT:
         sys_print("Entering " + FSM_state)
-        if FSM_state == STRING_MYTURN:
+        if FSM_state == FSM_MYTURN:
             sys_print("    It is turn " + str(turn_num))
 
-    if FSM_state == STRING_LEAVEHS:
+    if FSM_state == FSM_LEAVEHS:
         warning_print("Wow, What happened?")
         show_time(0.0)
         warning_print("Try to go back to HS")
         print()
 
-    if FSM_state == STRING_MATCHING:
+    if FSM_state == FSM_MATCHING:
         sys_print("The " + str(game_count) + " game begins")
         game_count += 1
         turn_num = 0
@@ -48,17 +48,21 @@ def ChoosingHeroAction():
     print_out()
     click.match_opponent()
     time.sleep(1)
-    return STRING_MATCHING
+    return FSM_MATCHING
 
 
 def MatchingAction():
     print_out()
-    local_state = STRING_MATCHING
-    while local_state == STRING_MATCHING:
+    local_state = FSM_MATCHING
+    while local_state == FSM_MATCHING:
         time.sleep(STATE_CHECK_INTERVAL)
         local_state = get_screen.get_state()
+
+    if local_state == FSM_CHOOSINGHERO:
+        return FSM_CHOOSINGHERO
+
     time.sleep(18)  # 18是一个经验数值...
-    return STRING_CHOOSINGCARD
+    return FSM
 
 
 def ChoosingCardAction():
@@ -66,7 +70,7 @@ def ChoosingCardAction():
     # TODO: 选牌时要不要做点什么
     click.commit_choose_card()
     time.sleep(STATE_CHECK_INTERVAL)
-    return STRING_NOTMYTURN
+    return FSM_NOTMYTURN
 
 
 def NotMyTurnAction():
@@ -77,7 +81,7 @@ def NotMyTurnAction():
         click.test_click()
         time.sleep(STATE_CHECK_INTERVAL)
         FSM_state = get_screen.get_state()
-        if FSM_state == STRING_NOTMYTURN:
+        if FSM_state == FSM_NOTMYTURN:
             continue
         else:
             return FSM_state
@@ -133,7 +137,7 @@ def MyTurnAction():
     click.end_turn()
     time.sleep(STATE_CHECK_INTERVAL)
 
-    return STRING_NOTMYTURN
+    return FSM_NOTMYTURN
 
 
 # def UncertainAction():
@@ -145,13 +149,19 @@ def MyTurnAction():
 def LeaveHSAction():
     print_out()
     global FSM_state
-    while FSM_state == STRING_LEAVEHS:
+    while FSM_state == FSM_LEAVEHS:
         click.enter_HS()
         time.sleep(15)
         FSM_state = get_screen.get_state()
-    while FSM_state != STRING_CHOOSINGHERO:
+    return FSM_state
+
+
+def MainMenuAction():
+    print_out()
+    global FSM_state
+    while FSM_state == FSM_MAIN_MENU:
         click.enter_battle_mode()
-        time.sleep(10)
+        time.sleep(5)
         FSM_state = get_screen.get_state()
     return FSM_state
 
@@ -183,10 +193,6 @@ def AutoHS_automata():
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", sys.exit)
 
-    state = State()
-    card.Hysteria().best_h_and_arg(state)
-
-    sys.exit(0)
-
-    FSM_state = get_screen.get_state()
-    eval(FSM_state + "Action")()
+    while True:
+        FSM_state = get_screen.get_state()
+        eval(FSM_state + "Action")()
