@@ -25,10 +25,10 @@ def print_out():
 
     if IF_PRINTOUT:
         sys_print("Entering " + FSM_state)
-        if FSM_state == FSM_MYTURN:
+        if FSM_state == FSM_MY_TURN:
             sys_print("    It is turn " + str(turn_num))
 
-    if FSM_state == FSM_LEAVEHS:
+    if FSM_state == FSM_LEAVE_HS:
         warning_print("Wow, What happened?")
         show_time(0.0)
         warning_print("Try to go back to HS")
@@ -58,11 +58,11 @@ def MatchingAction():
         time.sleep(STATE_CHECK_INTERVAL)
         local_state = get_screen.get_state()
 
-    if local_state == FSM_CHOOSINGHERO:
-        return FSM_CHOOSINGHERO
+    if local_state == FSM_CHOOSING_HERO:
+        return FSM_CHOOSING_HERO
 
     time.sleep(18)  # 18是一个经验数值...
-    return FSM
+    return FSM_CHOOSING_CARD
 
 
 def ChoosingCardAction():
@@ -70,7 +70,7 @@ def ChoosingCardAction():
     # TODO: 选牌时要不要做点什么
     click.commit_choose_card()
     time.sleep(STATE_CHECK_INTERVAL)
-    return FSM_NOTMYTURN
+    return FSM_NOT_MY_TURN
 
 
 def NotMyTurnAction():
@@ -81,7 +81,7 @@ def NotMyTurnAction():
         click.test_click()
         time.sleep(STATE_CHECK_INTERVAL)
         FSM_state = get_screen.get_state()
-        if FSM_state == FSM_NOTMYTURN:
+        if FSM_state == FSM_NOT_MY_TURN:
             continue
         else:
             return FSM_state
@@ -137,7 +137,7 @@ def MyTurnAction():
     click.end_turn()
     time.sleep(STATE_CHECK_INTERVAL)
 
-    return FSM_NOTMYTURN
+    return FSM_NOT_MY_TURN
 
 
 # def UncertainAction():
@@ -149,7 +149,7 @@ def MyTurnAction():
 def LeaveHSAction():
     print_out()
     global FSM_state
-    while FSM_state == FSM_LEAVEHS:
+    while FSM_state == FSM_LEAVE_HS:
         click.enter_HS()
         time.sleep(15)
         FSM_state = get_screen.get_state()
@@ -177,6 +177,24 @@ def show_time(time_last):
     return time.time()
 
 
+def FSM_dispatch(next_state):
+    dispatch_dict = {
+        FSM_LEAVE_HS: LeaveHSAction,
+        FSM_MAIN_MENU: MainMenuAction,
+        FSM_CHOOSING_HERO: ChoosingHeroAction,
+        FSM_MATCHING: MatchingAction,
+        FSM_CHOOSING_CARD: ChoosingCardAction,
+        FSM_NOT_MY_TURN: NotMyTurnAction,
+        FSM_MY_TURN: MyTurnAction,
+    }
+
+    if next_state not in dispatch_dict:
+        error_print("Unknown state!")
+        sys.exit()
+    else:
+        return dispatch_dict[next_state]()
+
+
 def AutoHS_automata():
     global FSM_state
     global turn_num
@@ -187,7 +205,7 @@ def AutoHS_automata():
         # cv2.imwrite("./img/" + FSM_state + "/" +
         #             time.strftime("%m_%d_%H_%M_%S", time.localtime()) + ".jpg"
         #             , get_screen.catch_screen())
-        FSM_state = eval(FSM_state + "Action")()
+        FSM_state = FSM_dispatch(FSM_state)
 
 
 if __name__ == "__main__":
@@ -195,4 +213,4 @@ if __name__ == "__main__":
 
     while True:
         FSM_state = get_screen.get_state()
-        eval(FSM_state + "Action")()
+        FSM_dispatch(FSM_state)

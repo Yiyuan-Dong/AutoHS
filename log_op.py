@@ -4,8 +4,9 @@ import time
 
 from constants.constants import *
 
-#　例子: "D 16:54:18.3314307 GameState.DebugPrintPower() -     GameEntity EntityID=1"
+# 　例子: "D 16:54:18.3314307 GameState.DebugPrintPower() -     GameEntity EntityID=1"
 GAME_STATE_PATTERN = re.compile(r"D [\d]{2}:[\d]{2}:[\d]{2}.[\d]{7} GameState.DebugPrintPower\(\) - (.+)")
+
 
 class LineInfoContainer:
     def __init__(self):
@@ -27,7 +28,6 @@ def parse_line(log_container, line_str):
         return
 
     line_str = match_obj.group(1)
-
 
 
 def log_iter():
