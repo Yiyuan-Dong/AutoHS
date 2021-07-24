@@ -27,13 +27,44 @@ class GameState:
         self.player_id_map_dict[player_id] = player_entity_id
 
     @property
-    def current_entity(self):
+    def current_update_entity(self):
         return self.entity_dict[self.current_update_id]
+
+    @property
+    def game_entity(self):
+        return self.entity_dict[self.game_entity_id]
+
+    @property
+    def my_entity(self):
+        return self.entity_dict[self.player_id_map_dict[self.my_player_id]]
+
+    @property
+    def is_my_turn(self):
+        return self.my_entity.tag_dict["CURRENT_PLAYER"] == 1
+
+    @property
+    def my_last_mana(self):
+        return self.my_entity.tag_dict["RESOURCES"] - \
+               self.my_entity.tag_dict["RESOURCES_USED"]
+
+    @property
+    def game_step(self):
+        return self.game_entity.tag_dict["STEP"]
+
+    @property
+    def game_state(self):
+        return self.game_entity.tag_dict["STATE"]
 
 
 class Entity:
     def __init__(self):
         self.tag_dict = {}
+
+    def __str__(self):
+        res = ""
+        for key, value in self.tag_dict.items():
+            res += key + ": " + value + "\n"
+        return res
 
     def set_tag(self, tag, val):
         self.tag_dict[tag] = val
@@ -49,10 +80,14 @@ class GameEntity(Entity):
 class PlayerEntity(Entity):
     pass
 
+
 class CardEntity(Entity):
     def __init__(self, card_id):
         super().__init__()
         self.card_id = card_id
+
+    def __str__(self):
+        return "cardID: " + self.card_id + "\n" + super().__str__()
 
     def update_card_id(self, card_id):
         self.card_id = card_id
@@ -115,7 +150,7 @@ def update_state(state, line_info_container):
     if line_info_container.log_type == LOG_LINE_TAG:
         tag = line_info_container.info_dict["tag"]
         value = line_info_container.info_dict["value"]
-        state.current_entity.set_tag(tag, value)
+        state.current_update_entity.set_tag(tag, value)
 
     if line_info_container.log_type == LOG_LINE_PLAYER_ID:
         player_id = line_info_container.info_dict["player"]
@@ -127,5 +162,3 @@ def update_state(state, line_info_container):
         else:
             state.my_name = player_name
             state.my_player_id = player_id
-
-
