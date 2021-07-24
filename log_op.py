@@ -13,7 +13,7 @@ GAME_ENTITY_PATTERN = re.compile(r" *GameEntity EntityID=(\d+)")
 # "Player EntityID=2 PlayerID=1 GameAccountId=[hi=112233445566778899 lo=223344556]"
 PLAYER_PATTERN = re.compile(r" *Player EntityID=(\d+) PlayerID=(\d+).*")
 
-# "FULL_ENTITY - Creating ID=89 CardID=EX1_538t"
+# "FULL_ENTITY - Creting ID=89 CardID=EX1_538t"
 # "FULL_ENTITY - Creating ID=90 CardID="
 FULL_ENTITY_PATTERN = re.compile(r" *FULL_ENTITY - Creating ID=(\d+) CardID=(.*)")
 
@@ -28,7 +28,7 @@ BLOCK_START_PATTERN = re.compile(r" *BLOCK_START BlockType=([A-Z]+) Entity=(.*) 
 BlOCK_END_PATTERN = re.compile(r" *BLOCK_END *")
 
 # "PlayerID=1, PlayerName=UNKNOWN HUMAN PLAYER"
-PLAYER_ID_PATTERN = re.compile(r"PlayerID=(\d), PlayerName=(.*)")
+PLAYER_ID_PATTERN = re.compile(r"PlayerID=(\d+), PlayerName=(.*)")
 
 # "TAG_CHANGE Entity=GameEntity tag=NEXT_STEP value=FINAL_WRAPUP "
 TAG_CHANGE_PATTERN = re.compile(r" *TAG_CHANGE Entity=(.*) tag=(.*) value=(.*) *")
@@ -109,9 +109,27 @@ def parse_line(line_str):
 
     match_obj = SHOW_ENTITY_PATTERN.match(line_str)
     if match_obj is not None:
+        temp_entity = match_obj.group(1)
+        entity = ""
+        if "[" in temp_entity:
+            # 去除前后的[]
+            temp_entity = temp_entity[1:-1]
+
+            # 提取成形如 [... , "id=233" , ...]的格式
+            temp_list = temp_entity.split(" ")
+
+            for item in temp_list:
+                if item[:3] == "id=":
+                    entity = item[3:]
+                    break
+        else:
+            entity = temp_entity
+
+        assert entity != ""
+
         return LineInfoContainer(
             LOG_LINE_SHOW_ENTITY,
-            entity=match_obj.group(1),
+            entity=entity,
             card=match_obj.group(2)
         )
 
