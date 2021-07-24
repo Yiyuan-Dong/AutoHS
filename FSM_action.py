@@ -24,7 +24,7 @@ def print_out():
     global game_count
 
     if IF_PRINTOUT:
-        sys_print("Entering " + FSM_state)
+        sys_print("Entering State " + str(FSM_state))
         if FSM_state == FSM_MY_TURN:
             sys_print("    It is turn " + str(turn_num))
 

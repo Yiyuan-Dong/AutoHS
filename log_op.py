@@ -6,25 +6,34 @@ from constants.constants import *
 
 # "D 04:23:18.0000001 GameState.DebugPrintPower() -     GameEntity EntityID=1"
 GAME_STATE_PATTERN = re.compile(r"D [\d]{2}:[\d]{2}:[\d]{2}.[\d]{7} GameState.DebugPrintPower\(\) - (.+)")
-# "    GameEntity EntityID=1"
+
+# "GameEntity EntityID=1"
 GAME_ENTITY_PATTERN = re.compile(r" *GameEntity EntityID=(\d+)")
-# "    Player EntityID=2 PlayerID=1 GameAccountId=[hi=112233445566778899 lo=223344556]"
+
+# "Player EntityID=2 PlayerID=1 GameAccountId=[hi=112233445566778899 lo=223344556]"
 PLAYER_PATTERN = re.compile(r" *Player EntityID=(\d+) PlayerID=(\d+).*")
-# "        FULL_ENTITY - Creating ID=89 CardID=EX1_538t"
-# "        FULL_ENTITY - Creating ID=90 CardID="
+
+# "FULL_ENTITY - Creating ID=89 CardID=EX1_538t"
+# "FULL_ENTITY - Creating ID=90 CardID="
 FULL_ENTITY_PATTERN = re.compile(r" *FULL_ENTITY - Creating ID=(\d+) CardID=(.*)")
-# "        SHOW_ENTITY - Updating Entity=90 CardID=NEW1_033o"
-# "    SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=32 zone=DECK zonePos=0 cardId= player=1] CardID=VAN_EX1_539"
+
+# "SHOW_ENTITY - Updating Entity=90 CardID=NEW1_033o"
+# "SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=32 zone=DECK zonePos=0 cardId= player=1] CardID=VAN_EX1_539"
 SHOW_ENTITY_PATTERN = re.compile(r" *SHOW_ENTITY - Updating Entity=(.*) CardID=(.*) *")
+
 # "BLOCK_START BlockType=DEATHS Entity=GameEntity EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1 "
 BLOCK_START_PATTERN = re.compile(r" *BLOCK_START BlockType=([A-Z]+) Entity=(.*) EffectCardId=.*")
+
 # "BLOCK_END"
 BlOCK_END_PATTERN = re.compile(r" *BLOCK_END *")
+
 # "PlayerID=1, PlayerName=UNKNOWN HUMAN PLAYER"
 PLAYER_ID_PATTERN = re.compile(r"PlayerID=(\d), PlayerName=(.*)")
+
 # "TAG_CHANGE Entity=GameEntity tag=NEXT_STEP value=FINAL_WRAPUP "
 TAG_CHANGE_PATTERN = re.compile(r" *TAG_CHANGE Entity=(.*) tag=(.*) value=(.*) *")
-# "    tag=ZONE value=DECK"
+
+# "tag=ZONE value=DECK"
 TAG_PATTERN = re.compile(r" *tag=(.*) value=(.*)")
 
 
