@@ -67,6 +67,76 @@ def parse_line(line_str):
     if line_str == "CREATE GAME":
         return LineInfoContainer(LOG_LINE_CREATE_GAME)
 
+    match_obj = TAG_CHANGE_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_TAG_CHANGE,
+            entity=match_obj.group(1),
+            tag=match_obj.group(2),
+            value=match_obj.group(3),
+        )
+
+    match_obj = TAG_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_TAG,
+            tag=match_obj.group(1),
+            value=match_obj.group(2)
+        )
+
+    match_obj = GAME_ENTITY_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_GAME_ENTITY,
+            entity=match_obj.group(1)
+        )
+
+    match_obj = PLAYER_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_PLAYER_ENTITY,
+            entity=match_obj.group(1),
+            player=match_obj.group(2)
+        )
+
+    match_obj = FULL_ENTITY_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_FULL_ENTITY,
+            entity=match_obj.group(1),
+            card=match_obj.group(2)
+        )
+
+    match_obj = SHOW_ENTITY_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_SHOW_ENTITY,
+            entity=match_obj.group(1),
+            card=match_obj.group(2)
+        )
+
+    match_obj = BLOCK_START_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_BLOCK_START,
+            type=match_obj.group(1),
+            card=match_obj.group(2)
+        )
+
+    match_obj = BlOCK_END_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_BLOCK_END
+        )
+
+    match_obj = PLAYER_ID_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_PLAYER_ID,
+            player=match_obj.group(1),
+            name=match_obj.group(2)
+        )
+
     return None
 
 
