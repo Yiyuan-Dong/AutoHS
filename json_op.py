@@ -26,9 +26,13 @@ def read_json():
 
     with open(json_path, "r", encoding="utf8") as f:
         json_string = f.read()
-        return json.loads(json_string)
+        json_list = json.loads(json_string)
+        json_dict = {}
+        for item in json_list:
+            json_dict[item["id"]] = item
+        return json_dict
 
 
 if __name__ == "__main__":
-    json_list = read_json()
-    print(json_list[2000])
+    json_dict = read_json()
+    print(json_dict["VAN_EX1_048"])

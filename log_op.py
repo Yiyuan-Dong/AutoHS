@@ -28,9 +28,12 @@ BLOCK_START_PATTERN = re.compile(r" *BLOCK_START BlockType=([A-Z]+) Entity=(.*) 
 BlOCK_END_PATTERN = re.compile(r" *BLOCK_END *")
 
 # "PlayerID=1, PlayerName=UNKNOWN HUMAN PLAYER"
+# "PlayerID=2, PlayerName=Example#51234"
 PLAYER_ID_PATTERN = re.compile(r"PlayerID=(\d+), PlayerName=(.*)")
 
 # "TAG_CHANGE Entity=GameEntity tag=NEXT_STEP value=FINAL_WRAPUP "
+# "TAG_CHANGE Entity=Example#51234 tag=467 value=4 "
+# "TAG_CHANGE Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=14 zone=DECK zonePos=0 cardId= player=1] tag=ZONE value=HAND "
 TAG_CHANGE_PATTERN = re.compile(r" *TAG_CHANGE Entity=(.*) tag=(.*) value=(.*) *")
 
 # "tag=ZONE value=DECK"
@@ -58,6 +61,18 @@ class LogInfoContainer:
         self.message_list.append(line_info)
 
 
+def fetch_entity_id(input_string):
+    # 去除前后的 "[", "]"
+    kv_list = input_string[1:-1]
+
+    # 提取成形如 [... , "id=233" , ...]的格式
+    kv_list = kv_list.split(" ")
+
+    for item in kv_list:
+        if item[:3] == "id=":
+            return item[3:]
+
+
 def parse_line(line_str):
     match_obj = GAME_STATE_PATTERN.match(line_str)
     if match_obj is None:
@@ -71,7 +86,7 @@ def parse_line(line_str):
     if match_obj is not None:
         return LineInfoContainer(
             LOG_LINE_TAG_CHANGE,
-            entity=match_obj.group(1),
+            entity=fetch_entity_id(match_obj.group(1)),
             tag=match_obj.group(2),
             value=match_obj.group(3),
         )
@@ -110,22 +125,10 @@ def parse_line(line_str):
     match_obj = SHOW_ENTITY_PATTERN.match(line_str)
     if match_obj is not None:
         temp_entity = match_obj.group(1)
-        entity = ""
-        if "[" in temp_entity:
-            # 去除前后的[]
-            temp_entity = temp_entity[1:-1]
-
-            # 提取成形如 [... , "id=233" , ...]的格式
-            temp_list = temp_entity.split(" ")
-
-            for item in temp_list:
-                if item[:3] == "id=":
-                    entity = item[3:]
-                    break
+        if temp_entity[0] == "[":
+            entity = fetch_entity_id(temp_entity)
         else:
             entity = temp_entity
-
-        assert entity != ""
 
         return LineInfoContainer(
             LOG_LINE_SHOW_ENTITY,
@@ -158,13 +161,13 @@ def parse_line(line_str):
     return None
 
 
-def log_iter():
+def log_iter_func(path=HEARTHSTONE_POWER_LOG_PATH):
     while True:
-        if not os.path.exists(HEARTHSTONE_POWER_LOG_PATH):
+        if not os.path.exists(path):
             yield LogInfoContainer(LOG_CONTAINER_ERROR)
             continue
 
-        with open(HEARTHSTONE_POWER_LOG_PATH, "r", encoding="utf8") as f:
+        with open(path, "r", encoding="utf8") as f:
             while True:
 
                 empty_line_count = 0
@@ -180,12 +183,12 @@ def log_iter():
                             break
                     else:
                         empty_line_count = 0
-                        line_cantainer = parse_line(line)
-                        if line_cantainer is not None:
-                            log_container.append_info(line_cantainer)
+                        line_container = parse_line(line)
+                        if line_container is not None:
+                            log_container.append_info(line_container)
 
                 yield log_container
 
-                if not os.path.exists(HEARTHSTONE_POWER_LOG_PATH):
+                if not os.path.exists(path):
                     yield LogInfoContainer(LOG_CONTAINER_ERROR)
                     break

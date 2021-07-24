@@ -1,4 +1,7 @@
 from log_op import *
+from json_op import *
+
+JSON_DICT = read_json()
 
 
 class GameState:
@@ -11,6 +14,24 @@ class GameState:
         self.oppo_player_id = 0
         self.entity_dict = {}
         self.current_update_id = 0
+
+    def __str__(self):
+        res = ""
+        key_list = list(self.entity_dict.keys())
+        key_list.sort()
+
+        for key in key_list:
+            if key == self.game_entity_id:
+                res += "GameState:\n"
+            elif key == self.player_id_map_dict[self.my_player_id]:
+                res += "MyEntity\n"
+            elif key == self.player_id_map_dict[self.oppo_player_id]:
+                res += "OppoEntity\n"
+
+            res += str(self.entity_dict[key])
+            res += "\n"
+
+        return res
 
     def add_entity(self, entity_id, entity):
         self.entity_dict[entity_id] = entity
@@ -85,9 +106,12 @@ class CardEntity(Entity):
     def __init__(self, card_id):
         super().__init__()
         self.card_id = card_id
+        self.name = JSON_DICT[self.card_id]["name"]
 
     def __str__(self):
-        return "cardID: " + self.card_id + "\n" + super().__str__()
+        return "cardID: " + self.card_id + "\n" + \
+               "name: " + self.name + "\n" + \
+               super().__str__()
 
     def update_card_id(self, card_id):
         self.card_id = card_id
@@ -130,8 +154,11 @@ def update_state(state, line_info_container):
 
     if line_info_container.log_type == LOG_LINE_TAG_CHANGE:
         entity_string = line_info_container.info_dict["entity"]
+
+        # 情形一 "TAG_CHANGE Entity=GameEntity"
         if entity_string == "GameEntity":
             entity_id = state.game_entity_id
+        # 情形二 "TAG_CHANGE Entity=Example#51234"
         elif "#" in entity_string:
             if entity_string == state.my_name:
                 entity_id = state.my_player_id
@@ -139,6 +166,8 @@ def update_state(state, line_info_container):
                 entity_id = state.oppo_player_id
                 if entity_string != state.oppo_name:
                     state.oppo_name = entity_string
+        # 情形三 "TAG_CHANGE Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=14 ...]"
+        # 此时的EntityId已经被提取出来了
         else:
             entity_id = entity_string
 
@@ -162,3 +191,7 @@ def update_state(state, line_info_container):
         else:
             state.my_name = player_name
             state.my_player_id = player_id
+
+
+if __name__ == "__main__":
+    log_iter = log_iter_func()
