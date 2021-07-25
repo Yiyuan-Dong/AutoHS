@@ -5,7 +5,7 @@ import copy
 from constants.constants import *
 
 # "D 04:23:18.0000001 GameState.DebugPrintPower() -     GameEntity EntityID=1"
-GAME_STATE_PATTERN = re.compile(r"D [\d]{2}:[\d]{2}:[\d]{2}.[\d]{7} GameState.DebugPrintPower\(\) - (.+)")
+GAME_STATE_PATTERN = re.compile(r"D [\d]{2}:[\d]{2}:[\d]{2}.[\d]{7} GameState.DebugPrint(Game|Power)\(\) - (.+)")
 
 # "GameEntity EntityID=1"
 GAME_ENTITY_PATTERN = re.compile(r" *GameEntity EntityID=(\d+)")
@@ -64,6 +64,9 @@ class LogInfoContainer:
 
 
 def fetch_entity_id(input_string):
+    if input_string[0] != "[":
+        return input_string
+
     # 去除前后的 "[", "]"
     kv_list = input_string[1:-1]
 
@@ -80,7 +83,8 @@ def parse_line(line_str):
     if match_obj is None:
         return
 
-    line_str = match_obj.group(1)
+    line_str = match_obj.group(2)
+
     if line_str == "CREATE_GAME":
         return LineInfoContainer(LOG_LINE_CREATE_GAME)
 
@@ -126,15 +130,9 @@ def parse_line(line_str):
 
     match_obj = SHOW_ENTITY_PATTERN.match(line_str)
     if match_obj is not None:
-        temp_entity = match_obj.group(1)
-        if temp_entity[0] == "[":
-            entity = fetch_entity_id(temp_entity)
-        else:
-            entity = temp_entity
-
         return LineInfoContainer(
             LOG_LINE_SHOW_ENTITY,
-            entity=entity,
+            entity=fetch_entity_id(match_obj.group(1)),
             card=match_obj.group(2)
         )
 

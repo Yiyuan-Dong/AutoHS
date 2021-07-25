@@ -16,24 +16,39 @@ class GameState:
         self.current_update_id = 0
 
     def __str__(self):
-        res = ""
+        res = "--------------------\n"
+        res += "State:"
+        res += f"""
+    game_entity_id: {self.game_entity_id}
+    my_name: {self.my_name}
+    oppo_name: {self.oppo_name}
+    my_player_id: {self.my_player_id}
+    oppo_player_id: {self.oppo_player_id}
+    current_update_id: {self.current_update_id}
+    entity_keys: {[list(self.entity_dict.keys())]}
+
+"""
         key_list = list(self.entity_dict.keys())
-        key_list.sort()
+        key_list.sort(key=int)
 
         for key in key_list:
             if key == self.game_entity_id:
-                res += "GameState"
-            elif key == self.player_id_map_dict[self.my_player_id]:
-                res += "MyEntity"
-            elif key == self.player_id_map_dict[self.oppo_player_id]:
-                res += "OppoEntity"
+                res += "GameState-"
+            elif key == self.my_entity_id:
+                res += "MyEntity-"
+            elif key == self.oppo_entity_id:
+                res += "OppoEntity-"
             res += f"[{str(key)}]\n"
             res += str(self.entity_dict[key])
             res += "\n"
 
         return res
 
+    def flush(self):
+        self.__init__()
+
     def add_entity(self, entity_id, entity):
+        assert entity_id.isdigit()
         self.entity_dict[entity_id] = entity
 
     def set_game_entity(self, game_entity_id, game_entity):
@@ -56,8 +71,21 @@ class GameState:
         return self.entity_dict[self.game_entity_id]
 
     @property
+    def my_entity_id(self):
+        return self.player_id_map_dict.get(self.my_player_id, 0)
+
+    @property
     def my_entity(self):
-        return self.entity_dict[self.player_id_map_dict[self.my_player_id]]
+        return self.entity_dict[self.my_entity_id]
+
+    @property
+    def oppo_entity_id(self):
+        return self.player_id_map_dict.get(self.oppo_player_id, 0)
+
+    @property
+    def oppo_entity(self):
+        return self.entity_dict[self.oppo_entity_id]
+
 
     @property
     def is_my_turn(self):
@@ -84,7 +112,7 @@ class Entity:
     def __str__(self):
         res = ""
         for key, value in self.tag_dict.items():
-            res += key + ": " + value + "\n"
+            res += f"\t{key}: {value}\n"
         return res
 
     def set_tag(self, tag, val):
@@ -106,10 +134,6 @@ class CardEntity(Entity):
     def __init__(self, card_id):
         super().__init__()
         self.card_id = card_id
-        if self.card_id != "":
-            self.name = JSON_DICT[self.card_id]["name"]
-        else:
-            self.name = "Unknown"
 
     def __str__(self):
         return "cardID: " + self.card_id + "\n" + \
@@ -119,19 +143,28 @@ class CardEntity(Entity):
     def update_card_id(self, card_id):
         self.card_id = card_id
 
+    @property
+    def name(self):
+        temp = JSON_DICT.get(self.card_id, None)
+        if temp:
+            return temp["name"]
+        else:
+            return "Unknown"
+
 
 def update_state(state, line_info_container):
-    if line_info_container.log_type == LOG_LINE_CREATE_GAME:
-        state = GameState()
+    if line_info_container.line_type == LOG_LINE_CREATE_GAME:
+        state.flush()
 
-    if line_info_container.log_type == LOG_LINE_GAME_ENTITY:
+    if line_info_container.line_type == LOG_LINE_GAME_ENTITY:
         game_entity = GameEntity()
         game_entity_id = line_info_container.info_dict["entity"]
 
         state.current_update_id = game_entity_id
         state.add_entity(game_entity_id, game_entity)
+        state.game_entity_id = game_entity_id
 
-    if line_info_container.log_type == LOG_LINE_PLAYER_ENTITY:
+    if line_info_container.line_type == LOG_LINE_PLAYER_ENTITY:
         player_entity = PlayerEntity()
         player_entity_id = line_info_container.info_dict["entity"]
         player_id = line_info_container.info_dict["player"]
@@ -139,7 +172,7 @@ def update_state(state, line_info_container):
         state.current_update_id = player_entity_id
         state.add_player_entity(player_entity_id, player_id, player_entity)
 
-    if line_info_container.log_type == LOG_LINE_FULL_ENTITY:
+    if line_info_container.line_type == LOG_LINE_FULL_ENTITY:
         card_id = line_info_container.info_dict["card"]
         card_entity_id = line_info_container.info_dict["entity"]
         card_entity = CardEntity(card_id)
@@ -147,7 +180,7 @@ def update_state(state, line_info_container):
         state.current_update_id = card_entity_id
         state.add_entity(card_entity_id, card_entity)
 
-    if line_info_container.log_type == LOG_LINE_SHOW_ENTITY:
+    if line_info_container.line_type == LOG_LINE_SHOW_ENTITY:
         card_id = line_info_container.info_dict["card"]
         card_entity_id = line_info_container.info_dict["entity"]
 
@@ -155,20 +188,22 @@ def update_state(state, line_info_container):
         card_entity.update_card_id(card_id)
         state.current_update_id = card_entity_id
 
-    if line_info_container.log_type == LOG_LINE_TAG_CHANGE:
+    if line_info_container.line_type == LOG_LINE_TAG_CHANGE:
         entity_string = line_info_container.info_dict["entity"]
 
         # 情形一 "TAG_CHANGE Entity=GameEntity"
         if entity_string == "GameEntity":
             entity_id = state.game_entity_id
         # 情形二 "TAG_CHANGE Entity=Example#51234"
-        elif "#" in entity_string:
+        elif not entity_string.isdigit():
             if entity_string == state.my_name:
-                entity_id = state.my_player_id
+                entity_id = state.my_entity_id
             else:
-                entity_id = state.oppo_player_id
+                entity_id = state.oppo_entity_id
                 if entity_string != state.oppo_name:
                     state.oppo_name = entity_string
+
+            assert int(entity_id) <= 3
         # 情形三 "TAG_CHANGE Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=14 ...]"
         # 此时的EntityId已经被提取出来了
         else:
@@ -179,12 +214,12 @@ def update_state(state, line_info_container):
 
         state.entity_dict[entity_id].set_tag(tag, value)
 
-    if line_info_container.log_type == LOG_LINE_TAG:
+    if line_info_container.line_type == LOG_LINE_TAG:
         tag = line_info_container.info_dict["tag"]
         value = line_info_container.info_dict["value"]
         state.current_update_entity.set_tag(tag, value)
 
-    if line_info_container.log_type == LOG_LINE_PLAYER_ID:
+    if line_info_container.line_type == LOG_LINE_PLAYER_ID:
         player_id = line_info_container.info_dict["player"]
         player_name = line_info_container.info_dict["name"]
 
@@ -197,4 +232,11 @@ def update_state(state, line_info_container):
 
 
 if __name__ == "__main__":
-    log_iter = log_iter_func()
+    log_iter = log_iter_func("./Power.log")
+    log_container = next(log_iter)
+    state = GameState()
+
+    for x in log_container.message_list:
+        # print(x)
+        update_state(state, x)
+    print(state)
