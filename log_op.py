@@ -47,9 +47,11 @@ class LineInfoContainer:
 
     def __str__(self):
         res = "line_type: " + str(self.line_type) + "\n"
-        res += "info_dict\n"
-        for key, value in self.info_dict.items():
-            res += "\t" + str(key) + ": " + str(value) + "\n"
+        if len(self.info_dict) > 0:
+            res += "info_dict\n"
+            for key, value in self.info_dict.items():
+                res += "\t" + str(key) + ": " + str(value) + "\n"
+        return res
 
 
 class LogInfoContainer:
@@ -79,7 +81,7 @@ def parse_line(line_str):
         return
 
     line_str = match_obj.group(1)
-    if line_str == "CREATE GAME":
+    if line_str == "CREATE_GAME":
         return LineInfoContainer(LOG_LINE_CREATE_GAME)
 
     match_obj = TAG_CHANGE_PATTERN.match(line_str)
@@ -192,3 +194,8 @@ def log_iter_func(path=HEARTHSTONE_POWER_LOG_PATH):
                 if not os.path.exists(path):
                     yield LogInfoContainer(LOG_CONTAINER_ERROR)
                     break
+
+
+if __name__ == "__main__":
+    line_str = input()
+    print(parse_line(line_str))

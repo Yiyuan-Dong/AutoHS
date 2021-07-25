@@ -22,12 +22,12 @@ class GameState:
 
         for key in key_list:
             if key == self.game_entity_id:
-                res += "GameState:\n"
+                res += "GameState"
             elif key == self.player_id_map_dict[self.my_player_id]:
-                res += "MyEntity\n"
+                res += "MyEntity"
             elif key == self.player_id_map_dict[self.oppo_player_id]:
-                res += "OppoEntity\n"
-
+                res += "OppoEntity"
+            res += f"[{str(key)}]\n"
             res += str(self.entity_dict[key])
             res += "\n"
 
@@ -106,7 +106,10 @@ class CardEntity(Entity):
     def __init__(self, card_id):
         super().__init__()
         self.card_id = card_id
-        self.name = JSON_DICT[self.card_id]["name"]
+        if self.card_id != "":
+            self.name = JSON_DICT[self.card_id]["name"]
+        else:
+            self.name = "Unknown"
 
     def __str__(self):
         return "cardID: " + self.card_id + "\n" + \
