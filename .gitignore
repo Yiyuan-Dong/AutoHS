@@ -4,5 +4,6 @@ venv/
 img/
 backup.md
 test*
-*json
-*log
+*.json
+*.log
+*.txt

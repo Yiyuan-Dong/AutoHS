@@ -9,18 +9,50 @@ import random
 from name2card import NAME2CARD
 from constants.card_name import *
 from print_info import *
+from game_state import *
+from log_op import *
 
 
-class State:
-    def __init__(self):
+class StrategyState:
+    def __init__(self, game_state=None):
         self.available = []
         self.oppos = []
         self.mines = []
+        self.cards = []
 
-        self.update_minions()
+        if game_state is None:
+            # 原来的cv的部分
+            self.update_minions()
 
-        tmp_card_num = get_screen.count_my_cards()
-        self.cards = get_screen.identify_cards(tmp_card_num)
+            tmp_card_num = get_screen.count_my_cards()
+            self.cards = get_screen.identify_cards(tmp_card_num)
+        else:
+            for entity in game_state.entity_dict.values():
+                if entity.query_tag("ZONE") == "PLAY" \
+                        and entity.query_tag("CARDTYPE") == "MINION":
+                    minion = Minion(
+                        attack=int(entity.query_tag("ATK")),
+                        health=int(entity.query_tag("HEALTH")),
+                        taunt=int(entity.query_tag("TAUNT")),
+                        divine_shield=int(entity.query_tag("DIVINE_SHIELD")),
+                        stealth=int(entity.query_tag("STEALTH")),
+                        poisonous=int(entity.query_tag("POISONOUS")),
+                        spellpower=int(entity.query_tag("SPELLPOWER")),
+                        exhausted=int(entity.query_tag("EXHAUSTED"))
+                    )
+
+                    if game_state.is_my_entity(entity):
+                        self.mines.append(minion)
+                        if entity.query_tag("EXHAUSTED") == "0":
+                            self.available.append(2)
+                        else:
+                            self.available.append(0)
+                    else:
+                        self.oppos.append(minion)
+
+                if entity.query_tag("ZONE") == "HAND" \
+                        and game_state.is_my_entity(entity):
+                    self.cards.append(entity.name)
 
         self.debug_print_out()
 
@@ -89,7 +121,6 @@ class State:
         debug_print(f"h_val: {self.heuristic_value}")
         print()
 
-
     @property
     def oppo_num(self):
         return len(self.oppos)
@@ -102,24 +133,20 @@ class State:
     def card_num(self):
         return len(self.cards)
 
-    # 用攻血点数之和算启发值(方卡费体系里就是卡费乘2)
+    # 用卡费体系算启发值
     @property
     def oppo_heuristic_value(self):
-        h_val = 0
+        total_h_val = 0
         for minion in self.oppos:
-            h_val += minion.attack + minion.health
-            if minion.has_divine_shield:
-                h_val += minion.attack
-        return h_val
+            total_h_val += minion.heuristic_val
+        return total_h_val
 
     @property
     def mine_heuristic_value(self):
-        h_val = 0
+        total_h_val = 0
         for minion in self.mines:
-            h_val += minion.attack + minion.health
-            if minion.has_divine_shield:
-                h_val += minion.attack
-        return h_val
+            total_h_val += minion.heuristic_val
+        return total_h_val
 
     @property
     def heuristic_value(self):
@@ -132,7 +159,6 @@ class State:
             if card_name != NAME_THE_COIN and card_name in NAME2CARD:
                 minium = min(NAME2CARD[card_name].cost, minium)
         return minium
-
 
     def fight_between(self, oppo_index, mine_index):
         oppo_minion = self.oppos[oppo_index]
@@ -169,12 +195,12 @@ class State:
             if minion.get_damaged(damage):
                 self.mines.pop(mine_index)
 
-    def get_best_action(self):
+    def get_best_attack_target(self):
         could_attack_oppos = []
         has_taunt = False
 
         for i in range(len(self.oppos)):
-            if self.oppos[i].is_taunt:
+            if self.oppos[i].taunt:
                 could_attack_oppos.append(i)
                 has_taunt = True
 
@@ -196,10 +222,6 @@ class State:
 
                 tmp_delta_h_val -= my_minion.delta_h_after_damage(oppo_minion.attack)
                 tmp_delta_h_val += oppo_minion.delta_h_after_damage(my_minion.attack)
-
-                # 想给过墙行为加一点补正
-                if oppo_minion.is_taunt:
-                    tmp_delta_h_val += min(oppo_minion.health, my_minion.attack) * 0.5
 
                 if tmp_delta_h_val > max_delta_h_val:
                     max_delta_h_val = tmp_delta_h_val
@@ -286,8 +308,15 @@ class State:
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", sys.exit)
 
-    state = State()
-    state_2 = state.copy_new_one()
+    log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
+    state = GameState()
 
-    state_2.mines[0].attack = 1000
-    state.debug_print_out()
+    while True:
+        log_container = next(log_iter)
+        if log_container.length > 0:
+            for x in log_container.message_list:
+                update_state(state, x)
+            strategy_state = StrategyState(state)
+
+            with open("temp.txt", "w") as f:
+                f.write(str(state))

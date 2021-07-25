@@ -7,7 +7,7 @@ import get_screen
 import sys
 import cv2
 from constants.constants import *
-from state import State
+from strategy import StrategyState
 from print_info import *
 import keyboard
 
@@ -99,7 +99,7 @@ def MyTurnAction():
     mana_last = turn_num
     # mana_last = 10
     while True:
-        state = State()
+        state = StrategyState()
         if state.test_use_coin(mana_last):
             state.use_coin()
             continue
@@ -120,7 +120,7 @@ def MyTurnAction():
     for i in range(7):
         state.update_minions()
         state.debug_print_battlefield()
-        mine_index, oppo_index = state.get_best_action()
+        mine_index, oppo_index = state.get_best_attack_target()
         debug_print(f"我的决策是: mine_index: {mine_index}, oppo_index: {oppo_index}")
 
         if mine_index == -1 or last_index == mine_index:

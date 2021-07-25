@@ -34,7 +34,7 @@ PLAYER_ID_PATTERN = re.compile(r"PlayerID=(\d+), PlayerName=(.*)")
 # "TAG_CHANGE Entity=GameEntity tag=NEXT_STEP value=FINAL_WRAPUP "
 # "TAG_CHANGE Entity=Example#51234 tag=467 value=4 "
 # "TAG_CHANGE Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=14 zone=DECK zonePos=0 cardId= player=1] tag=ZONE value=HAND "
-TAG_CHANGE_PATTERN = re.compile(r" *TAG_CHANGE Entity=(.*) tag=(.*) value=(.*) *")
+TAG_CHANGE_PATTERN = re.compile(r" *TAG_CHANGE Entity=(.*) tag=(.*) value=(.*) ")
 
 # "tag=ZONE value=DECK"
 TAG_PATTERN = re.compile(r" *tag=(.*) value=(.*)")
@@ -61,6 +61,10 @@ class LogInfoContainer:
 
     def append_info(self, line_info):
         self.message_list.append(line_info)
+
+    @property
+    def length(self):
+        return len(self.message_list)
 
 
 def fetch_entity_id(input_string):

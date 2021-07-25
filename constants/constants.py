@@ -1,7 +1,7 @@
 HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
 
 # 关于信息打印的设置
-DEBUG_PRINT = False
+DEBUG_PRINT = True
 WARNING_PRINT = True
 SYS_PRINT = True
 INFO_PRINT = True
