@@ -18,7 +18,7 @@ class StrategyState:
         self.available = []
         self.oppo_minions = []
         self.my_minions = []
-        self.cards = []
+        self.my_hand_cards = []
 
         self.my_hero = None
         self.my_hero_power = None
@@ -48,6 +48,8 @@ class StrategyState:
                     poisonous=int(entity.query_tag("POISONOUS")),
                     spell_power=int(entity.query_tag("SPELLPOWER")),
                     exhausted=int(entity.tag_dict.get("EXHAUSTED", 1)),
+                    charge=int(entity.query_tag("CHARGE")),
+                    rush=int(entity.query_tag("RUSH")),
                     name=entity.name
                 )
 
@@ -62,7 +64,13 @@ class StrategyState:
 
             if entity.query_tag("ZONE") == "HAND":
                 if game_state.is_my_entity(entity):
-                    self.cards.append(entity.name)
+                    hand_card = HandCard(
+                        card_type=entity.query_tag("CARDTYPE"),
+                        cost=int(entity.query_tag("COST")),
+                        zone_pos=int(entity.query_tag("ZONE_POSITION")),
+                        name=entity.name,
+                    )
+                    self.my_hand_cards.append(hand_card)
                 else:
                     self.oppo_hand_card_num += 1
 
@@ -73,6 +81,7 @@ class StrategyState:
                     damage=int(entity.query_tag("DAMAGE")),
                     attack=int(entity.query_tag("ATK")),
                     exhausted=int(entity.tag_dict.get("EXHAUSTED", 1)),
+                    armor=int(entity.query_tag("ARMOR")),
                     name=entity.name
                 )
                 if game_state.is_my_entity(entity):
@@ -101,6 +110,7 @@ class StrategyState:
                 else:
                     self.oppo_weapon = weapon
 
+        self.my_hand_cards.sort(key=lambda temp: temp.zone_pos)
         self.debug_print_out()
 
     def update_minions(self):
@@ -152,23 +162,18 @@ class StrategyState:
         for minion in self.oppo_minions:
             debug_print("    " + str(minion))
         debug_print(f"h_val: {self.oppo_heuristic_value}")
+
         debug_print()
+
         debug_print("我的英雄:")
         debug_print("    " + str(self.my_hero))
         if self.my_weapon:
             debug_print("头上有把武器:")
             debug_print("    " + str(self.my_weapon))
-
         debug_print(f"我有{self.my_minion_num}个随从:")
         for i in range(len(self.my_minions)):
             minion = self.my_minions[i]
             tmp_str = "    " + str(minion)
-            # if self.available[i] == 2:
-            #     tmp_str += " 能打脸"
-            # elif self.available[i] == 1:
-            #     tmp_str += " 是突袭"
-            # else:
-            #     tmp_str += " 不能动"
             debug_print(tmp_str)
         debug_print(f"h_val: {self.my_heuristic_value}")
 
@@ -178,10 +183,10 @@ class StrategyState:
 
         debug_print(f"对手有{self.oppo_hand_card_num}张手牌")
         self.debug_print_battlefield()
-        debug_print(f"我有{self.my_hand_card_num}张手牌,它们分别是")
-        debug_print("    " + ", ".join(self.cards))
         debug_print()
-        debug_print(f"total_h_val: {self.heuristic_value}")
+        debug_print(f"我有{self.my_hand_card_num}张手牌,它们分别是")
+        for hand_card in self.my_hand_cards:
+            debug_print("    " + str(hand_card))
 
     @property
     def oppo_minion_num(self):
@@ -193,7 +198,7 @@ class StrategyState:
 
     @property
     def my_hand_card_num(self):
-        return len(self.cards)
+        return len(self.my_hand_cards)
 
     # 用卡费体系算启发值
     @property
@@ -216,12 +221,12 @@ class StrategyState:
 
     @property
     def heuristic_value(self):
-        return self.my_heuristic_value - self.oppo_heuristic_value
+        return round(self.my_heuristic_value - self.oppo_heuristic_value, 3)
 
     @property
     def min_cost(self):
         minium = 100
-        for card_name in self.cards:
+        for card_name in self.my_hand_cards:
             if card_name != NAME_THE_COIN and card_name in NAME2CARD:
                 minium = min(NAME2CARD[card_name].cost, minium)
         return minium
@@ -320,7 +325,7 @@ class StrategyState:
         best_args = []
 
         for card_index in range(self.my_hand_card_num):
-            card_name = self.cards[card_index]
+            card_name = self.my_hand_cards[card_index]
 
             if card_name != NAME_THE_COIN and card_name in NAME2CARD:
                 card = NAME2CARD[card_name]
@@ -341,7 +346,7 @@ class StrategyState:
         return best_delta_h, best_index, best_args
 
     def test_use_coin(self, curr_mana):
-        if NAME_THE_COIN not in self.cards:
+        if NAME_THE_COIN not in self.my_hand_cards:
             return False
         if curr_mana == 10:
             res = False
@@ -357,17 +362,17 @@ class StrategyState:
 
     def use_coin(self):
         for index in range(self.my_hand_card_num):
-            if self.cards[index] == NAME_THE_COIN:
+            if self.my_hand_cards[index] == NAME_THE_COIN:
                 debug_print(f"Will use the coin at [{index}]")
                 NAME2CARD[NAME_THE_COIN].use_with_arg(self, index)
 
     # 会返回这张卡的cost
     def use_card(self, index, *args):
-        card_name = self.cards[index]
+        card_name = self.my_hand_cards[index]
         card = NAME2CARD[card_name]
         debug_print(f"Will use card[{index}] {card.name}")
         card.use_with_arg(self, index, *args)
-        self.cards.pop(index)
+        self.my_hand_cards.pop(index)
         return card.cost
 
 
@@ -384,5 +389,5 @@ if __name__ == "__main__":
                 update_state(state, x)
             strategy_state = StrategyState(state)
 
-            with open("temp.txt", "w") as f:
+            with open("game_state_snapshot.txt", "w") as f:
                 f.write(str(state))

@@ -5,7 +5,7 @@ import copy
 class Minion:
     def __init__(self, attack, max_health, damage=0, taunt=0,
                  divine_shield=0, stealth=0, poisonous=0, life_steal=0,
-                 spell_power=0, charge=0, exhausted=1, name=""):
+                 spell_power=0, charge=0, rush=0, exhausted=1, name=""):
         self.attack = attack
         self.max_health = max_health
         self.damage = damage
@@ -16,6 +16,7 @@ class Minion:
         self.life_steal = life_steal
         self.spell_power = spell_power
         self.charge = charge
+        self.rush = rush
         self.exhausted = exhausted
         self.name = name
 
@@ -24,9 +25,13 @@ class Minion:
         return self.max_health - self.damage
 
     def __str__(self):
-        temp = f"{self.name} {self.attack}-{self.health}({self.max_health})"
+        temp = f"{self.name} {self.attack}-{self.health}" \
+               f"({self.max_health})"
         if self.exhausted:
-            temp += " [不能动]"
+            if self.rush:
+                temp += " [能突袭]"
+            else:
+                temp += " [不能动]"
         else:
             temp += " [能动]"
 
@@ -36,8 +41,10 @@ class Minion:
             temp += " 圣盾"
         if self.stealth:
             temp += " 潜行"
-        if self.charge:
-            temp += " 冲锋"
+        # if self.charge:
+        #     temp += " 冲锋"
+        # if self.rush:
+        #     temp += " 突袭"
         if self.poisonous:
             temp += " 剧毒"
         if self.life_steal:
@@ -122,7 +129,8 @@ class Weapon:
         self.name = name
 
     def __str__(self):
-        return f"{self.name} {self.attack}-{self.health}({self.durability}) h_val:{self.heuristic_val}"
+        return f"{self.name} {self.attack}-{self.health}" \
+               f"({self.durability}) h_val:{self.heuristic_val}"
 
     @property
     def health(self):
@@ -134,15 +142,18 @@ class Weapon:
 
 
 class Hero:
-    def __init__(self, max_health, damage=0, attack=0, exhausted=1, name=""):
+    def __init__(self, max_health, damage=0, armor=0,
+                 attack=0, exhausted=1, name=""):
         self.max_health = max_health
         self.damage = damage
+        self.armor = armor
         self.attack = attack
         self.exhausted = exhausted
         self.name = name
 
     def __str__(self):
-        res = f"{self.name} {self.attack}-{self.health}({self.max_health})"
+        res = f"{self.name} {self.attack}-{self.health}" \
+              f"({self.max_health-self.damage}+{self.armor})"
         if self.exhausted == 1:
             res += " [不能动]"
         else:
@@ -152,7 +163,7 @@ class Hero:
 
     @property
     def health(self):
-        return self.max_health - self.damage
+        return self.max_health + self.armor - self.damage
 
     @property
     def heuristic_val(self):
@@ -167,4 +178,12 @@ class Hero:
 
 
 class HandCard:
-    pass
+    def __init__(self, card_type, cost, zone_pos, name):
+        self.card_type = card_type
+        self.cost = cost
+        self.name = name
+        self.zone_pos = zone_pos
+
+    def __str__(self):
+        return f"[{self.zone_pos - 1}]{self.name} " \
+               f"cost:{self.cost} type:{self.card_type}"
