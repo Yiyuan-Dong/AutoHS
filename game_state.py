@@ -16,10 +16,9 @@ class GameState:
         self.current_update_id = 0
 
     def __str__(self):
-        res = "--------------------\n"
-        res += "State:"
-        res += f"""
-    game_entity_id: {self.game_entity_id}
+        res = "State:"
+        res += \
+f"""game_entity_id: {self.game_entity_id}
     my_name: {self.my_name}
     oppo_name: {self.oppo_name}
     my_player_id: {self.my_player_id}

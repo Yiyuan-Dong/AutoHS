@@ -126,9 +126,9 @@ def MyTurnAction():
         if mine_index == -1 or last_index == mine_index:
             break
         if oppo_index == -1:
-            click.minion_beat_hero(mine_index, state.mine_num)
+            click.minion_beat_hero(mine_index, state.my_minion_num)
         else:
-            click.minion_beat_minion(mine_index, state.mine_num, oppo_index, state.oppo_num)
+            click.minion_beat_minion(mine_index, state.my_minion_num, oppo_index, state.oppo_minion_num)
         last_index = mine_index
 
         time.sleep(1.5)

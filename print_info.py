@@ -11,7 +11,7 @@ def warning_print(warning_str):
         print("[WARNING] " + warning_str)
 
 
-def debug_print(debug_str):
+def debug_print(debug_str=""):
     if DEBUG_PRINT:
         print("[DEBUG] " + debug_str)
 

@@ -42,7 +42,7 @@ class SpellCard(Card):
             return
 
         if self.spell_type == SPELL_NO_POINT:
-            click.choose_and_use_spell(card_index, state.card_num)
+            click.choose_and_use_spell(card_index, state.my_hand_card_num)
             click.cancel_click()
             time.sleep(self.wait_time)
             return
@@ -53,8 +53,8 @@ class SpellCard(Card):
                 return
 
             oppo_index = args[0]
-            click.choose_card(card_index, state.card_num)
-            click.choose_opponent_minion(oppo_index, state.oppo_num)
+            click.choose_card(card_index, state.my_hand_card_num)
+            click.choose_opponent_minion(oppo_index, state.oppo_minion_num)
             click.cancel_click()
             time.sleep(self.wait_time)
             return
@@ -65,8 +65,8 @@ class SpellCard(Card):
                 return
 
             mine_index = args[0]
-            click.choose_card(card_index, state.card_num)
-            click.choose_my_minion(mine_index, state.oppo_num)
+            click.choose_card(card_index, state.my_hand_card_num)
+            click.choose_my_minion(mine_index, state.oppo_minion_num)
             click.cancel_click()
             time.sleep(self.wait_time)
             return
@@ -92,16 +92,16 @@ class BasicMinionCard(MinionCard):
 
     def best_h_and_arg(self, state):
         # 格子满了
-        if state.mine_num == 7:
+        if state.my_minion_num == 7:
             return -1, 0
         else:
             # 默认放到最右边
-            return self.value, state.mine_num
+            return self.value, state.my_minion_num
 
     def use_with_arg(self, state, card_index, *args):
         gap_index = args[0]
-        click.choose_card(card_index, state.card_num)
-        click.put_minion(gap_index, state.mine_num)
+        click.choose_card(card_index, state.my_hand_card_num)
+        click.put_minion(gap_index, state.my_minion_num)
         click.cancel_click()
         time.sleep(BASIC_MINION_PUT_INTERVAL)
 
@@ -135,8 +135,8 @@ class HolySmite(SpellCard):
         best_oppo_index = -1
         best_delta_h = 0
 
-        for oppo_index in range(state.oppo_num):
-            oppo_minion = state.oppos[oppo_index]
+        for oppo_index in range(state.oppo_minion_num):
+            oppo_minion = state.oppo_minions[oppo_index]
             temp_delta_h = oppo_minion.delta_h_after_damage(3) + self.bias
             if temp_delta_h > best_delta_h:
                 best_delta_h = temp_delta_h
@@ -157,7 +157,7 @@ class WaveOfApathy(SpellCard):
     def best_h_and_arg(self, state):
         tmp = 0
 
-        for minion in state.oppos:
+        for minion in state.oppo_minions:
             tmp += minion.attack - 1
 
         return tmp + self.bias,
@@ -184,9 +184,9 @@ class ShadowWordDeath(SpellCard):
         best_oppo_index = -1
         best_delta_h = 0
 
-        for i in range(state.oppo_num):
+        for i in range(state.oppo_minion_num):
 
-            minion = state.oppos[i]
+            minion = state.oppo_minions[i]
             if minion.attack < 5:
                 continue
 
@@ -210,9 +210,9 @@ class Apotheosis(SpellCard):
         best_delta_h = 0
         best_mine_index = -1
 
-        for i in range(state.mine_num):
+        for i in range(state.my_minion_num):
             tmp = self.bias + 5
-            minion = state.mines[i]
+            minion = state.my_minions[i]
             if state.available[i] > 0:
                 tmp += minion.attack / 2 + minion.health / 4
             if tmp > best_delta_h:
@@ -248,7 +248,7 @@ class DevouringPlague(SpellCard):
         for i in range(sample_times):
             tmp_state = state.copy_new_one()
             for j in range(4):
-                tmp_state.random_distribute_damage(1, [i for i in range(tmp_state.oppo_num)], [])
+                tmp_state.random_distribute_damage(1, [i for i in range(tmp_state.oppo_minion_num)], [])
 
             sum += tmp_state.heuristic_value - h
 
@@ -273,7 +273,7 @@ class HolyNova(SpellCard):
 
     def best_h_and_arg(self, state):
         return self.bias + sum([minion.delta_h_after_damage(2)
-                                for minion in state.oppos]),
+                                for minion in state.oppo_minions]),
 
 
 class Hysteria(SpellCard):
@@ -290,39 +290,39 @@ class Hysteria(SpellCard):
         best_arg = 0
         sample_times = 10
 
-        if state.oppo_num == 0 or state.oppo_num + state.mine_num == 1:
+        if state.oppo_minion_num == 0 or state.oppo_minion_num + state.my_minion_num == 1:
             return 0, -1
 
-        for chosen_index in range(state.oppo_num):
+        for chosen_index in range(state.oppo_minion_num):
             delta_h_count = 0
 
             for i in range(sample_times):
                 tmp_state = state.copy_new_one()
-                chosen_minion = tmp_state.oppos[chosen_index]
+                chosen_minion = tmp_state.oppo_minions[chosen_index]
                 tmp_chosen_index = chosen_index
 
                 while True:
-                    another_index_list = [j for j in range(tmp_state.oppo_num + tmp_state.mine_num)]
+                    another_index_list = [j for j in range(tmp_state.oppo_minion_num + tmp_state.my_minion_num)]
                     another_index_list.pop(tmp_chosen_index)
                     if len(another_index_list) == 0:
                         break
                     another_index = another_index_list[random.randint(0, len(another_index_list) - 1)]
 
                     # print("another index: ", another_index)
-                    if another_index >= tmp_state.oppo_num:
-                        another_minion = tmp_state.mines[another_index - tmp_state.oppo_num]
+                    if another_index >= tmp_state.oppo_minion_num:
+                        another_minion = tmp_state.my_minions[another_index - tmp_state.oppo_minion_num]
                         if another_minion.get_damaged(chosen_minion.attack):
-                            tmp_state.mines.pop(another_index - tmp_state.oppo_num)
+                            tmp_state.my_minions.pop(another_index - tmp_state.oppo_minion_num)
                     else:
-                        another_minion = tmp_state.oppos[another_index]
+                        another_minion = tmp_state.oppo_minions[another_index]
                         if another_minion.get_damaged(chosen_minion.attack):
-                            tmp_state.oppos.pop(another_index)
+                            tmp_state.oppo_minions.pop(another_index)
                             if another_index < tmp_chosen_index:
                                 tmp_chosen_index -= 1
 
                     if chosen_minion.get_damaged(another_minion.attack):
                         # print("h:", tmp_state.heuristic_value, state.heuristic_value)
-                        tmp_state.oppos.pop(tmp_chosen_index)
+                        tmp_state.oppo_minions.pop(tmp_chosen_index)
                         break
 
                     # print("h:", tmp_state.heuristic_value, state.heuristic_value)
@@ -348,7 +348,7 @@ class ShadowWordRuin(SpellCard):
 
     def best_h_and_arg(self, state):
         return self.bias + sum([minion.attack + minion.health
-                                for minion in state.oppos
+                                for minion in state.oppo_minions
                                 if minion.attack >= 5]),
 
 
@@ -363,10 +363,10 @@ class AgainstAllOdds(SpellCard):
     def best_h_and_arg(self, state):
         return self.bias + \
                sum([minion.attack + minion.health
-                    for minion in state.oppos
+                    for minion in state.oppo_minions
                     if minion.attack % 2 == 1]) - \
                sum([minion.attack + minion.health
-                    for minion in state.mines
+                    for minion in state.my_minions
                     if minion.attack % 2 == 1]),
 
 
@@ -413,10 +413,10 @@ class SoulMirror(SpellCard):
         self.bias = -16
 
     def best_h_and_arg(self, state):
-        copy_number = min(7 - state.mine_num, state.oppo_num)
+        copy_number = min(7 - state.my_minion_num, state.oppo_minion_num)
         sum = 0
         for i in range(copy_number):
-            sum += state.oppos[i].attack + state.oppos[i].health
+            sum += state.oppo_minions[i].attack + state.oppo_minions[i].health
 
         return sum + self.bias,
 
