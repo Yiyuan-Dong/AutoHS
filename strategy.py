@@ -15,18 +15,21 @@ from strategy_entity import *
 
 class StrategyState:
     def __init__(self, game_state=None):
-        self.available = []
         self.oppo_minions = []
         self.my_minions = []
         self.my_hand_cards = []
 
         self.my_hero = None
         self.my_hero_power = None
+        self.can_use_power = False
         self.my_weapon = None
         self.oppo_hero = None
         self.oppo_hero_power = None
         self.oppo_weapon = None
         self.oppo_hand_card_num = 0
+
+        self.my_last_mana = int(game_state.my_entity.query_tag("RESOURCES")) - \
+                            int(game_state.my_entity.query_tag("RESOURCES_USED"))
 
         # if game_state is None:
         #     # 原来的cv的部分
@@ -50,15 +53,13 @@ class StrategyState:
                     exhausted=int(entity.tag_dict.get("EXHAUSTED", 1)),
                     charge=int(entity.query_tag("CHARGE")),
                     rush=int(entity.query_tag("RUSH")),
+                    attackable_by_rush=int(entity.query_tag("ATTACKABLE_BY_RUSH")),
+                    zone_pos=int(entity.query_tag("ZONE_POSITION")),
                     name=entity.name
                 )
 
                 if game_state.is_my_entity(entity):
                     self.my_minions.append(minion)
-                    if entity.query_tag("EXHAUSTED") == "0":
-                        self.available.append(2)
-                    else:
-                        self.available.append(0)
                 else:
                     self.oppo_minions.append(minion)
 
@@ -93,6 +94,7 @@ class StrategyState:
                     and entity.query_tag("CARDTYPE") == "HERO_POWER":
                 if game_state.is_my_entity(entity):
                     self.my_hero_power = entity.name
+                    self.can_use_power = entity.query_tag("EXHAUSTED") == "0"
                 else:
                     self.oppo_hero_power = entity.name
 
@@ -110,44 +112,47 @@ class StrategyState:
                 else:
                     self.oppo_weapon = weapon
 
-        self.my_hand_cards.sort(key=lambda temp: temp.zone_pos)
+        def get_zone_pos(x):
+            return x.zone_pos
+
+        self.my_minions.sort(key=get_zone_pos)
+        self.oppo_minions.sort(key=get_zone_pos)
+        self.my_hand_cards.sort(key=get_zone_pos)
         self.debug_print_out()
 
-    def update_minions(self):
-        img = get_screen.catch_screen()
-        tmp_oppo_num, tmp_mine_num = get_screen.count_minions(img)
-        oppo_ah, mine_ah = get_screen.get_attack_health(img, tmp_oppo_num, tmp_mine_num)
-        oppo_t, mine_t = get_screen.test_taunt(img, tmp_oppo_num, tmp_mine_num)
-
-        oppo_ds, mine_ds = get_screen.test_divine_shield()
-        if len(oppo_ds) != tmp_oppo_num:
-            oppo_ds = [False for i in range(tmp_oppo_num)]
-        if len(mine_ds) != tmp_mine_num:
-            mine_ds = [False for i in range(tmp_mine_num)]
-
-        self.available = get_screen.test_available(img, tmp_mine_num)
-
-        self.oppo_minions = []
-        for i in range(tmp_oppo_num):
-            self.oppo_minions.append(
-                Minion(
-                    oppo_ah[i][0],
-                    oppo_ah[i][1],
-                    oppo_t[i],
-                    oppo_ds[i]
-                )
-            )
-
-        self.my_minions = []
-        for i in range(tmp_mine_num):
-            self.my_minions.append(
-                Minion(
-                    mine_ah[i][0],
-                    mine_ah[i][1],
-                    mine_t[i],
-                    mine_ds[i]
-                )
-            )
+    # def update_minions(self):
+    #     img = get_screen.catch_screen()
+    #     tmp_oppo_num, tmp_mine_num = get_screen.count_minions(img)
+    #     oppo_ah, mine_ah = get_screen.get_attack_health(img, tmp_oppo_num, tmp_mine_num)
+    #     oppo_t, mine_t = get_screen.test_taunt(img, tmp_oppo_num, tmp_mine_num)
+    #
+    #     oppo_ds, mine_ds = get_screen.test_divine_shield()
+    #     if len(oppo_ds) != tmp_oppo_num:
+    #         oppo_ds = [False for i in range(tmp_oppo_num)]
+    #     if len(mine_ds) != tmp_mine_num:
+    #         mine_ds = [False for i in range(tmp_mine_num)]
+    #
+    #     self.oppo_minions = []
+    #     for i in range(tmp_oppo_num):
+    #         self.oppo_minions.append(
+    #             Minion(
+    #                 oppo_ah[i][0],
+    #                 oppo_ah[i][1],
+    #                 oppo_t[i],
+    #                 oppo_ds[i]
+    #             )
+    #         )
+    #
+    #     self.my_minions = []
+    #     for i in range(tmp_mine_num):
+    #         self.my_minions.append(
+    #             Minion(
+    #                 mine_ah[i][0],
+    #                 mine_ah[i][1],
+    #                 mine_t[i],
+    #                 mine_ds[i]
+    #             )
+    #         )
 
     def debug_print_battlefield(self):
         if not DEBUG_PRINT:
@@ -231,29 +236,21 @@ class StrategyState:
                 minium = min(NAME2CARD[card_name].cost, minium)
         return minium
 
-    def fight_between(self, oppo_index, mine_index):
+    def fight_between(self, oppo_index, my_index):
         oppo_minion = self.oppo_minions[oppo_index]
-        mine_minion = self.my_minions[mine_index]
+        my_minion = self.my_minions[my_index]
 
-        if oppo_minion.has_divine_shield:
-            oppo_minion.has_divine_shield = False
-        else:
-            oppo_minion.health -= mine_minion.attack
-            if oppo_minion.health <= 0:
-                self.oppo_minions.pop(oppo_index)
+        if oppo_minion.get_damaged(my_minion.attack):
+            self.oppo_minions.pop(oppo_index)
 
-        if mine_minion.has_divine_shield:
-            mine_minion.has_divine_shield = False
-        else:
-            mine_minion.health -= oppo_minion.attack
-            if mine_minion.health <= 0:
-                self.my_minions.pop(mine_index)
+        if my_minion.get_damaged(oppo_minion.attack):
+            self.my_minions.pop(my_index)
 
-    def random_distribute_damage(self, damage, oppo_index_list, mine_index_list):
-        if len(oppo_index_list) == len(mine_index_list) == 0:
+    def random_distribute_damage(self, damage, oppo_index_list, my_index_list):
+        if len(oppo_index_list) == len(my_index_list) == 0:
             return
 
-        random_x = random.randint(0, len(oppo_index_list) + len(mine_index_list) - 1)
+        random_x = random.randint(0, len(oppo_index_list) + len(my_index_list) - 1)
 
         if random_x < len(oppo_index_list):
             oppo_index = oppo_index_list[random_x]
@@ -261,10 +258,10 @@ class StrategyState:
             if minion.get_damaged(damage):
                 self.oppo_minions.pop(oppo_index)
         else:
-            mine_index = mine_index_list[random_x - len(oppo_index_list)]
-            minion = self.my_minions[mine_index]
+            my_index = my_index_list[random_x - len(oppo_index_list)]
+            minion = self.my_minions[my_index]
             if minion.get_damaged(damage):
-                self.my_minions.pop(mine_index)
+                self.my_minions.pop(my_index)
 
     def get_best_attack_target(self):
         could_attack_oppos = []
@@ -283,9 +280,10 @@ class StrategyState:
         max_oppo_index = -1
 
         for my_index in range(len(self.my_minions)):
-            if self.available[my_index] == 0:
-                continue
             my_minion = self.my_minions[my_index]
+
+            if not my_minion.can_attack:
+                continue
 
             for oppo_index in could_attack_oppos:
                 oppo_minion = self.oppo_minions[oppo_index]
@@ -302,12 +300,12 @@ class StrategyState:
                 # print(my_index, oppo_index, tmp_delta_h_val)
             # 如果没有墙,自己又能打脸,应该试一试
             if not has_taunt:
-                if self.available[my_index] == 2 and \
-                        my_minion.attack * 0.75 > max_delta_h_val:
-                    # *0.75 因为场面更重要
-                    max_delta_h_val = my_minion.attack * 0.75
-                    max_my_index = my_index
-                    max_oppo_index = -1
+                if my_minion.can_beat_face:
+                    face_delta_h = self.oppo_hero.delta_h_after_damage(my_minion.attack)
+                    if face_delta_h > max_delta_h_val:
+                        max_delta_h_val = face_delta_h
+                        max_my_index = my_index
+                        max_oppo_index = -1
 
         return max_my_index, max_oppo_index
 
@@ -317,26 +315,32 @@ class StrategyState:
             tmp.oppo_minions[i] = copy.deepcopy(self.oppo_minions[i])
         for i in range(self.my_minion_num):
             tmp.my_minions[i] = copy.deepcopy(self.my_minions[i])
+        for i in range(self.my_hand_card_num):
+            tmp.my_hand_cards[i] = copy.deepcopy(self.my_hand_cards[i])
         return tmp
 
-    def best_h_and_arg_within_mana(self, mana_limit, full_use=False):
+    def best_h_and_arg_within_mana(self, full_use=False):
         best_delta_h = 0
         best_index = 0
         best_args = []
 
         for card_index in range(self.my_hand_card_num):
-            card_name = self.my_hand_cards[card_index]
+            hand_card = self.my_hand_cards[card_index]
 
-            if card_name != NAME_THE_COIN and card_name in NAME2CARD:
-                card = NAME2CARD[card_name]
+            # TODO: DELETE IT !
+            if hand_card.name not in NAME2CARD:
+                print(f"!!!!!!!!!! {hand_card.name}")
+            if hand_card.name != NAME_THE_COIN \
+                    and hand_card.name in NAME2CARD:
+                card = NAME2CARD[hand_card.name]
 
-                if full_use and card.cost != mana_limit:
-                    continue
-                if card.cost > mana_limit:
+                if full_use and card.cost != self.my_last_mana \
+                        or card.cost > self.my_last_mana:
                     continue
 
                 delta_h, *args = card.best_h_and_arg(self)
-                debug_print(f"card[{card_index}]({card_name}) delta_h: {delta_h}, *args: {args}")
+                debug_print(f"card[{card_index}]({hand_card.name}) "
+                            f"delta_h: {delta_h}, *args: {args}")
 
                 if delta_h > best_delta_h:
                     best_delta_h = delta_h
@@ -345,14 +349,21 @@ class StrategyState:
 
         return best_delta_h, best_index, best_args
 
-    def test_use_coin(self, curr_mana):
-        if NAME_THE_COIN not in self.my_hand_cards:
-            return False
-        if curr_mana == 10:
+    def test_use_coin(self):
+        flag = False
+        for hand_card in self.my_hand_cards:
+            if hand_card.name == NAME_THE_COIN:
+                flag = True
+                break
+        if not flag:
+            debug_print("没有硬币")
+            return flag
+
+        if self.my_last_mana == 10:
             res = False
         else:
-            res = self.best_h_and_arg_within_mana(curr_mana + 1, full_use=True)[0] \
-                  - self.best_h_and_arg_within_mana(curr_mana)[0] > 3
+            res = self.best_h_and_arg_within_mana(full_use=True)[0] \
+                  - self.best_h_and_arg_within_mana()[0] >= 2
         if res:
             debug_print("需要用硬币")
         else:
@@ -368,7 +379,9 @@ class StrategyState:
 
     # 会返回这张卡的cost
     def use_card(self, index, *args):
-        card_name = self.my_hand_cards[index]
+        hand_card = self.my_hand_cards[index]
+        card_name = hand_card.name
+        print(card_name)
         card = NAME2CARD[card_name]
         debug_print(f"Will use card[{index}] {card.name}")
         card.use_with_arg(self, index, *args)
@@ -391,3 +404,13 @@ if __name__ == "__main__":
 
             with open("game_state_snapshot.txt", "w") as f:
                 f.write(str(state))
+
+            mine_index, oppo_index = strategy_state.get_best_attack_target()
+            debug_print(f"我的决策是: mine_index: {mine_index}, oppo_index: {oppo_index}")
+
+            if mine_index != -1:
+                if oppo_index == -1:
+                    click.minion_beat_hero(mine_index, strategy_state.my_minion_num)
+                else:
+                    click.minion_beat_minion(mine_index, strategy_state.my_minion_num,
+                                             oppo_index, strategy_state.oppo_minion_num)

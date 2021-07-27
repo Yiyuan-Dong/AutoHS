@@ -65,6 +65,10 @@ f"""game_entity_id: {self.game_entity_id}
         return entity.query_tag("CONTROLLER") == self.my_player_id
 
     @property
+    def is_end(self):
+        return self.game_entity.query_tag("STATE") == "COMPLETE"
+
+    @property
     def current_update_entity(self):
         return self.entity_dict[self.current_update_id]
 
@@ -90,7 +94,7 @@ f"""game_entity_id: {self.game_entity_id}
 
     @property
     def is_my_turn(self):
-        return self.my_entity.query_tag("CURRENT_PLAYER") == 1
+        return self.my_entity.query_tag("CURRENT_PLAYER") == "1"
 
     @property
     def my_last_mana(self):
@@ -120,7 +124,7 @@ class Entity:
         self.tag_dict[tag] = val
 
     def query_tag(self, tag):
-        return self.tag_dict.get(tag, 0)
+        return self.tag_dict.get(tag, "0")
 
 
 class GameEntity(Entity):
@@ -235,9 +239,9 @@ def update_state(state, line_info_container):
 if __name__ == "__main__":
     log_iter = log_iter_func("./Power.log")
     log_container = next(log_iter)
-    state = GameState()
+    temp_state = GameState()
 
     for x in log_container.message_list:
         # print(x)
-        update_state(state, x)
-    print(state)
+        update_state(temp_state, x)
+    print(temp_state)

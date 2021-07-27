@@ -211,10 +211,11 @@ class Apotheosis(SpellCard):
         best_mine_index = -1
 
         for i in range(state.my_minion_num):
-            tmp = self.bias + 5
             minion = state.my_minions[i]
-            if state.available[i] > 0:
-                tmp += minion.attack / 2 + minion.health / 4
+            tmp = self.bias + 3 + (minion.health + 2) / 4 + \
+                  (minion.attack + 1) / 2
+            if minion.can_attack > 0:
+                tmp += minion.attack / 4
             if tmp > best_delta_h:
                 best_delta_h = tmp
                 best_mine_index = i

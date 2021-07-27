@@ -9,12 +9,15 @@ import cv2
 from constants.constants import *
 from strategy import StrategyState
 from print_info import *
+from log_op import *
+from game_state import *
 import keyboard
 
 FSM_state = ""
 turn_num = 0
 time_snap = 0.0
 game_count = 1
+LOG_ITER = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
 
 
 def print_out():
@@ -25,8 +28,6 @@ def print_out():
 
     if IF_PRINTOUT:
         sys_print("Entering State " + str(FSM_state))
-        if FSM_state == FSM_MY_TURN:
-            sys_print("    It is turn " + str(turn_num))
 
     if FSM_state == FSM_LEAVE_HS:
         warning_print("Wow, What happened?")
@@ -70,81 +71,157 @@ def ChoosingCardAction():
     # TODO: 选牌时要不要做点什么
     click.commit_choose_card()
     time.sleep(STATE_CHECK_INTERVAL)
-    return FSM_NOT_MY_TURN
+    return FSM_BATTLING
 
 
-def NotMyTurnAction():
+# def NotMyTurnAction():
+#     print_out()
+#     global FSM_state
+#     while 1:
+#         click.cancel_click()
+#         click.test_click()
+#         time.sleep(STATE_CHECK_INTERVAL)
+#         FSM_state = get_screen.get_state()
+#         if FSM_state == FSM_NOT_MY_TURN:
+#             continue
+#         else:
+#             return FSM_state
+#
+#
+# def MyTurnAction():
+#     global turn_num
+#     turn_num += 1
+#     print_out()
+#     time.sleep(FRONT_ROPING_TIME)
+#     if_emoj = random.random()
+#     if if_emoj < EMOJ_RATE:
+#         click.emoj()
+#
+#     mana_last = turn_num
+#     # mana_last = 10
+#     while True:
+#         state = StrategyState()
+#         if state.test_use_coin(mana_last):
+#             state.use_coin()
+#             continue
+#
+#         delta_h, index, args = state.best_h_and_arg_within_mana(mana_last)
+#         if delta_h == 0:
+#             debug_print("不需要出牌")
+#             break
+#         mana_last -= state.use_card(index, *args)
+#
+#         if mana_last < state.min_cost:
+#             break
+#
+#     if mana_last >= 2:
+#         click.use_skill_point()
+#
+#     last_index = -1
+#     for i in range(7):
+#         state.update_minions()
+#         state.debug_print_battlefield()
+#         mine_index, oppo_index = state.get_best_attack_target()
+#         debug_print(f"我的决策是: mine_index: {mine_index}, oppo_index: {oppo_index}")
+#
+#         if mine_index == -1 or last_index == mine_index:
+#             break
+#         if oppo_index == -1:
+#             click.minion_beat_hero(mine_index, state.my_minion_num)
+#         else:
+#             click.minion_beat_minion(mine_index, state.my_minion_num, oppo_index, state.oppo_minion_num)
+#         last_index = mine_index
+#
+#         time.sleep(1.5)
+#
+#     time.sleep(BACK_ROPING_TIME)
+#     click.end_turn()
+#     time.sleep(STATE_CHECK_INTERVAL)
+#
+#     return FSM_NOT_MY_TURN
+
+
+def Battling():
     print_out()
-    global FSM_state
-    while 1:
-        click.cancel_click()
-        click.test_click()
-        time.sleep(STATE_CHECK_INTERVAL)
-        FSM_state = get_screen.get_state()
-        if FSM_state == FSM_NOT_MY_TURN:
-            continue
-        else:
-            return FSM_state
+    game_state = GameState()
+    not_mine_count = 0
+    action_in_one_turn = 0
 
-
-def MyTurnAction():
-    global turn_num
-    turn_num += 1
-    print_out()
-    time.sleep(FRONT_ROPING_TIME)
-    if_emoj = random.random()
-    if if_emoj < EMOJ_RATE:
-        click.emoj()
-
-    mana_last = turn_num
-    # mana_last = 10
     while True:
-        state = StrategyState()
-        if state.test_use_coin(mana_last):
-            state.use_coin()
+        log_container = next(LOG_ITER)
+        if log_container.log_type == LOG_CONTAINER_ERROR:
+            return FSM_ERROR
+
+        for x in log_container.message_list:
+            update_state(game_state, x)
+
+        if game_state.is_end:
+            return FSM_QUITTING_BATTLE
+
+        if not game_state.is_my_turn:
+            not_mine_count += 1
+            action_in_one_turn = 0
+            if not_mine_count == 1000:
+                return FSM_ERROR
+
+            # time.sleep(0.5)
             continue
 
-        delta_h, index, args = state.best_h_and_arg_within_mana(mana_last)
+        not_mine_count = 0
+        action_in_one_turn += 1
+        if action_in_one_turn == 15:
+            click.end_turn()
+            time.sleep(STATE_CHECK_INTERVAL)
+        # time.sleep(0.5)
+
+        strategy_state = StrategyState(game_state)
+
+        if DEBUG_PRINT:
+            with open("game_state_snapshot.txt", "w") as f:
+                f.write(str(game_state))
+
+        if strategy_state.test_use_coin():
+            strategy_state.use_coin()
+            continue
+
+        delta_h, index, args = strategy_state.best_h_and_arg_within_mana()
         if delta_h == 0:
             debug_print("不需要出牌")
-            break
-        mana_last -= state.use_card(index, *args)
+        else:
+            strategy_state.use_card(index, *args)
+            continue
 
-        if mana_last < state.min_cost:
-            break
+        if strategy_state.my_last_mana >= 2 \
+                and strategy_state.can_use_power:
+            click.use_skill_point()
+            continue
 
-    if mana_last >= 2:
-        click.use_skill_point()
-
-    last_index = -1
-    for i in range(7):
-        state.update_minions()
-        state.debug_print_battlefield()
-        mine_index, oppo_index = state.get_best_attack_target()
+        mine_index, oppo_index = strategy_state.get_best_attack_target()
         debug_print(f"我的决策是: mine_index: {mine_index}, oppo_index: {oppo_index}")
 
-        if mine_index == -1 or last_index == mine_index:
-            break
-        if oppo_index == -1:
-            click.minion_beat_hero(mine_index, state.my_minion_num)
+        if mine_index != -1:
+            if oppo_index == -1:
+                click.minion_beat_hero(mine_index, strategy_state.my_minion_num)
+            else:
+                click.minion_beat_minion(mine_index, strategy_state.my_minion_num,
+                                         oppo_index, strategy_state.oppo_minion_num)
         else:
-            click.minion_beat_minion(mine_index, state.my_minion_num, oppo_index, state.oppo_minion_num)
-        last_index = mine_index
-
-        time.sleep(1.5)
-
-    time.sleep(BACK_ROPING_TIME)
-    click.end_turn()
-    time.sleep(STATE_CHECK_INTERVAL)
-
-    return FSM_NOT_MY_TURN
+            click.end_turn()
+            time.sleep(STATE_CHECK_INTERVAL)
 
 
-# def UncertainAction():
-#     log_out()
-#     time.sleep(STATE_CHECK_INTERVAL)
-#     click.flush_uncertain()
-#     return ""
+def QuittingBattle():
+    count = 0
+    while get_screen.get_state() != FSM_CHOOSING_HERO:
+        click.cancel_click()
+        click.test_click()
+        count += 1
+        if count == 50:
+            return HandleErrorAction()
+        time.sleep(STATE_CHECK_INTERVAL)
+
+    return FSM_CHOOSING_HERO
+
 
 def LeaveHSAction():
     print_out()
@@ -166,6 +243,30 @@ def MainMenuAction():
     return FSM_state
 
 
+def HandleErrorAction():
+    print_out()
+
+    if not get_screen.test_hs_available():
+        return LeaveHSAction()
+    else:
+        while get_screen.get_state() != FSM_LEAVE_HS:
+            click.click_setting()
+            time.sleep(0.5)
+            click.left_click(960, 380)
+
+            time.sleep(10)
+            for i in range(3):
+                click.test_click()
+                click.cancel_click()
+
+            click.click_setting()
+            time.sleep(0.5)
+            click.left_click(960, 470)
+            time.sleep(6)
+
+        return FSM_LEAVE_HS
+
+
 def show_time(time_last):
     info_print("Now the time is " +
                time.strftime("%m-%d %H:%M:%S", time.localtime()))
@@ -184,8 +285,9 @@ def FSM_dispatch(next_state):
         FSM_CHOOSING_HERO: ChoosingHeroAction,
         FSM_MATCHING: MatchingAction,
         FSM_CHOOSING_CARD: ChoosingCardAction,
-        FSM_NOT_MY_TURN: NotMyTurnAction,
-        FSM_MY_TURN: MyTurnAction,
+        FSM_BATTLING: Battling,
+        FSM_ERROR: HandleErrorAction,
+        FSM_QUITTING_BATTLE: QuittingBattle,
     }
 
     if next_state not in dispatch_dict:
@@ -211,6 +313,4 @@ def AutoHS_automata():
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", sys.exit)
 
-    while True:
-        FSM_state = get_screen.get_state()
-        FSM_dispatch(FSM_state)
+    HandleErrorAction()

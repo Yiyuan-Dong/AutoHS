@@ -23,6 +23,10 @@ step = STEP
 start = START
 
 
+def test_hs_available():
+    return win32gui.FindWindow(None, "炉石传说") != 0
+
+
 def max_diff(img, pixel_list):
     ans = 0
     for pair in pixel_list:
@@ -99,11 +103,8 @@ def get_state():
     # 4.对手回合: 像素值为(70+, 90+, 100~)
     # 所以通过蓝像素与红像素的差值判断
 
-    diff = max_diff(im_opencv, [(510, 1560), (510, 1550)])
-    if diff < 50:
-        return FSM_action.FSM_NOT_MY_TURN
-    else:
-        return FSM_action.FSM_MY_TURN
+    # diff = max_diff(im_opencv, [(510, 1560), (510, 1550)])
+    return FSM_BATTLING
 
 
 def test_card_with_x(img, x, step, show_img=False):
@@ -435,3 +436,7 @@ def test_available(img, mine_num):
             res.append(0)
 
     return res
+
+
+if __name__ == "__main__":
+    print(get_state())

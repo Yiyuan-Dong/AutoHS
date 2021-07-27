@@ -38,15 +38,40 @@ def test_click():
     left_click(50, 400)
 
 
+HAND_CARD_X = [
+    [],  # 0
+    [885],  # 1
+    [820, 980],  # 2
+    [750, 890, 1040],  # 3
+    [690, 820, 970, 1130],  # 4
+    [680, 780, 890, 1010, 1130],  # 5
+    [660, 750, 840, 930, 1020, 1110],  # 6
+    [660, 733, 810, 885, 965, 1040, 1120],  # 7
+    [650, 720, 785, 855, 925, 995, 1060, 1130],  # 8
+    [650, 710, 765, 825, 880, 950, 1010, 1070, 1140],  # 9
+    [647, 700, 750, 800, 860, 910, 970, 1020, 1070, 1120]  # 10
+]
+
+
 def choose_card(card_index, card_num):
-    x = START[card_num] + 65 + STEP[card_num] * card_index
-    y = 980
+    if card_index >= card_num or card_num > 10 \
+            or card_num <= 0 or card_index < 0:
+        return
+
+    # x = START[card_num] + 65 + STEP[card_num] * card_index
+    x = HAND_CARD_X[card_num][card_index]
+
+    y = 1000
     left_click(x, y)
     time.sleep(OPERATE_INTERVAL)
 
 
 def click_middle():
     left_click(960, 500)
+
+
+def click_setting():
+    left_click(1880, 1050)
 
 
 def choose_and_use_spell(card_index, card_num):
@@ -157,7 +182,7 @@ def enter_HS():
         error_print("未找到应用战网")
         sys.exit()
 
-    left_click(180, 910)
+    # left_click(180, 910)
     # 把战网客户端拉回前台以便点击
     win32gui.SetForegroundWindow(hwnd)
     win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
@@ -168,4 +193,7 @@ def enter_HS():
 
 
 if __name__ == "__main__":
-    enter_HS()
+    n = 1
+    for i in range(n):
+        choose_card(i, n)
+        cancel_click()
