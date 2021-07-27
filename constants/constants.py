@@ -1,3 +1,5 @@
+# 你的Power.log的路径,应该在你的炉石安装目录下的`Logs/`文件夹中,这里放的是我的路径
+# ** 一定要修改成自己电脑上的路径 **
 HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
 
 # 关于信息打印的设置

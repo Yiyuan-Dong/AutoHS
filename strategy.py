@@ -1,13 +1,9 @@
-import copy
-import time
 import click
-import get_screen
 import keyboard
 import sys
 import random
 from name2card import NAME2CARD
 from constants.card_name import *
-from print_info import *
 from game_state import *
 from log_op import *
 from strategy_entity import *
@@ -118,6 +114,7 @@ class StrategyState:
         self.my_minions.sort(key=get_zone_pos)
         self.oppo_minions.sort(key=get_zone_pos)
         self.my_hand_cards.sort(key=get_zone_pos)
+
         self.debug_print_out()
 
     # def update_minions(self):
@@ -363,7 +360,7 @@ class StrategyState:
             res = False
         else:
             res = self.best_h_and_arg_within_mana(full_use=True)[0] \
-                  - self.best_h_and_arg_within_mana()[0] >= 2
+                  - self.best_h_and_arg_within_mana()[0] >= 1
         if res:
             debug_print("需要用硬币")
         else:
@@ -381,7 +378,6 @@ class StrategyState:
     def use_card(self, index, *args):
         hand_card = self.my_hand_cards[index]
         card_name = hand_card.name
-        print(card_name)
         card = NAME2CARD[card_name]
         debug_print(f"Will use card[{index}] {card.name}")
         card.use_with_arg(self, index, *args)
