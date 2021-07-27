@@ -1,8 +1,9 @@
-import add_parent_dir
-from pynput.mouse import Controller
-import get_screen
 import time
+
 import cv2
+from pynput.mouse import Controller
+
+import get_screen
 from constants.constants import *
 from constants.hash_vals import *
 

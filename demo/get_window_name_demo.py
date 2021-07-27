@@ -1,7 +1,4 @@
-import win32api
 import win32gui
-import win32con
-import time
 
 hwnd_title = {}
 NAME = "战网"

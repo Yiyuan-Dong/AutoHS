@@ -1,4 +1,3 @@
-import add_parent_dir
 import get_screen
 
 if __name__ == "__main__":

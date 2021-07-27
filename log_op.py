@@ -1,7 +1,8 @@
+import copy
 import os
 import re
 import time
-import copy
+
 from constants.constants import *
 
 # "D 04:23:18.0000001 GameState.DebugPrintPower() -     GameEntity EntityID=1"

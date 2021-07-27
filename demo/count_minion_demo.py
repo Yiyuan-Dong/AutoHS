@@ -1,6 +1,6 @@
-import add_parent_dir
-import get_screen
 import cv2
+
+import get_screen
 
 if __name__ == "__main__":
     img = get_screen.catch_screen()

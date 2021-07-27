@@ -1,5 +1,5 @@
-from log_op import *
 from json_op import *
+from log_op import *
 
 JSON_DICT = read_json()
 

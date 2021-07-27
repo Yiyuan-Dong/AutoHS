@@ -1,8 +1,9 @@
-from pynput.mouse import Button, Controller
 import time
-import add_parent_dir
+
+from pynput.mouse import Button, Controller
 
 MOUSE_SLEEP_INTERVAL = 3  # 3 seconds
+
 
 def main():
     mouse = Controller()
@@ -38,4 +39,4 @@ def main():
 
 
 if __name__ == "__main__":
-     main()
+    main()

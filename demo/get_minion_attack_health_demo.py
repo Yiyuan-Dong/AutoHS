@@ -1,13 +1,10 @@
-import sys
-import add_parent_dir
-import get_screen
-from constants.constants import *
-from constants.hash_vals import *
 import cv2
+
+import get_screen
+from constants.hash_vals import *
 
 steps_oppos = [0, 140, 140, 139, 139, 139, 139, 139]
 steps_mine = [0, 140, 140, 140, 140, 140, 140, 140]
-
 
 if __name__ == "__main__":
     img = get_screen.catch_screen()

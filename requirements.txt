@@ -1,0 +1,8 @@
+keyboard
+opencv-python
+imagehash
+pynput
+pillow
+sklearn
+numpy
+pywin32

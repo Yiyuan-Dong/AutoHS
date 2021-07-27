@@ -1,10 +1,12 @@
-import get_screen
-import click
-import time
 import random
-import FSM_action
-import keyboard
 import sys
+import time
+
+import keyboard
+
+import FSM_action
+import click
+import get_screen
 
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", sys.exit)

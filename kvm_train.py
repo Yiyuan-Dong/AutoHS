@@ -1,11 +1,12 @@
 # 效果完全不行, 放在这里当失败案例
 
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.datasets import mnist
-from sklearn import svm
-import time
 import pickle
+import time
+
 import numpy as np
+from sklearn import svm
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.optimizers import Adam
 
 if __name__ == "__main__":
     ((trainData, trainLabels), (testData, testLabels)) = mnist.load_data()

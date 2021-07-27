@@ -1,16 +1,14 @@
-import copy
-import time
-from minion import Minion
-import click
-import get_screen
-import keyboard
-import sys
 import random
-from name2card import NAME2CARD
+import sys
+
+import keyboard
+
+import get_screen
 from constants.card_name import *
-from print_info import *
 from game_state import *
 from log_op import *
+from minion import Minion
+from name2card import NAME2CARD
 
 
 class StrategyState:

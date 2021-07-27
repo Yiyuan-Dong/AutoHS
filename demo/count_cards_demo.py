@@ -1,11 +1,7 @@
-import cv2
-from pynput.mouse import Button, Controller
-import get_screen
-import time
-import numpy
-import imagehash
-from PIL import Image
 import sys
+
+import get_screen
+
 if __name__ == "__main__":
     print(get_screen.count_my_cards())
     sys.exit(0)

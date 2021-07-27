@@ -1,12 +1,12 @@
-import win32gui
-import win32api
-import win32con
-import time
-from pynput.mouse import Button, Controller
 import random
-from constants.constants import *
-from print_info import *
 import sys
+import time
+
+import win32con
+import win32gui
+from pynput.mouse import Button, Controller
+
+from print_info import *
 
 
 def choose_my_minion(mine_index, mine_num):

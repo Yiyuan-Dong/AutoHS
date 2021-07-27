@@ -2,9 +2,7 @@ import random
 import time
 
 import click
-from constants.constants import *
 from print_info import *
-from constants.card_name import *
 
 
 class Card:

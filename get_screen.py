@@ -2,22 +2,22 @@
 主体代码引自 Demon_Hunter 的CSDN博客, 博客URL:https://blog.csdn.net/zhuisui_woxin/article/details/84345036
 """
 
+import time
+
+import cv2
+import imagehash
+import numpy
+import win32con
 import win32gui
 import win32ui
-import win32con
-import win32api
-import cv2
-import time
-import FSM_action
-import time
-import numpy
-import imagehash
 from PIL import Image
-from pynput.mouse import Button, Controller
-from print_info import *
+from pynput.mouse import Controller
+
+import FSM_action
 import click
 from constants.constants import *
 from constants.hash_vals import *
+from print_info import *
 
 step = STEP
 start = START

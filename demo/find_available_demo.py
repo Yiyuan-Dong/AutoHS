@@ -1,10 +1,4 @@
-import sys
-import add_parent_dir
 import get_screen
-from constants.constants import *
-from constants.hash_vals import *
-import cv2
-
 
 # 不能动:0, 突袭:1, 冲锋:2
 if __name__ == "__main__":
