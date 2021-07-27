@@ -27,13 +27,6 @@ class StrategyState:
         self.my_last_mana = int(game_state.my_entity.query_tag("RESOURCES")) - \
                             int(game_state.my_entity.query_tag("RESOURCES_USED"))
 
-        # if game_state is None:
-        #     # 原来的cv的部分
-        #     self.update_minions()
-        #
-        #     tmp_card_num = get_screen.count_my_cards()
-        #     self.cards = get_screen.identify_cards(tmp_card_num)
-        # else:
         for entity in game_state.entity_dict.values():
             if entity.query_tag("ZONE") == "PLAY" \
                     and entity.query_tag("CARDTYPE") == "MINION":
@@ -45,11 +38,15 @@ class StrategyState:
                     divine_shield=int(entity.query_tag("DIVINE_SHIELD")),
                     stealth=int(entity.query_tag("STEALTH")),
                     poisonous=int(entity.query_tag("POISONOUS")),
+                    freeze=int(entity.query_tag("FREEZE")),
                     spell_power=int(entity.query_tag("SPELLPOWER")),
-                    exhausted=int(entity.tag_dict.get("EXHAUSTED", 1)),
+                    not_targeted_by_spell=int(entity.query_tag("CANT_BE_TARGETED_BY_SPELLS")),
+                    not_targeted_by_power=int(entity.query_tag("CANT_BE_TARGETED_BY_HERO_POWERS")),
                     charge=int(entity.query_tag("CHARGE")),
                     rush=int(entity.query_tag("RUSH")),
+                    frozen=int(entity.query_tag("FROZEN")),
                     attackable_by_rush=int(entity.query_tag("ATTACKABLE_BY_RUSH")),
+                    exhausted=int(entity.tag_dict.get("EXHAUSTED", 1)),
                     zone_pos=int(entity.query_tag("ZONE_POSITION")),
                     name=entity.name
                 )
@@ -117,58 +114,26 @@ class StrategyState:
 
         self.debug_print_out()
 
-    # def update_minions(self):
-    #     img = get_screen.catch_screen()
-    #     tmp_oppo_num, tmp_mine_num = get_screen.count_minions(img)
-    #     oppo_ah, mine_ah = get_screen.get_attack_health(img, tmp_oppo_num, tmp_mine_num)
-    #     oppo_t, mine_t = get_screen.test_taunt(img, tmp_oppo_num, tmp_mine_num)
-    #
-    #     oppo_ds, mine_ds = get_screen.test_divine_shield()
-    #     if len(oppo_ds) != tmp_oppo_num:
-    #         oppo_ds = [False for i in range(tmp_oppo_num)]
-    #     if len(mine_ds) != tmp_mine_num:
-    #         mine_ds = [False for i in range(tmp_mine_num)]
-    #
-    #     self.oppo_minions = []
-    #     for i in range(tmp_oppo_num):
-    #         self.oppo_minions.append(
-    #             Minion(
-    #                 oppo_ah[i][0],
-    #                 oppo_ah[i][1],
-    #                 oppo_t[i],
-    #                 oppo_ds[i]
-    #             )
-    #         )
-    #
-    #     self.my_minions = []
-    #     for i in range(tmp_mine_num):
-    #         self.my_minions.append(
-    #             Minion(
-    #                 mine_ah[i][0],
-    #                 mine_ah[i][1],
-    #                 mine_t[i],
-    #                 mine_ds[i]
-    #             )
-    #         )
-
     def debug_print_battlefield(self):
         if not DEBUG_PRINT:
             return
 
         debug_print("对手英雄:")
         debug_print("    " + str(self.oppo_hero))
+        debug_print(f"技能: {self.oppo_hero_power}")
         if self.oppo_weapon:
             debug_print("头上有把武器:")
             debug_print("    " + str(self.oppo_weapon))
         debug_print(f"对手有{self.oppo_minion_num}个随从:")
         for minion in self.oppo_minions:
             debug_print("    " + str(minion))
-        debug_print(f"h_val: {self.oppo_heuristic_value}")
+        debug_print(f"卡费启发值: {self.oppo_heuristic_value}")
 
         debug_print()
 
         debug_print("我的英雄:")
         debug_print("    " + str(self.my_hero))
+        debug_print(f"技能: {self.my_hero_power}")
         if self.my_weapon:
             debug_print("头上有把武器:")
             debug_print("    " + str(self.my_weapon))
@@ -177,7 +142,7 @@ class StrategyState:
             minion = self.my_minions[i]
             tmp_str = "    " + str(minion)
             debug_print(tmp_str)
-        debug_print(f"h_val: {self.my_heuristic_value}")
+        debug_print(f"卡费启发值: {self.my_heuristic_value}")
 
     def debug_print_out(self):
         if not DEBUG_PRINT:
@@ -279,7 +244,7 @@ class StrategyState:
         for my_index in range(len(self.my_minions)):
             my_minion = self.my_minions[my_index]
 
-            if not my_minion.can_attack:
+            if not my_minion.can_attack_minion:
                 continue
 
             for oppo_index in could_attack_oppos:

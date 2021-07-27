@@ -214,7 +214,7 @@ class Apotheosis(SpellCard):
             minion = state.my_minions[i]
             tmp = self.bias + 3 + (minion.health + 2) / 4 + \
                   (minion.attack + 1) / 2
-            if minion.can_attack > 0:
+            if minion.can_attack_minion:
                 tmp += minion.attack / 4
             if tmp > best_delta_h:
                 best_delta_h = tmp

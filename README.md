@@ -7,7 +7,10 @@
 
 ### 如何运行
 
-1. 安装所需依赖: `pip install -r requirements.txt`
+1. 安装所需依赖:
+```
+pip install -r requirements.txt
+```
 
 2. 在 `constants/constants` 里有一些参数可以设置，其中名为
  `HEARTHSTONE_POWER_LOG_PATH` 的变量必须修改成你的电脑上的炉石传说日志
@@ -18,7 +21,7 @@
 > 
 > `Power.log` 会在进入炉石后第一次对战开始时创建，在退出炉石后自动删除。
 > 
-> 关于炉石Log的更多信息可以查看这个
+> 关于炉石log的更多信息可以查看这个
 > [Reddit帖子](https://www.reddit.com/r/hearthstone/comments/268fkk/simple_hearthstone_logging_see_your_complete_play/) 。
 
 3. 可以先跑一跑 `demo/` 下的一些文件
@@ -78,7 +81,8 @@ AAECAa0GBsi+A/PuA6bvA6iKBPCfBKOgBAzXvgPcvgPmvgPLzQP63wP44wOS5AOY6gOb6wOEnwSFnwTB
 - `demo/catch_screen_demo.py` : 运行此文件会获取炉石传说进程的整个截屏
 (无论是在前台还是后台)，并画上一些坐标基准线，方便判断想实现的操作的坐标值
 - `demo/game_state_snapshot_demo.py` : 在控制台显示目前的炉石战局情况，包括显示手牌情况，英雄情况，随从情况等；
-  还会在当前目录下创建一个名为`game_state_sanpshot.txt`的文件，记录log分析情况。需要在 `Power.log` 存在，即进入对战模式后调用。
+  还会在`demp/`目录下创建一个名为`game_state_sanpshot.txt`的文件，记录log分析情况。
+  需要在 `Power.log` 存在，即进入对战模式后调用。
 - `demo/get_window_name.py` : 显示当前所有窗口的名称和编号，可以用来看炉石传说叫什么名字……
 - `demo/mouse_control_demo.py` : 一个样例程序展现了如何控制鼠标
 

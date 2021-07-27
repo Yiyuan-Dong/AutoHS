@@ -3,11 +3,10 @@ import copy
 
 
 class Minion:
-    def __init__(self, attack, max_health, damage=0, taunt=0,
-                 divine_shield=0, stealth=0, poisonous=0,
-                 life_steal=0, spell_power=0, charge=0,
-                 rush=0, attackable_by_rush=0, exhausted=1,
-                 zone_pos=0, name=""):
+    def __init__(self, attack, max_health, damage=0, taunt=0, divine_shield=0,
+                 stealth=0, poisonous=0, life_steal=0, spell_power=0, freeze=0,
+                 not_targeted_by_spell=0, not_targeted_by_power=0, charge=0, rush=0,
+                 attackable_by_rush=0, frozen=0, exhausted=1, zone_pos=0, name=""):
         self.attack = attack
         self.max_health = max_health
         self.damage = damage
@@ -17,9 +16,13 @@ class Minion:
         self.poisonous = poisonous
         self.life_steal = life_steal
         self.spell_power = spell_power
+        self.freeze = freeze
+        self.not_targeted_by_spell = not_targeted_by_spell
+        self.not_targeted_by_power = not_targeted_by_power
         self.charge = charge
         self.rush = rush
         self.attackable_by_rush = attackable_by_rush
+        self.frozen = frozen
         self.exhausted = exhausted
         self.zone_pos = zone_pos
         self.name = name
@@ -30,23 +33,26 @@ class Minion:
 
     @property
     def can_beat_face(self):
-        return self.exhausted == 0
+        return self.exhausted == 0 and not self.frozen
 
     @property
-    def can_attack(self):
-        return self.exhausted == 0 or self.attackable_by_rush
+    def can_attack_minion(self):
+        return not self.frozen and \
+               self.exhausted == 0 or self.attackable_by_rush
 
     def __str__(self):
         temp = f"[{self.zone_pos - 1}]{self.name} " \
                f"{self.attack}-{self.health}({self.max_health})"
-        if self.exhausted:
-            if self.rush:
-                temp += " [能突袭]"
-            else:
-                temp += " [不能动]"
-        else:
-            temp += " [能动]"
 
+        if self.can_beat_face:
+            temp += " [能打脸]"
+        elif self.can_attack_minion:
+            temp += " [能打怪]"
+        else:
+            temp += " [不能动]"
+
+        if self.frozen:
+            temp += " 被冻结"
         if self.taunt:
             temp += " 嘲讽"
         if self.divine_shield:
@@ -61,6 +67,10 @@ class Minion:
             temp += " 剧毒"
         if self.life_steal:
             temp += " 吸血"
+        if self.freeze:
+            temp += "冻结敌人"
+        if self.not_targeted_by_spell and self.not_targeted_by_power:
+            temp += " 魔免"
         if self.spell_power:
             temp += f" 法术伤害+{self.spell_power}"
 
