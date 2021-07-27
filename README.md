@@ -3,6 +3,8 @@
 
 欢迎任何批评建议~
 
+原来的脚本是通过计算机视觉手段（分析图片哈希相似度等）来分析局势的，但现在这个方案已经被放弃了（非常不靠谱）。可以在`cv`分支中看到cv相关的代码。
+
 ### 如何运行
 
 1. 安装所需依赖: `pip install -r requirements.txt`
@@ -75,8 +77,8 @@ AAECAa0GBsi+A/PuA6bvA6iKBPCfBKOgBAzXvgPcvgPmvgPLzQP63wP44wOS5AOY6gOb6wOEnwSFnwTB
 ### 文件说明
 - `demo/catch_screen_demo.py` : 运行此文件会获取炉石传说进程的整个截屏
 (无论是在前台还是后台)，并画上一些坐标基准线，方便判断想实现的操作的坐标值
-- `demo/game_state_snapshot_demo.py` : 显示目前的炉石战局情况，包括显示手牌情况，英雄情况，随从情况等。
-  需要在 `Power.log` 存在，即进入对战模式后调用。
+- `demo/game_state_snapshot_demo.py` : 在控制台显示目前的炉石战局情况，包括显示手牌情况，英雄情况，随从情况等；
+  还会在当前目录下创建一个名为`game_state_sanpshot.txt`的文件，记录log分析情况。需要在 `Power.log` 存在，即进入对战模式后调用。
 - `demo/get_window_name.py` : 显示当前所有窗口的名称和编号，可以用来看炉石传说叫什么名字……
 - `demo/mouse_control_demo.py` : 一个样例程序展现了如何控制鼠标
 
