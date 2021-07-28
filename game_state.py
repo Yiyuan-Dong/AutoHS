@@ -167,6 +167,7 @@ class CardEntity(Entity):
                 taunt=int(self.query_tag("TAUNT")),
                 divine_shield=int(self.query_tag("DIVINE_SHIELD")),
                 stealth=int(self.query_tag("STEALTH")),
+                windfury=int(self.query_tag("WINDFURY")),
                 poisonous=int(self.query_tag("POISONOUS")),
                 freeze=int(self.query_tag("FREEZE")),
                 spell_power=int(self.query_tag("SPELLPOWER")),
@@ -196,6 +197,7 @@ class CardEntity(Entity):
                 attack=int(self.query_tag("ATK")),
                 durability=int(self.query_tag("DURABILITY")),
                 damage=int(self.query_tag("DAMAGE")),
+                windfury=int(self.query_tag("WINDFURY")),
             )
         elif self.cardtype == "HERO":
             return Hero(

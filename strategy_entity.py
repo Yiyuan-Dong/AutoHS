@@ -25,7 +25,7 @@ class Minion(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
                  current_cost, overload,
                  attack, max_health, damage=0,
-                 taunt=0, divine_shield=0, stealth=0, poisonous=0,
+                 taunt=0, divine_shield=0, stealth=0, windfury=0, poisonous=0,
                  life_steal=0, spell_power=0, freeze=0,
                  not_targeted_by_spell=0, not_targeted_by_power=0,
                  charge=0, rush=0, attackable_by_rush=0, frozen=0,
@@ -37,6 +37,7 @@ class Minion(StrategyEntity):
         self.taunt = taunt
         self.divine_shield = divine_shield
         self.stealth = stealth
+        self.windfury = windfury
         self.poisonous = poisonous
         self.life_steal = life_steal
         self.spell_power = spell_power
@@ -86,6 +87,8 @@ class Minion(StrategyEntity):
         #     temp += " 冲锋"
         # if self.rush:
         #     temp += " 突袭"
+        if self.windfury:
+            temp += " 风怒"
         if self.poisonous:
             temp += " 剧毒"
         if self.life_steal:
@@ -154,15 +157,19 @@ class Minion(StrategyEntity):
 class Weapon(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
                  current_cost, overload,
-                 attack, durability, damage=0):
+                 attack, durability, damage=0, windfury=0):
         super().__init__(card_id, zone, zone_pos, current_cost, overload)
         self.attack = attack
         self.durability = durability
         self.damage = damage
+        self.windfury = windfury
 
     def __str__(self):
-        return f"{self.name} {self.attack}-{self.health}" \
+        temp = f"{self.name} {self.attack}-{self.health}" \
                f"({self.durability}) h_val:{self.heuristic_val}"
+        if self.windfury:
+            temp += " 风怒"
+        return temp
 
     @property
     def health(self):
