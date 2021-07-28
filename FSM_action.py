@@ -1,4 +1,6 @@
 import sys
+import time
+
 import keyboard
 
 import click
@@ -8,7 +10,6 @@ from game_state import *
 
 
 FSM_state = ""
-turn_num = 0
 time_snap = 0.0
 game_count = 1
 LOG_ITER = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
@@ -16,7 +17,6 @@ LOG_ITER = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
 
 def print_out():
     global FSM_state
-    global turn_num
     global time_snap
     global game_count
 
@@ -32,7 +32,6 @@ def print_out():
     if FSM_state == FSM_MATCHING:
         sys_print("The " + str(game_count) + " game begins")
         game_count += 1
-        turn_num = 0
         time_snap = show_time(time_snap)
         print()
 
@@ -53,8 +52,8 @@ def MatchingAction():
         time.sleep(STATE_CHECK_INTERVAL)
         local_state = get_screen.get_state()
 
-    if local_state == FSM_CHOOSING_HERO:
-        return FSM_CHOOSING_HERO
+    if local_state in [FSM_CHOOSING_HERO, FSM_LEAVE_HS]:
+        return local_state
 
     time.sleep(18)  # 18是一个经验数值...
     return FSM_CHOOSING_CARD
@@ -73,6 +72,7 @@ def Battling():
     game_state = GameState()
     not_mine_count = 0
     action_in_one_turn = 0
+    last_controller_is_me = False
 
     while True:
         log_container = next(LOG_ITER)
@@ -86,6 +86,7 @@ def Battling():
             return FSM_QUITTING_BATTLE
 
         if not game_state.is_my_turn:
+            last_controller_is_me = False
             not_mine_count += 1
             action_in_one_turn = 0
             if not_mine_count == 1000:
@@ -94,6 +95,10 @@ def Battling():
             # time.sleep(0.5)
             continue
 
+        # 接下来考虑在我的回合的出牌逻辑
+        if not last_controller_is_me:
+            time.sleep(3)
+        last_controller_is_me = True
         not_mine_count = 0
         action_in_one_turn += 1
         if action_in_one_turn == 15:
@@ -111,6 +116,7 @@ def Battling():
             strategy_state.use_coin()
             continue
 
+        # 考虑要不要出牌
         delta_h, index, args = strategy_state.best_h_and_arg_within_mana()
         if delta_h == 0:
             debug_print("不需要出牌")
@@ -118,11 +124,13 @@ def Battling():
             strategy_state.use_card(index, *args)
             continue
 
+        # 考虑要不要用技能
         if strategy_state.my_last_mana >= 2 \
                 and strategy_state.can_use_power:
             click.use_skill_point()
             continue
 
+        # 考虑随从怎么打架
         mine_index, oppo_index = strategy_state.get_best_attack_target()
         debug_print(f"我的决策是: mine_index: {mine_index}, oppo_index: {oppo_index}")
 
@@ -179,6 +187,7 @@ def HandleErrorAction():
         while get_screen.get_state() != FSM_LEAVE_HS:
             click.click_setting()
             time.sleep(0.5)
+            # 先点认输
             click.left_click(960, 380)
 
             time.sleep(10)
@@ -188,6 +197,7 @@ def HandleErrorAction():
 
             click.click_setting()
             time.sleep(0.5)
+            # 再点退出
             click.left_click(960, 470)
             time.sleep(6)
 
@@ -226,14 +236,10 @@ def FSM_dispatch(next_state):
 
 def AutoHS_automata():
     global FSM_state
-    global turn_num
 
     while 1:
         if FSM_state == "":
             FSM_state = get_screen.get_state()
-        # cv2.imwrite("./img/" + FSM_state + "/" +
-        #             time.strftime("%m_%d_%H_%M_%S", time.localtime()) + ".jpg"
-        #             , get_screen.catch_screen())
         FSM_state = FSM_dispatch(FSM_state)
 
 

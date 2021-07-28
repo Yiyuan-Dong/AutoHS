@@ -8,6 +8,7 @@ import win32con
 import numpy
 import imagehash
 from PIL import Image
+
 from constants.constants import *
 
 step = STEP
