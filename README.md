@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 2. 在 `constants/constants` 里有一些参数可以设置，其中名为
  `HEARTHSTONE_POWER_LOG_PATH` 的变量必须修改成你的电脑上的炉石传说日志
-   `Power.log` 的路径，`Power.log` 在炉石安装路径下的 `Logs/`文件夹中
+   `Power.log` 的路径，`Power.log` 在炉石安装路径下的 `Logs/`文件夹中。
    
 > `Power.log` 中记录了对战过程中每一个**对象**(**Entity**)的每一项**属性**(**tag**)的变化。
 > 这个**对象**包括玩家、英雄、英雄技能、卡牌(无论在牌库里、手牌中、战场上还是坟地里)等。

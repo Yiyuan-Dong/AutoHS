@@ -1,6 +1,5 @@
 from pynput.mouse import Button, Controller
 import time
-import add_parent_dir
 
 MOUSE_SLEEP_INTERVAL = 3  # 3 seconds
 

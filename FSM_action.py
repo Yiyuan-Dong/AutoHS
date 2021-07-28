@@ -1,17 +1,11 @@
-import random
-
-import card
-import click
-import time
-import get_screen
 import sys
-import cv2
-from constants.constants import *
-from strategy import StrategyState
-from print_info import *
-from log_op import *
-from game_state import *
 import keyboard
+
+import click
+import get_screen
+from strategy import StrategyState
+from game_state import *
+
 
 FSM_state = ""
 turn_num = 0

@@ -2,6 +2,7 @@ import click
 import keyboard
 import sys
 import random
+
 from name2card import NAME2CARD
 from constants.card_name import *
 from game_state import *

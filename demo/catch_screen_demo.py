@@ -2,18 +2,16 @@
 主体代码引自 Demon_Hunter 的CSDN博客, 博客URL:https://blog.csdn.net/zhuisui_woxin/article/details/84345036
 """
 
-import add_parent_dir
 import cv2
 import time
 import math
 
+import add_parent_dir
 import get_screen
 
-# AREA_LIST = [((1495, 465), (1620, 522))]
-
-# AREA_LIST = []
 PRINT_ALL_AREA_LIST = []
-AREA_LIST = []
+# AREA_LIST = [((1495, 465), (1620, 522))]
+AREA_LIST = [((300, 310), (340, 710))]
 
 POINT_LIST = [(960, 650), (1090, 1070)]
 
@@ -40,7 +38,7 @@ def add_point(img, point_list):
         cv2.circle(img, pair, 1, (255, 0, 0), 2, 0)
 
 
-def show_area(img, top_left, bottom_right, ratio=5, print_out=False):
+def show_area(img, top_left, bottom_right, print_out=False):
     x1, y1 = top_left
     x2, y2 = bottom_right
     tmp_img = img[y1:y2, x1:x2]
@@ -54,11 +52,12 @@ def show_area(img, top_left, bottom_right, ratio=5, print_out=False):
                     count += 1
         print(count)
 
+    ratio = min(round(1600 / (x2 - x1)), round(1000 / (y2 - y1)))
     resized_x_length = (x2 - x1) * int(ratio)
     resized_y_length = int(resized_x_length * ((y2 - y1) / (x2 - x1)))
     tmp_img = cv2.resize(tmp_img, (resized_x_length, resized_y_length))
 
-    font_size = int(ratio) / 10
+    font_size = int(ratio) / 5
     for x in range(x1, x2, 10):
         temp_x = int(resized_x_length / (x2 - x1) * (x - x1))
         cv2.line(tmp_img, pt1=(temp_x, 0), pt2=(temp_x, resized_y_length), color=(200, 200, 200), thickness=1)
