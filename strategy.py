@@ -3,7 +3,7 @@ import keyboard
 import sys
 import random
 
-from name2card import NAME2CARD
+from name2card import ID2CARD_DICT
 from constants.card_name import *
 from game_state import *
 from log_op import *
@@ -13,8 +13,10 @@ from strategy_entity import *
 class StrategyState:
     def __init__(self, game_state=None):
         self.oppo_minions = []
+        self.oppo_graveyard = []
         self.my_minions = []
         self.my_hand_cards = []
+        self.my_graveyard = []
 
         self.my_hero = None
         self.my_hero_power = None
@@ -25,93 +27,55 @@ class StrategyState:
         self.oppo_weapon = None
         self.oppo_hand_card_num = 0
 
-        self.my_last_mana = int(game_state.my_entity.query_tag("RESOURCES")) - \
-                            int(game_state.my_entity.query_tag("RESOURCES_USED"))
+        self.my_total_mana = int(game_state.my_entity.query_tag("RESOURCES"))
+        self.my_used_mana = int(game_state.my_entity.query_tag("RESOURCES_USED"))
 
         for entity in game_state.entity_dict.values():
-            if entity.query_tag("ZONE") == "PLAY" \
-                    and entity.query_tag("CARDTYPE") == "MINION":
-                minion = Minion(
-                    attack=int(entity.query_tag("ATK")),
-                    max_health=int(entity.query_tag("HEALTH")),
-                    damage=int(entity.query_tag("DAMAGE")),
-                    taunt=int(entity.query_tag("TAUNT")),
-                    divine_shield=int(entity.query_tag("DIVINE_SHIELD")),
-                    stealth=int(entity.query_tag("STEALTH")),
-                    poisonous=int(entity.query_tag("POISONOUS")),
-                    freeze=int(entity.query_tag("FREEZE")),
-                    spell_power=int(entity.query_tag("SPELLPOWER")),
-                    not_targeted_by_spell=int(entity.query_tag("CANT_BE_TARGETED_BY_SPELLS")),
-                    not_targeted_by_power=int(entity.query_tag("CANT_BE_TARGETED_BY_HERO_POWERS")),
-                    charge=int(entity.query_tag("CHARGE")),
-                    rush=int(entity.query_tag("RUSH")),
-                    frozen=int(entity.query_tag("FROZEN")),
-                    attackable_by_rush=int(entity.query_tag("ATTACKABLE_BY_RUSH")),
-                    exhausted=int(entity.tag_dict.get("EXHAUSTED", 1)),
-                    zone_pos=int(entity.query_tag("ZONE_POSITION")),
-                    name=entity.name
-                )
-
-                if game_state.is_my_entity(entity):
-                    self.my_minions.append(minion)
-                else:
-                    self.oppo_minions.append(minion)
-
             if entity.query_tag("ZONE") == "HAND":
                 if game_state.is_my_entity(entity):
-                    hand_card = HandCard(
-                        card_type=entity.query_tag("CARDTYPE"),
-                        cost=int(entity.query_tag("COST")),
-                        zone_pos=int(entity.query_tag("ZONE_POSITION")),
-                        name=entity.name,
-                    )
+                    hand_card = entity.corresponding_entity
                     self.my_hand_cards.append(hand_card)
                 else:
                     self.oppo_hand_card_num += 1
 
-            if entity.query_tag("ZONE") == "PLAY" \
-                    and entity.query_tag("CARDTYPE") == "HERO":
-                hero = Hero(
-                    max_health=int(entity.query_tag("HEALTH")),
-                    damage=int(entity.query_tag("DAMAGE")),
-                    attack=int(entity.query_tag("ATK")),
-                    exhausted=int(entity.tag_dict.get("EXHAUSTED", 1)),
-                    armor=int(entity.query_tag("ARMOR")),
-                    name=entity.name
-                )
+            elif entity.zone == "PLAY":
+                if entity.cardtype == "MINION":
+                    minion = entity.corresponding_entity
+                    if game_state.is_my_entity(entity):
+                        self.my_minions.append(minion)
+                    else:
+                        self.oppo_minions.append(minion)
+
+                elif entity.cardtype == "HERO":
+                    hero = entity.corresponding_entity
+                    if game_state.is_my_entity(entity):
+                        self.my_hero = hero
+                    else:
+                        self.oppo_hero = hero
+
+                elif entity.cardtype == "HERO_POWER":
+                    hero_power = entity.corresponding_entity
+                    if game_state.is_my_entity(entity):
+                        self.my_hero_power = hero_power
+                    else:
+                        self.oppo_hero_power = hero_power
+
+                elif entity.cardtype == "WEAPON":
+                    weapon = entity.corresponding_entity
+                    if game_state.is_my_entity(entity):
+                        self.my_weapon = weapon
+                    else:
+                        self.oppo_weapon = weapon
+
+            elif entity.zone == "GRAVEYARD":
                 if game_state.is_my_entity(entity):
-                    self.my_hero = hero
+                    self.my_graveyard.append(entity)
                 else:
-                    self.oppo_hero = hero
+                    self.oppo_graveyard.append(entity)
 
-            if entity.query_tag("ZONE") == "PLAY" \
-                    and entity.query_tag("CARDTYPE") == "HERO_POWER":
-                if game_state.is_my_entity(entity):
-                    self.my_hero_power = entity.name
-                    self.can_use_power = entity.query_tag("EXHAUSTED") == "0"
-                else:
-                    self.oppo_hero_power = entity.name
-
-            if entity.query_tag("ZONE") == "PLAY" \
-                    and entity.query_tag("CARDTYPE") == "WEAPON":
-                weapon = Weapon(
-                    attack=int(entity.query_tag("ATK")),
-                    durability=int(entity.query_tag("DURABILITY")),
-                    damage=int(entity.query_tag("DAMAGE")),
-                    name=entity.name
-                )
-
-                if game_state.is_my_entity(entity):
-                    self.my_weapon = weapon
-                else:
-                    self.oppo_weapon = weapon
-
-        def get_zone_pos(x):
-            return x.zone_pos
-
-        self.my_minions.sort(key=get_zone_pos)
-        self.oppo_minions.sort(key=get_zone_pos)
-        self.my_hand_cards.sort(key=get_zone_pos)
+        self.my_minions.sort(key=lambda temp: temp.zone_pos)
+        self.oppo_minions.sort(key=lambda temp: temp.zone_pos)
+        self.my_hand_cards.sort(key=lambda temp: temp.zone_pos)
 
         self.debug_print_out()
 
@@ -121,40 +85,58 @@ class StrategyState:
 
         debug_print("对手英雄:")
         debug_print("    " + str(self.oppo_hero))
-        debug_print(f"技能: {self.oppo_hero_power}")
+        debug_print(f"技能:")
+        debug_print("    " + self.oppo_hero_power.name)
         if self.oppo_weapon:
             debug_print("头上有把武器:")
             debug_print("    " + str(self.oppo_weapon))
-        debug_print(f"对手有{self.oppo_minion_num}个随从:")
-        for minion in self.oppo_minions:
-            debug_print("    " + str(minion))
-        debug_print(f"卡费启发值: {self.oppo_heuristic_value}")
+        if self.oppo_minion_num > 0:
+            debug_print(f"对手有{self.oppo_minion_num}个随从:")
+            for minion in self.oppo_minions:
+                debug_print("    " + str(minion))
+        else:
+            debug_print(f"对手没有随从")
+        debug_print(f"总卡费启发值: {self.oppo_heuristic_value}")
 
         debug_print()
 
         debug_print("我的英雄:")
         debug_print("    " + str(self.my_hero))
-        debug_print(f"技能: {self.my_hero_power}")
+        debug_print(f"技能:")
+        debug_print("    " + self.my_hero_power.name)
         if self.my_weapon:
             debug_print("头上有把武器:")
             debug_print("    " + str(self.my_weapon))
-        debug_print(f"我有{self.my_minion_num}个随从:")
-        for i in range(len(self.my_minions)):
-            minion = self.my_minions[i]
-            tmp_str = "    " + str(minion)
-            debug_print(tmp_str)
-        debug_print(f"卡费启发值: {self.my_heuristic_value}")
+        if self.my_minion_num > 0:
+            debug_print(f"我有{self.my_minion_num}个随从:")
+            for minion in self.my_minions:
+                debug_print("    " + str(minion))
+        else:
+            debug_print("我没有随从")
+        debug_print(f"总卡费启发值: {self.my_heuristic_value}")
 
     def debug_print_out(self):
         if not DEBUG_PRINT:
             return
 
+        debug_print(f"对手墓地:")
+        debug_print("    " + ", ".join([entity.name for entity in self.oppo_graveyard]))
         debug_print(f"对手有{self.oppo_hand_card_num}张手牌")
+
         self.debug_print_battlefield()
         debug_print()
-        debug_print(f"我有{self.my_hand_card_num}张手牌,它们分别是")
+
+        debug_print(f"水晶: {self.my_last_mana}/{self.my_total_mana}")
+        debug_print(f"我有{self.my_hand_card_num}张手牌:")
         for hand_card in self.my_hand_cards:
-            debug_print("    " + str(hand_card))
+            debug_print(f"    [{hand_card.zone_pos}] {hand_card.name} "
+                        f"cost:{hand_card.current_cost}")
+        debug_print(f"我的墓地:")
+        debug_print("    " + ", ".join([entity.name for entity in self.my_graveyard]))
+
+    @property
+    def my_last_mana(self):
+        return self.my_total_mana - self.my_used_mana
 
     @property
     def oppo_minion_num(self):
@@ -194,9 +176,8 @@ class StrategyState:
     @property
     def min_cost(self):
         minium = 100
-        for card_name in self.my_hand_cards:
-            if card_name != NAME_THE_COIN and card_name in NAME2CARD:
-                minium = min(NAME2CARD[card_name].cost, minium)
+        for hand_card in self.my_hand_cards:
+            minium = min(minium, hand_card.current_cost)
         return minium
 
     def fight_between(self, oppo_index, my_index):
@@ -291,14 +272,14 @@ class StrategyState:
             hand_card = self.my_hand_cards[card_index]
 
             # TODO: DELETE IT !
-            if hand_card.name not in NAME2CARD:
+            if hand_card.name not in ID2CARD_DICT:
                 print(f"!!!!!!!!!! {hand_card.name}")
             if hand_card.name != NAME_THE_COIN \
-                    and hand_card.name in NAME2CARD:
-                card = NAME2CARD[hand_card.name]
+                    and hand_card.name in ID2CARD_DICT:
+                card = ID2CARD_DICT[hand_card.name]
 
-                if full_use and card.cost != self.my_last_mana \
-                        or card.cost > self.my_last_mana:
+                if full_use and card.current_cost != self.my_last_mana \
+                        or card.current_cost > self.my_last_mana:
                     continue
 
                 delta_h, *args = card.best_h_and_arg(self)
@@ -338,17 +319,17 @@ class StrategyState:
         for index in range(self.my_hand_card_num):
             if self.my_hand_cards[index] == NAME_THE_COIN:
                 debug_print(f"Will use the coin at [{index}]")
-                NAME2CARD[NAME_THE_COIN].use_with_arg(self, index)
+                ID2CARD_DICT[NAME_THE_COIN].use_with_arg(self, index)
 
     # 会返回这张卡的cost
     def use_card(self, index, *args):
         hand_card = self.my_hand_cards[index]
         card_name = hand_card.name
-        card = NAME2CARD[card_name]
+        card = ID2CARD_DICT[card_name]
         debug_print(f"Will use card[{index}] {card.name}")
         card.use_with_arg(self, index, *args)
         self.my_hand_cards.pop(index)
-        return card.cost
+        return card.current_cost
 
 
 if __name__ == "__main__":

@@ -41,15 +41,18 @@ def read_json(re_download=False):
 def query_json_dict(key):
     global JSON_DICT
 
+    if key == "":
+        return "Unknown"
+
     if key in JSON_DICT:
-        return JSON_DICT[key]
+        return JSON_DICT[key]["name"]
     # 认为是炉石更新了，出现了新卡，需要重新下载。
     else:
         JSON_DICT = read_json(True)
         if key not in JSON_DICT:
             error_print("出现未识别卡牌，程序无法继续")
             sys.exit(-1)
-        return JSON_DICT[key]
+        return JSON_DICT[key]["name"]
 
 
 JSON_DICT = read_json()

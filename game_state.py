@@ -1,5 +1,6 @@
 from log_op import *
 from json_op import *
+from strategy_entity import *
 
 
 class GameState:
@@ -14,9 +15,9 @@ class GameState:
         self.current_update_id = 0
 
     def __str__(self):
-        res = "State:"
+        res = "---------------State---------------\n"
         res += \
-f"""game_entity_id: {self.game_entity_id}
+            f"""game_entity_id: {self.game_entity_id}
     my_name: {self.my_name}
     oppo_name: {self.oppo_name}
     my_player_id: {self.my_player_id}
@@ -124,6 +125,14 @@ class Entity:
     def query_tag(self, tag):
         return self.tag_dict.get(tag, "0")
 
+    @property
+    def cardtype(self):
+        return self.query_tag("CARDTYPE")
+
+    @property
+    def zone(self):
+        return self.query_tag("ZONE")
+
 
 class GameEntity(Entity):
     pass
@@ -143,16 +152,82 @@ class CardEntity(Entity):
                "name: " + self.name + "\n" + \
                super().__str__()
 
-    def update_card_id(self, card_id):
-        self.card_id = card_id
+    @property
+    def corresponding_entity(self):
+        if self.cardtype == "MINION":
+            return Minion(
+                card_id=self.card_id,
+                zone=self.query_tag("ZONE"),
+                zone_pos=int(self.query_tag("ZONE_POSITION")),
+                current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
+                overload=int(self.query_tag("OVERLOAD")),
+                attack=int(self.query_tag("ATK")),
+                max_health=int(self.query_tag("HEALTH")),
+                damage=int(self.query_tag("DAMAGE")),
+                taunt=int(self.query_tag("TAUNT")),
+                divine_shield=int(self.query_tag("DIVINE_SHIELD")),
+                stealth=int(self.query_tag("STEALTH")),
+                poisonous=int(self.query_tag("POISONOUS")),
+                freeze=int(self.query_tag("FREEZE")),
+                spell_power=int(self.query_tag("SPELLPOWER")),
+                not_targeted_by_spell=int(self.query_tag("CANT_BE_TARGETED_BY_SPELLS")),
+                not_targeted_by_power=int(self.query_tag("CANT_BE_TARGETED_BY_HERO_POWERS")),
+                charge=int(self.query_tag("CHARGE")),
+                rush=int(self.query_tag("RUSH")),
+                frozen=int(self.query_tag("FROZEN")),
+                attackable_by_rush=int(self.query_tag("ATTACKABLE_BY_RUSH")),
+                exhausted=int(self.query_tag("EXHAUSTED")),
+            )
+        elif self.cardtype == "SPELL":
+            return Spell(
+                card_id=self.card_id,
+                zone=self.query_tag("ZONE"),
+                zone_pos=int(self.query_tag("ZONE_POSITION")),
+                current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
+                overload=int(self.query_tag("OVERLOAD")),
+            )
+        elif self.cardtype == "WEAPON":
+            return Weapon(
+                card_id=self.card_id,
+                zone=self.query_tag("ZONE"),
+                zone_pos=int(self.query_tag("ZONE_POSITION")),
+                current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
+                overload=int(self.query_tag("OVERLOAD")),
+                attack=int(self.query_tag("ATK")),
+                durability=int(self.query_tag("DURABILITY")),
+                damage=int(self.query_tag("DAMAGE")),
+            )
+        elif self.cardtype == "HERO":
+            return Hero(
+                card_id=self.card_id,
+                zone=self.query_tag("ZONE"),
+                zone_pos=int(self.query_tag("ZONE_POS")),
+                current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
+                overload=int(self.query_tag("OVERLOAD")),
+                max_health=int(self.query_tag("HEALTH")),
+                damage=int(self.query_tag("DAMAGE")),
+                attack=int(self.query_tag("ATK")),
+                exhausted=int(self.query_tag("EXHAUSTED")),
+                armor=int(self.query_tag("ARMOR")),
+            )
+        elif self.cardtype == "HERO_POWER":
+            return HeroPower(
+                card_id=self.card_id,
+                zone=self.query_tag("ZONE"),
+                zone_pos=int(self.query_tag("ZONE_POS")),
+                current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
+                overload=int(self.query_tag("OVERLOAD")),
+                exhausted=int(self.query_tag("EXHAUSTED")),
+            )
+        else:
+            return None
 
     @property
     def name(self):
-        temp = JSON_DICT.get(self.card_id, None)
-        if temp:
-            return temp["name"]
-        else:
-            return "Unknown"
+        return query_json_dict(self.card_id)
+
+    def update_card_id(self, card_id):
+        self.card_id = card_id
 
 
 def update_state(state, line_info_container):

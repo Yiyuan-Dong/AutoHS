@@ -1,12 +1,36 @@
 from print_info import *
+from json_op import *
 import copy
 
 
-class Minion:
-    def __init__(self, attack, max_health, damage=0, taunt=0, divine_shield=0,
-                 stealth=0, poisonous=0, life_steal=0, spell_power=0, freeze=0,
-                 not_targeted_by_spell=0, not_targeted_by_power=0, charge=0, rush=0,
-                 attackable_by_rush=0, frozen=0, exhausted=1, zone_pos=0, name=""):
+class StrategyEntity:
+    def __init__(self, card_id, zone, zone_pos,
+                 current_cost, overload):
+        self.card_id = card_id
+        self.zone = zone
+        self.zone_pos = zone_pos
+        self.current_cost = current_cost
+        self.overload = overload
+
+    @property
+    def name(self):
+        return query_json_dict(self.card_id)
+
+    @property
+    def heuristic_val(self):
+        return -1
+
+
+class Minion(StrategyEntity):
+    def __init__(self, card_id, zone, zone_pos,
+                 current_cost, overload,
+                 attack, max_health, damage=0,
+                 taunt=0, divine_shield=0, stealth=0, poisonous=0,
+                 life_steal=0, spell_power=0, freeze=0,
+                 not_targeted_by_spell=0, not_targeted_by_power=0,
+                 charge=0, rush=0, attackable_by_rush=0, frozen=0,
+                 exhausted=1):
+        super().__init__(card_id, zone, zone_pos, current_cost, overload)
         self.attack = attack
         self.max_health = max_health
         self.damage = damage
@@ -25,7 +49,6 @@ class Minion:
         self.frozen = frozen
         self.exhausted = exhausted
         self.zone_pos = zone_pos
-        self.name = name
 
     @property
     def health(self):
@@ -41,7 +64,7 @@ class Minion:
                self.exhausted == 0 or self.attackable_by_rush
 
     def __str__(self):
-        temp = f"[{self.zone_pos - 1}]{self.name} " \
+        temp = f"[{self.zone_pos}] {self.name} " \
                f"{self.attack}-{self.health}({self.max_health})"
 
         if self.can_beat_face:
@@ -128,12 +151,14 @@ class Minion:
         return self.heuristic_val - temp_minion.heuristic_val
 
 
-class Weapon:
-    def __init__(self, attack, durability, damage=0, name=""):
+class Weapon(StrategyEntity):
+    def __init__(self, card_id, zone, zone_pos,
+                 current_cost, overload,
+                 attack, durability, damage=0):
+        super().__init__(card_id, zone, zone_pos, current_cost, overload)
         self.attack = attack
         self.durability = durability
         self.damage = damage
-        self.name = name
 
     def __str__(self):
         return f"{self.name} {self.attack}-{self.health}" \
@@ -148,23 +173,25 @@ class Weapon:
         return self.attack * self.health
 
 
-class Hero:
-    def __init__(self, max_health, damage=0, armor=0,
-                 attack=0, exhausted=1, name=""):
+class Hero(StrategyEntity):
+    def __init__(self, card_id, zone, zone_pos,
+                 current_cost, overload,
+                 max_health, damage=0,
+                 armor=0, attack=0, exhausted=1):
+        super().__init__(card_id, zone, zone_pos, current_cost, overload)
         self.max_health = max_health
         self.damage = damage
         self.armor = armor
         self.attack = attack
         self.exhausted = exhausted
-        self.name = name
 
     def __str__(self):
         res = f"{self.name} {self.attack}-{self.health}" \
               f"({self.max_health - self.damage}+{self.armor})"
-        if self.exhausted == 1:
-            res += " [不能动]"
-        else:
+        if self.can_attack:
             res += " [能动]"
+        else:
+            res += " [不能动]"
         res += f" h_val:{self.heuristic_val}"
         return res
 
@@ -183,6 +210,10 @@ class Hero:
         else:
             return 10 + (self.health - 20) * 0.3
 
+    @property
+    def can_attack(self):
+        return self.attack > 0 and not self.exhausted
+
     def get_damaged(self, damage):
         if damage <= self.armor:
             self.armor -= damage
@@ -197,13 +228,14 @@ class Hero:
         return self.heuristic_val - temp_hero.heuristic_val
 
 
-class HandCard:
-    def __init__(self, card_type, cost, zone_pos, name):
-        self.card_type = card_type
-        self.cost = cost
-        self.name = name
-        self.zone_pos = zone_pos
+class Spell(StrategyEntity):
+    pass
 
-    def __str__(self):
-        return f"[{self.zone_pos - 1}]{self.name} " \
-               f"cost:{self.cost} type:{self.card_type}"
+
+class HeroPower(StrategyEntity):
+    def __init__(self, card_id, zone, zone_pos,
+                 current_cost, overload,
+                 exhausted):
+        super().__init__(card_id, zone, zone_pos,
+                         current_cost, overload)
+        self.exhausted = exhausted

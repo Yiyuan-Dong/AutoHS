@@ -3,7 +3,7 @@ import re
 from card import *
 from constants.card_name import *
 
-NAME2CARD = {
+ID2CARD_DICT = {
     "护甲商贩": ArmorVendor(),
     "神圣惩击": HolySmite(),
     "倦怠光波": WaveOfApathy(),
@@ -23,8 +23,9 @@ NAME2CARD = {
     "吞噬者穆坦努斯": MutanusTheDevourer(),
     "灵魂之镜": SoulMirror(),
     "戈霍恩之血": BloodOfGhuun(),
-    NAME_THE_COIN: Coin(),
 }
+
+coin_card = Coin()
 
 BASE_COIN_PATTERN = re.compile(r".*_COIN\d$")
 
@@ -33,3 +34,11 @@ def is_coin_id(card_id):
     if card_id in ["GAME_005", "GAME_005e"]:
         return True
     return BASE_COIN_PATTERN.match(card_id) is not None
+
+
+def id2card(card_id):
+    if is_coin_id(card_id):
+        return coin_card
+    if card_id in ID2CARD_DICT:
+        return ID2CARD_DICT[card_id]
+    return None
