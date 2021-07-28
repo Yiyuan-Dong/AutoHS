@@ -33,7 +33,6 @@ def print_out():
         sys_print("The " + str(game_count) + " game begins")
         game_count += 1
         time_snap = show_time(time_snap)
-        print()
 
     return
 
@@ -107,10 +106,6 @@ def Battling():
         # time.sleep(0.5)
 
         strategy_state = StrategyState(game_state)
-
-        if DEBUG_PRINT:
-            with open("game_state_snapshot.txt", "w") as f:
-                f.write(str(game_state))
 
         if strategy_state.test_use_coin():
             strategy_state.use_coin()

@@ -1,3 +1,5 @@
+import sys
+
 import requests
 import json
 import os
@@ -12,7 +14,7 @@ def download_json(json_path):
         f.write(file.content)
 
 
-def read_json():
+def read_json(re_download=False):
     dir_path = os.path.dirname(__file__)
     if dir_path == "":
         dir_path = "."
@@ -20,6 +22,9 @@ def read_json():
 
     if not os.path.exists(json_path):
         sys_print("未找到cards.json,试图通过网络下载文件")
+        download_json(json_path)
+    elif re_download:
+        sys_print("疑似有新版本炉石数据，正在重新下载最新文件")
         download_json(json_path)
     else:
         sys_print("cards.json已存在")
@@ -33,6 +38,25 @@ def read_json():
         return json_dict
 
 
+def query_json_dict(key):
+    global JSON_DICT
+
+    if key in JSON_DICT:
+        return JSON_DICT[key]
+    # 认为是炉石更新了，出现了新卡，需要重新下载。
+    else:
+        JSON_DICT = read_json(True)
+        if key not in JSON_DICT:
+            error_print("出现未识别卡牌，程序无法继续")
+            sys.exit(-1)
+        return JSON_DICT[key]
+
+
+JSON_DICT = read_json()
+
 if __name__ == "__main__":
-    json_dict = read_json()
-    print(json_dict["VAN_EX1_048"])
+    with open("id-name.txt", "w", encoding="utf8") as f:
+        for key, val in JSON_DICT.items():
+            f.write(key + " " + val["name"] + "\n")
+
+    query_json_dict("SW_085t")

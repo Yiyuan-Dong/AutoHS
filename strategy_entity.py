@@ -183,7 +183,6 @@ class Hero:
         else:
             return 10 + (self.health - 20) * 0.3
 
-
     def get_damaged(self, damage):
         if damage <= self.armor:
             self.armor -= damage

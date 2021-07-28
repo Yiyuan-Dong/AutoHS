@@ -14,7 +14,7 @@ if __name__ == "__main__":
     for x in log_container.message_list:
         update_state(state, x)
 
-    with open("game_state_snapshot.txt", "w") as f:
+    with open("game_state_snapshot.txt", "w", encoding="utf8") as f:
         f.write(str(state))
 
     strategy_state = StrategyState(state)

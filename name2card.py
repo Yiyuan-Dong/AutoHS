@@ -1,3 +1,5 @@
+import re
+
 from card import *
 from constants.card_name import *
 
@@ -23,3 +25,11 @@ NAME2CARD = {
     "戈霍恩之血": BloodOfGhuun(),
     NAME_THE_COIN: Coin(),
 }
+
+BASE_COIN_PATTERN = re.compile(r".*_COIN\d$")
+
+
+def is_coin_id(card_id):
+    if card_id in ["GAME_005", "GAME_005e"]:
+        return True
+    return BASE_COIN_PATTERN.match(card_id) is not None

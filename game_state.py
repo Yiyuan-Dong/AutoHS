@@ -1,8 +1,6 @@
 from log_op import *
 from json_op import *
 
-JSON_DICT = read_json()
-
 
 class GameState:
     def __init__(self):

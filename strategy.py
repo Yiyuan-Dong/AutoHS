@@ -364,7 +364,7 @@ if __name__ == "__main__":
                 update_state(state, x)
             strategy_state = StrategyState(state)
 
-            with open("game_state_snapshot.txt", "w") as f:
+            with open("game_state_snapshot.txt", "w", encoding="utf8") as f:
                 f.write(str(state))
 
             mine_index, oppo_index = strategy_state.get_best_attack_target()
