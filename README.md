@@ -7,6 +7,8 @@
 
 ### 如何运行
 
+0. 安装`Python3`
+
 1. 安装所需依赖:
 ```
 pip install -r requirements.txt

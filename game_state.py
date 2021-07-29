@@ -155,7 +155,7 @@ class CardEntity(Entity):
     @property
     def corresponding_entity(self):
         if self.cardtype == "MINION":
-            return Minion(
+            return StrategyMinion(
                 card_id=self.card_id,
                 zone=self.query_tag("ZONE"),
                 zone_pos=int(self.query_tag("ZONE_POSITION")),
@@ -170,6 +170,7 @@ class CardEntity(Entity):
                 windfury=int(self.query_tag("WINDFURY")),
                 poisonous=int(self.query_tag("POISONOUS")),
                 freeze=int(self.query_tag("FREEZE")),
+                battlecry=int(self.query_tag("BATTLECRY")),
                 spell_power=int(self.query_tag("SPELLPOWER")),
                 not_targeted_by_spell=int(self.query_tag("CANT_BE_TARGETED_BY_SPELLS")),
                 not_targeted_by_power=int(self.query_tag("CANT_BE_TARGETED_BY_HERO_POWERS")),
@@ -178,9 +179,10 @@ class CardEntity(Entity):
                 frozen=int(self.query_tag("FROZEN")),
                 attackable_by_rush=int(self.query_tag("ATTACKABLE_BY_RUSH")),
                 exhausted=int(self.query_tag("EXHAUSTED")),
+                cant_attack=int(self.query_tag("CANT_ATTACK"))
             )
         elif self.cardtype == "SPELL":
-            return Spell(
+            return StrategySpell(
                 card_id=self.card_id,
                 zone=self.query_tag("ZONE"),
                 zone_pos=int(self.query_tag("ZONE_POSITION")),
@@ -188,7 +190,7 @@ class CardEntity(Entity):
                 overload=int(self.query_tag("OVERLOAD")),
             )
         elif self.cardtype == "WEAPON":
-            return Weapon(
+            return StrategyWeapon(
                 card_id=self.card_id,
                 zone=self.query_tag("ZONE"),
                 zone_pos=int(self.query_tag("ZONE_POSITION")),
@@ -200,7 +202,7 @@ class CardEntity(Entity):
                 windfury=int(self.query_tag("WINDFURY")),
             )
         elif self.cardtype == "HERO":
-            return Hero(
+            return StrategyHero(
                 card_id=self.card_id,
                 zone=self.query_tag("ZONE"),
                 zone_pos=int(self.query_tag("ZONE_POS")),
@@ -213,7 +215,7 @@ class CardEntity(Entity):
                 armor=int(self.query_tag("ARMOR")),
             )
         elif self.cardtype == "HERO_POWER":
-            return HeroPower(
+            return StrategyHeroPower(
                 card_id=self.card_id,
                 zone=self.query_tag("ZONE"),
                 zone_pos=int(self.query_tag("ZONE_POS")),

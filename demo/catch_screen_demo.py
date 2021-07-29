@@ -1,6 +1,7 @@
 """
 主体代码引自 Demon_Hunter 的CSDN博客, 博客URL:https://blog.csdn.net/zhuisui_woxin/article/details/84345036
 """
+import sys
 
 import cv2
 import time
@@ -8,6 +9,7 @@ import math
 
 import add_parent_dir
 import get_screen
+
 
 PRINT_ALL_AREA_LIST = []
 # AREA_LIST = [((1495, 465), (1620, 522))]
@@ -23,7 +25,7 @@ def get_sum(x):
 def add_line(img, width, height):
     for i in range(1, math.floor(width / 100) + 1):
         cv2.line(img, pt1=(i * 100, 0), pt2=(i * 100, height), color=(200, 200, 200), thickness=1)
-        cv2.putText(img, str(i * 100), (i * 100 - 30, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
+        cv2.putText(img, str(i * 100), (i * 100 - 30, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
 
     for i in range(1, math.floor(height / 100) + 1):
         cv2.line(img, pt1=(0, i * 100), pt2=(width, i * 100), color=(200, 200, 200), thickness=1)
@@ -57,11 +59,11 @@ def show_area(img, top_left, bottom_right, print_out=False):
     resized_y_length = int(resized_x_length * ((y2 - y1) / (x2 - x1)))
     tmp_img = cv2.resize(tmp_img, (resized_x_length, resized_y_length))
 
-    font_size = int(ratio) / 5
+    font_size = int(ratio) / 8
     for x in range(x1, x2, 10):
         temp_x = int(resized_x_length / (x2 - x1) * (x - x1))
         cv2.line(tmp_img, pt1=(temp_x, 0), pt2=(temp_x, resized_y_length), color=(200, 200, 200), thickness=1)
-        cv2.putText(tmp_img, str(x), (temp_x - 20, 15), cv2.FONT_HERSHEY_COMPLEX, font_size, (0, 0, 255), 1)
+        cv2.putText(tmp_img, str(x), (temp_x, 10), cv2.FONT_HERSHEY_COMPLEX, font_size, (0, 0, 255), 1)
 
     for y in range(y1, y2, 10):
         temp_y = int(resized_y_length * (y - y1) / (y2 - y1))
@@ -73,8 +75,11 @@ def show_area(img, top_left, bottom_right, print_out=False):
     cv2.destroyWindow("area")
 
 
-def main():
-    im_opencv = get_screen.catch_screen()
+if __name__ == "__main__":
+    im_opencv = get_screen.catch_screen("炉石传说")
+    if im_opencv is None:
+        print("未找到应用")
+        sys.exit(-1)
 
     add_line(im_opencv, 1920, 1080)
     add_point(im_opencv, POINT_LIST)
@@ -97,7 +102,3 @@ def main():
         show_area(im_opencv, top_left, bottom_right, print_out=True)
 
     cv2.destroyAllWindows()
-
-
-if __name__ == "__main__":
-    main()

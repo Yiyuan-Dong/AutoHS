@@ -4,101 +4,130 @@ import time
 import click
 from constants.constants import *
 from print_info import *
-from constants.card_name import *
 
 
 class Card:
-    def __init__(self):
-        self.name = ""
-        self.cost = 0
+    name = "Unknown"
+    cost = 0
 
     # 返回两个东西,第一项是使用这张卡的\delta h,
     # 之后是是用这张卡的最佳参数,参数数目不定
     # 参数是什么呢,比如一张火球术,参数就是指示你
     # 是要打脸还是打怪
-    def best_h_and_arg(self, state):
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
         return -1
 
-    def use_with_arg(self, state, card_index, *args):
+    @classmethod
+    def use_with_arg(cls, state, card_index, *args):
         return None
 
-    @property
-    def card_type(self):
-        return ""
+    @classmethod
+    def get_card_type(cls):
+        return CARD_BASE
 
 
 class SpellCard(Card):
-    def __init__(self):
-        super(SpellCard, self).__init__()
-        self.spell_type = ""
-        self.wait_time = 2
+    spell_type = ""
+    wait_time = 2
 
-    def card_type(self):
+    @classmethod
+    def get_card_type(cls):
         return CARD_SPELL
 
-    def use_with_arg(self, state, card_index, *args):
-        if self.spell_type == "":
-            warning_print(f"Spell card {self.name} does not been assigned spell type!")
+    @classmethod
+    def use_with_arg(cls, state, card_index, *args):
+        if cls.spell_type == "":
+            warning_print(f"Spell card {cls.name} does not been assigned spell type!")
             return
 
-        if self.spell_type == SPELL_NO_POINT:
+        if cls.spell_type == SPELL_NO_POINT:
             click.choose_and_use_spell(card_index, state.my_hand_card_num)
             click.cancel_click()
-            time.sleep(self.wait_time)
+            time.sleep(cls.wait_time)
             return
 
-        if self.spell_type == SPELL_POINT_OPPO:
+        if cls.spell_type == SPELL_POINT_OPPO:
             if len(args) == 0:
-                warning_print(f"Spell {self.name} should use with one arg!")
+                warning_print(f"Spell {cls.name} should use with one arg!")
                 return
 
             oppo_index = args[0]
             click.choose_card(card_index, state.my_hand_card_num)
             click.choose_opponent_minion(oppo_index, state.oppo_minion_num)
             click.cancel_click()
-            time.sleep(self.wait_time)
+            time.sleep(cls.wait_time)
             return
 
-        if self.spell_type == SPELL_POINT_MINE:
+        if cls.spell_type == SPELL_POINT_MINE:
             if len(args) == 0:
-                warning_print(f"Spell {self.name} should use with one arg!")
+                warning_print(f"Spell {cls.name} should use with one arg!")
                 return
 
             mine_index = args[0]
             click.choose_card(card_index, state.my_hand_card_num)
             click.choose_my_minion(mine_index, state.oppo_minion_num)
             click.cancel_click()
-            time.sleep(self.wait_time)
+            time.sleep(cls.wait_time)
             return
 
-        warning_print(f"{self.name} has unknown spell type: {self.spell_type}")
+        warning_print(f"{cls.name} has unknown spell type: {cls.spell_type}")
 
 
 class Coin(SpellCard):
-    def __init__(self):
-        super(Coin, self).__init__()
-        self.spell_type = SPELL_NO_POINT
+    spell_type = SPELL_NO_POINT
+
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        best_delta_h = 0
+
+        for another_index in range(state.my_hand_card_num):
+            delta_h = 0
+            hand_card = state.my_hand_cards[another_index]
+
+            if hand_card.current_cost != state.my_last_mana + 1:
+                continue
+            if hand_card.is_coin:
+                continue
+
+            detail_card = hand_card.detail_card
+            debug_print(hand_card.name)
+            if detail_card is None:
+                if hand_card.cardtype == CARD_MINION and not hand_card.battlecry:
+                    debug_print(hand_card.name)
+                    delta_h = BasicMinionCard.best_h_and_arg(state, another_index)[0]
+            else:
+                delta_h = detail_card.best_h_and_arg(state, another_index)[0]
+
+            delta_h -= 1  # 如果跳费之后能使用的卡显著强于不跳费的卡, 就跳币
+            best_delta_h = max(best_delta_h, delta_h)
+
+        return best_delta_h,
 
 
 class MinionCard(Card):
-    def card_type(self):
+    @classmethod
+    def get_card_type(cls):
         return CARD_MINION
 
 
 class BasicMinionCard(MinionCard):
-    def __init__(self):
-        super(BasicMinionCard, self).__init__()
-        self.value = 0
+    value = -1  # -1代表默认值, 此时具体价值视手牌而定
 
-    def best_h_and_arg(self, state):
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
         # 格子满了
         if state.my_minion_num == 7:
             return -1, 0
+        elif cls.value != -1:
+            return cls.value, state.my_minion_num
         else:
-            # 默认放到最右边
-            return self.value, state.my_minion_num
+            hand_card = state.my_hand_cards[hand_card_index]
+            # 在什么都不知道的时候, 认为费用越高的卡应该越超模
+            return hand_card.current_cost / 2 + 1, state.my_minion_num  # 默认放到最右边
 
-    def use_with_arg(self, state, card_index, *args):
+    @classmethod
+    def use_with_arg(cls, state, card_index, *args):
         gap_index = args[0]
         click.choose_card(card_index, state.my_hand_card_num)
         click.put_minion(gap_index, state.my_minion_num)
@@ -107,37 +136,35 @@ class BasicMinionCard(MinionCard):
 
 
 class WeaponCard(Card):
-    def card_type(self):
+    @classmethod
+    def get_card_type(cls):
         return CARD_WEAPON
 
     # TODO: 还什么都没实现...
 
 
 class ArmorVendor(BasicMinionCard):
-    def __init__(self):
-        super().__init__()
-        self.name = "护甲商贩"
-        self.cost = 1
-        self.value = 2
+    name = "护甲商贩"
+    cost = 1
+    value = 2
 
 
 class HolySmite(SpellCard):
-    def __init__(self):
-        super().__init__()
-        self.name = "神圣惩击"
-        self.cost = 1
-        self.spell_type = SPELL_POINT_OPPO
-        self.wait_time = 2
-        # 加个bias,一是包含了消耗的水晶的代价，二是包含了消耗了手牌的代价
-        self.bias = -2
+    name = "神圣惩击"
+    cost = 1
+    spell_type = SPELL_POINT_OPPO
+    wait_time = 2
+    # 加个bias,一是包含了消耗的水晶的代价，二是包含了消耗了手牌的代价
+    bias = -2
 
-    def best_h_and_arg(self, state):
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
         best_oppo_index = -1
         best_delta_h = 0
 
         for oppo_index in range(state.oppo_minion_num):
             oppo_minion = state.oppo_minions[oppo_index]
-            temp_delta_h = oppo_minion.delta_h_after_damage(3) + self.bias
+            temp_delta_h = oppo_minion.delta_h_after_damage(3) + cls.bias
             if temp_delta_h > best_delta_h:
                 best_delta_h = temp_delta_h
                 best_oppo_index = oppo_index
@@ -146,41 +173,37 @@ class HolySmite(SpellCard):
 
 
 class WaveOfApathy(SpellCard):
-    def __init__(self):
-        super().__init__()
-        self.name = "倦怠光波"
-        self.cost = 1
-        self.spell_type = SPELL_NO_POINT
-        self.wait_time = 2
-        self.bias = -4
+    name = "倦怠光波"
+    cost = 1
+    spell_type = SPELL_NO_POINT
+    wait_time = 2
+    bias = -4
 
-    def best_h_and_arg(self, state):
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
         tmp = 0
 
         for minion in state.oppo_minions:
             tmp += minion.attack - 1
 
-        return tmp + self.bias,
+        return tmp + cls.bias,
 
 
 class BonechewerBrawler(BasicMinionCard):
-    def __init__(self):
-        super().__init__()
-        self.name = "噬骨斗殴者"
-        self.cost = 2
-        self.value = 2
+    name = "噬骨斗殴者"
+    cost = 2
+    value = 2
 
 
 class ShadowWordDeath(SpellCard):
-    def __init__(self):
-        super(ShadowWordDeath, self).__init__()
-        self.name = "暗言术灭"
-        self.cost = 2
-        self.spell_type = SPELL_POINT_OPPO
-        self.wait_time = 1.5
-        self.bias = -6
+    name = "暗言术灭"
+    cost = 2
+    spell_type = SPELL_POINT_OPPO
+    wait_time = 1.5
+    bias = -6
 
-    def best_h_and_arg(self, state):
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
         best_oppo_index = -1
         best_delta_h = 0
 
@@ -190,7 +213,7 @@ class ShadowWordDeath(SpellCard):
             if minion.attack < 5:
                 continue
 
-            tmp = minion.attack + minion.health + self.bias
+            tmp = minion.attack + minion.health + cls.bias
             if tmp > best_delta_h:
                 best_delta_h = tmp
                 best_oppo_index = i
@@ -199,20 +222,19 @@ class ShadowWordDeath(SpellCard):
 
 
 class Apotheosis(SpellCard):
-    def __init__(self):
-        super().__init__()
-        self.name = "神圣化身"
-        self.cost = 3
-        self.spell_type = SPELL_POINT_MINE
-        self.bias = -6
+    name = "神圣化身"
+    cost = 3
+    spell_type = SPELL_POINT_MINE
+    bias = -6
 
-    def best_h_and_arg(self, state):
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
         best_delta_h = 0
         best_mine_index = -1
 
         for i in range(state.my_minion_num):
             minion = state.my_minions[i]
-            tmp = self.bias + 3 + (minion.health + 2) / 4 + \
+            tmp = cls.bias + 3 + (minion.health + 2) / 4 + \
                   (minion.attack + 1) / 2
             if minion.can_attack_minion:
                 tmp += minion.attack / 4
@@ -224,23 +246,20 @@ class Apotheosis(SpellCard):
 
 
 class DeathsHeadCultist(BasicMinionCard):
-    def __init__(self):
-        super().__init__()
-        self.name = "亡首教徒"
-        self.cost = 3
-        self.value = 1
+    name = "亡首教徒"
+    cost = 3
+    value = 1
 
 
 class DevouringPlague(SpellCard):
-    def __init__(self):
-        super().__init__()
-        self.name = "噬灵疫病"
-        self.cost = 3
-        self.spell_type = SPELL_NO_POINT
-        self.wait_time = 4
-        self.bias = -4  # 把吸的血直接算进bias
+    name = "噬灵疫病"
+    cost = 3
+    spell_type = SPELL_NO_POINT
+    wait_time = 4
+    bias = -4  # 把吸的血直接算进bias
 
-    def best_h_and_arg(self, state):
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
         h = state.heuristic_value
 
         sum = 0
@@ -253,40 +272,36 @@ class DevouringPlague(SpellCard):
 
             sum += tmp_state.heuristic_value - h
 
-        return sum / sample_times + self.bias,
+        return sum / sample_times + cls.bias,
 
 
 class OverconfidentOrc(BasicMinionCard):
-    def __init__(self):
-        super().__init__()
-        self.name = "狂傲的兽人"
-        self.cost = 3
-        self.value = 3
+    name = "狂傲的兽人"
+    cost = 3
+    value = 3
 
 
 class HolyNova(SpellCard):
-    def __init__(self):
-        super().__init__()
-        self.name = "神圣新星"
-        self.cost = 4
-        self.spell_type = SPELL_NO_POINT
-        self.bias = -8
+    name = "神圣新星"
+    cost = 4
+    spell_type = SPELL_NO_POINT
+    bias = -8
 
-    def best_h_and_arg(self, state):
-        return self.bias + sum([minion.delta_h_after_damage(2)
-                                for minion in state.oppo_minions]),
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        return cls.bias + sum([minion.delta_h_after_damage(2)
+                               for minion in state.oppo_minions]),
 
 
 class Hysteria(SpellCard):
-    def __init__(self):
-        super(Hysteria, self).__init__()
-        self.name = "狂乱"
-        self.cost = 4
-        self.wait_time = 5
-        self.spell_type = SPELL_POINT_OPPO
-        self.bias = -9  # 我觉得狂乱应该要能力挽狂澜
+    name = "狂乱"
+    cost = 4
+    wait_time = 5
+    spell_type = SPELL_POINT_OPPO
+    bias = -9  # 我觉得狂乱应该要能力挽狂澜
 
-    def best_h_and_arg(self, state):
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
         best_delta_h = 0
         best_arg = 0
         sample_times = 10
@@ -336,33 +351,31 @@ class Hysteria(SpellCard):
                 best_delta_h = delta_h_count
                 best_arg = chosen_index
 
-        return best_delta_h + self.bias, best_arg
+        return best_delta_h + cls.bias, best_arg
 
 
 class ShadowWordRuin(SpellCard):
-    def __init__(self):
-        super(ShadowWordRuin, self).__init__()
-        self.name = "暗言术毁"
-        self.cost = 4
-        self.spell_type = SPELL_NO_POINT
-        self.bias = -8
+    name = "暗言术毁"
+    cost = 4
+    spell_type = SPELL_NO_POINT
+    bias = -8
 
-    def best_h_and_arg(self, state):
-        return self.bias + sum([minion.attack + minion.health
-                                for minion in state.oppo_minions
-                                if minion.attack >= 5]),
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        return cls.bias + sum([minion.attack + minion.health
+                               for minion in state.oppo_minions
+                               if minion.attack >= 5]),
 
 
 class AgainstAllOdds(SpellCard):
-    def __init__(self):
-        super(AgainstAllOdds, self).__init__()
-        self.name = "除奇致胜"
-        self.cost = 5
-        self.spell_type = SPELL_NO_POINT
-        self.bias = -9
+    name = "除奇致胜"
+    cost = 5
+    spell_type = SPELL_NO_POINT
+    bias = -9
 
-    def best_h_and_arg(self, state):
-        return self.bias + \
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        return cls.bias + \
                sum([minion.attack + minion.health
                     for minion in state.oppo_minions
                     if minion.attack % 2 == 1]) - \
@@ -372,59 +385,48 @@ class AgainstAllOdds(SpellCard):
 
 
 class RuststeedRaider(BasicMinionCard):
-    def __init__(self):
-        super(RuststeedRaider, self).__init__()
-        self.name = "锈骑劫匪"
-        self.cost = 5
-        self.value = 3
-        # TODO: 也许我可以为突袭随从专门写一套价值评判?
+    name = "锈骑劫匪"
+    cost = 5
+    value = 3
+    # TODO: 也许我可以为突袭随从专门写一套价值评判?
 
 
 class TaelanFordring(BasicMinionCard):
-    def __init__(self):
-        super(TaelanFordring, self).__init__()
-        self.name = "泰兰佛丁"
-        self.cost = 5
-        self.value = 3
+    name = "泰兰佛丁"
+    cost = 5
+    value = 3
 
 
 class CairneBloodhoof(BasicMinionCard):
-    def __init__(self):
-        super(CairneBloodhoof, self).__init__()
-        self.name = "凯恩血蹄"
-        self.cost = 6
-        self.value = 6
+    name = "凯恩血蹄"
+    cost = 6
+    value = 6
 
 
 class MutanusTheDevourer(BasicMinionCard):
-    def __init__(self):
-        super(MutanusTheDevourer, self).__init__()
-        self.name = "吃手手鱼"
-        self.cost = 7
-        self.value = 5
+    name = "吃手手鱼"
+    cost = 7
+    value = 5
 
 
 class SoulMirror(SpellCard):
-    def __init__(self):
-        super(SoulMirror, self).__init__()
-        self.name = "灵魂之镜"
-        self.cost = 7
-        self.spell_type = SPELL_NO_POINT
-        self.wait_time = 5
-        self.bias = -16
+    name = "灵魂之镜"
+    cost = 7
+    spell_type = SPELL_NO_POINT
+    wait_time = 5
+    bias = -16
 
-    def best_h_and_arg(self, state):
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
         copy_number = min(7 - state.my_minion_num, state.oppo_minion_num)
-        sum = 0
+        h_sum = 0
         for i in range(copy_number):
-            sum += state.oppo_minions[i].attack + state.oppo_minions[i].health
+            h_sum += state.oppo_minions[i].attack + state.oppo_minions[i].health
 
-        return sum + self.bias,
+        return h_sum + cls.bias,
 
 
 class BloodOfGhuun(BasicMinionCard):
-    def __init__(self):
-        super(BloodOfGhuun, self).__init__()
-        self.name = "戈霍恩之血"
-        self.cost = 9
-        self.value = 8
+    name = "戈霍恩之血"
+    cost = 9
+    value = 8

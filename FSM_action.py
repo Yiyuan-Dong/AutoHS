@@ -81,6 +81,10 @@ def Battling():
         for x in log_container.message_list:
             update_state(game_state, x)
 
+        if DEBUG_PRINT:
+            with open("game_state_snapshot.txt", "w", encoding="utf8") as f:
+                f.write(str(game_state))
+
         if game_state.is_end:
             return FSM_QUITTING_BATTLE
 
@@ -100,20 +104,16 @@ def Battling():
         last_controller_is_me = True
         not_mine_count = 0
         action_in_one_turn += 1
-        if action_in_one_turn == 15:
+        if action_in_one_turn == 16:
             click.end_turn()
             time.sleep(STATE_CHECK_INTERVAL)
         # time.sleep(0.5)
 
         strategy_state = StrategyState(game_state)
 
-        if strategy_state.test_use_coin():
-            strategy_state.use_coin()
-            continue
-
         # 考虑要不要出牌
-        delta_h, index, args = strategy_state.best_h_and_arg_within_mana()
-        if delta_h == 0:
+        delta_h, index, args = strategy_state.best_h_index_arg()
+        if delta_h <= 0:
             debug_print("不需要出牌")
         else:
             strategy_state.use_card(index, *args)
@@ -241,4 +241,4 @@ def AutoHS_automata():
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", sys.exit)
 
-    HandleErrorAction()
+    Battling()

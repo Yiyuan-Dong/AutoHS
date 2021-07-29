@@ -1,6 +1,11 @@
 from print_info import *
 from json_op import *
+from abc import ABC, abstractmethod
+from id2card import ID2CARD_DICT
 import copy
+import re
+
+BASE_COIN_PATTERN = re.compile(r".*_COIN\d$")
 
 
 class StrategyEntity:
@@ -18,18 +23,38 @@ class StrategyEntity:
 
     @property
     def heuristic_val(self):
-        return -1
+        return 0
+
+    @property
+    @abstractmethod
+    def cardtype(self):
+        pass
+
+    @property
+    def is_coin(self):
+        if self.card_id in ["GAME_005", "GAME_005e"]:
+            return True
+        return BASE_COIN_PATTERN.match(self.card_id) is not None
+
+    @property
+    def detail_card(self):
+        if self.is_coin:
+            return ID2CARD_DICT["COIN"]
+        else:
+            return ID2CARD_DICT.get(self.card_id, None)
 
 
-class Minion(StrategyEntity):
+class StrategyMinion(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
                  current_cost, overload,
                  attack, max_health, damage=0,
-                 taunt=0, divine_shield=0, stealth=0, windfury=0, poisonous=0,
-                 life_steal=0, spell_power=0, freeze=0,
+                 taunt=0, divine_shield=0, stealth=0,
+                 windfury=0, poisonous=0, life_steal=0,
+                 spell_power=0, freeze=0, battlecry=0,
                  not_targeted_by_spell=0, not_targeted_by_power=0,
-                 charge=0, rush=0, attackable_by_rush=0, frozen=0,
-                 exhausted=1):
+                 charge=0, rush=0,
+                 attackable_by_rush=0, frozen=0,
+                 cant_attack=0, exhausted=1):
         super().__init__(card_id, zone, zone_pos, current_cost, overload)
         self.attack = attack
         self.max_health = max_health
@@ -42,14 +67,19 @@ class Minion(StrategyEntity):
         self.life_steal = life_steal
         self.spell_power = spell_power
         self.freeze = freeze
+        self.battlecry = battlecry
         self.not_targeted_by_spell = not_targeted_by_spell
         self.not_targeted_by_power = not_targeted_by_power
         self.charge = charge
         self.rush = rush
         self.attackable_by_rush = attackable_by_rush
         self.frozen = frozen
+        self.cant_attack = cant_attack
         self.exhausted = exhausted
-        self.zone_pos = zone_pos
+
+    @property
+    def cardtype(self):
+        return CARD_MINION
 
     @property
     def health(self):
@@ -57,11 +87,13 @@ class Minion(StrategyEntity):
 
     @property
     def can_beat_face(self):
-        return self.exhausted == 0 and not self.frozen
+        return self.exhausted == 0 and self.attack > 0 \
+                and not self.frozen and not self.cant_attack
 
     @property
     def can_attack_minion(self):
-        return not self.frozen and \
+        return not self.frozen and self.attack > 0 and \
+               not self.cant_attack and \
                self.exhausted == 0 or self.attackable_by_rush
 
     def __str__(self):
@@ -83,10 +115,10 @@ class Minion(StrategyEntity):
             temp += " 圣盾"
         if self.stealth:
             temp += " 潜行"
-        # if self.charge:
-        #     temp += " 冲锋"
-        # if self.rush:
-        #     temp += " 突袭"
+        if self.charge:
+            temp += " 冲锋"
+        if self.rush:
+            temp += " 突袭"
         if self.windfury:
             temp += " 风怒"
         if self.poisonous:
@@ -94,11 +126,13 @@ class Minion(StrategyEntity):
         if self.life_steal:
             temp += " 吸血"
         if self.freeze:
-            temp += "冻结敌人"
+            temp += " 冻结敌人"
         if self.not_targeted_by_spell and self.not_targeted_by_power:
             temp += " 魔免"
         if self.spell_power:
             temp += f" 法术伤害+{self.spell_power}"
+        if self.cant_attack:
+            temp += " 不能攻击"
 
         temp += f" h_val:{self.heuristic_val}"
 
@@ -146,6 +180,10 @@ class Minion(StrategyEntity):
             h_val += self.attack / 2 + self.health / 4
         h_val += self.poisonous
 
+        if self.zone == "HAND":
+            if self.rush or self.attack:
+                h_val += self.attack / 4
+
         return h_val
 
     def delta_h_after_damage(self, damage):
@@ -154,7 +192,7 @@ class Minion(StrategyEntity):
         return self.heuristic_val - temp_minion.heuristic_val
 
 
-class Weapon(StrategyEntity):
+class StrategyWeapon(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
                  current_cost, overload,
                  attack, durability, damage=0, windfury=0):
@@ -172,6 +210,10 @@ class Weapon(StrategyEntity):
         return temp
 
     @property
+    def cardtype(self):
+        return CARD_WEAPON
+
+    @property
     def health(self):
         return self.durability - self.damage
 
@@ -180,7 +222,7 @@ class Weapon(StrategyEntity):
         return self.attack * self.health
 
 
-class Hero(StrategyEntity):
+class StrategyHero(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
                  current_cost, overload,
                  max_health, damage=0,
@@ -201,6 +243,10 @@ class Hero(StrategyEntity):
             res += " [不能动]"
         res += f" h_val:{self.heuristic_val}"
         return res
+
+    @property
+    def cardtype(self):
+        return CARD_HERO
 
     @property
     def health(self):
@@ -235,14 +281,20 @@ class Hero(StrategyEntity):
         return self.heuristic_val - temp_hero.heuristic_val
 
 
-class Spell(StrategyEntity):
-    pass
+class StrategySpell(StrategyEntity):
+    @property
+    def cardtype(self):
+        return CARD_SPELL
 
 
-class HeroPower(StrategyEntity):
+class StrategyHeroPower(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
                  current_cost, overload,
                  exhausted):
         super().__init__(card_id, zone, zone_pos,
                          current_cost, overload)
         self.exhausted = exhausted
+
+    @property
+    def cardtype(self):
+        return CARD_HERO_POWER

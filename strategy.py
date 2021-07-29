@@ -3,8 +3,7 @@ import keyboard
 import sys
 import random
 
-from name2card import ID2CARD_DICT
-from constants.card_name import *
+from card import BasicMinionCard
 from game_state import *
 from log_op import *
 from strategy_entity import *
@@ -29,6 +28,7 @@ class StrategyState:
 
         self.my_total_mana = int(game_state.my_entity.query_tag("RESOURCES"))
         self.my_used_mana = int(game_state.my_entity.query_tag("RESOURCES_USED"))
+        self.my_temp_mana = int(game_state.my_entity.query_tag("TEMP_RESOURCES"))
 
         for entity in game_state.entity_dict.values():
             if entity.query_tag("ZONE") == "HAND":
@@ -136,7 +136,7 @@ class StrategyState:
 
     @property
     def my_last_mana(self):
-        return self.my_total_mana - self.my_used_mana
+        return self.my_total_mana - self.my_used_mana + self.my_temp_mana
 
     @property
     def oppo_minion_num(self):
@@ -263,73 +263,56 @@ class StrategyState:
             tmp.my_hand_cards[i] = copy.deepcopy(self.my_hand_cards[i])
         return tmp
 
-    def best_h_and_arg_within_mana(self, full_use=False):
+    def best_h_index_arg(self):
+        debug_print()
         best_delta_h = 0
-        best_index = 0
+        best_index = -1
         best_args = []
 
-        for card_index in range(self.my_hand_card_num):
-            hand_card = self.my_hand_cards[card_index]
+        for hand_card_index in range(self.my_hand_card_num):
+            delta_h = 0
+            args = []
+            hand_card = self.my_hand_cards[hand_card_index]
 
-            # TODO: DELETE IT !
-            if hand_card.name not in ID2CARD_DICT:
-                print(f"!!!!!!!!!! {hand_card.name}")
-            if hand_card.name != NAME_THE_COIN \
-                    and hand_card.name in ID2CARD_DICT:
-                card = ID2CARD_DICT[hand_card.name]
+            if hand_card.current_cost > self.my_last_mana:
+                debug_print(f"跳过第[{hand_card_index}]张卡牌({hand_card.name})")
+                continue
 
-                if full_use and card.current_cost != self.my_last_mana \
-                        or card.current_cost > self.my_last_mana:
-                    continue
-
-                delta_h, *args = card.best_h_and_arg(self)
-                debug_print(f"card[{card_index}]({hand_card.name}) "
+            detail_card = hand_card.detail_card
+            if detail_card is None:
+                if hand_card.cardtype == CARD_MINION and not hand_card.battlecry:
+                    delta_h, *args = BasicMinionCard.best_h_and_arg(self, hand_card_index)
+                    debug_print(f"(默认行为) card[{hand_card_index}]({hand_card.name}) "
+                                f"delta_h: {delta_h}, *args: {[]}")
+                else:
+                    debug_print(f"卡牌[{hand_card_index}]({hand_card.name})无法评判")
+            else:
+                delta_h, *args = detail_card.best_h_and_arg(self, hand_card_index)
+                debug_print(f"(手写行为) card[{hand_card_index}]({hand_card.name}) "
                             f"delta_h: {delta_h}, *args: {args}")
 
-                if delta_h > best_delta_h:
-                    best_delta_h = delta_h
-                    best_index = card_index
-                    best_args = args
+            if delta_h > best_delta_h:
+                best_delta_h = delta_h
+                best_index = hand_card_index
+                best_args = args
 
+        debug_print(f"决策结果: best_delta_h:{best_delta_h}, "
+                    f"best_index:{best_index}, best_args:{best_args}")
         return best_delta_h, best_index, best_args
-
-    def test_use_coin(self):
-        flag = False
-        for hand_card in self.my_hand_cards:
-            if hand_card.name == NAME_THE_COIN:
-                flag = True
-                break
-        if not flag:
-            debug_print("没有硬币")
-            return flag
-
-        if self.my_last_mana == 10:
-            res = False
-        else:
-            res = self.best_h_and_arg_within_mana(full_use=True)[0] \
-                  - self.best_h_and_arg_within_mana()[0] >= 1
-        if res:
-            debug_print("需要用硬币")
-        else:
-            debug_print("不需要用硬币")
-
-        return res
-
-    def use_coin(self):
-        for index in range(self.my_hand_card_num):
-            if self.my_hand_cards[index] == NAME_THE_COIN:
-                debug_print(f"Will use the coin at [{index}]")
-                ID2CARD_DICT[NAME_THE_COIN].use_with_arg(self, index)
 
     # 会返回这张卡的cost
     def use_card(self, index, *args):
         hand_card = self.my_hand_cards[index]
-        card_name = hand_card.name
-        card = ID2CARD_DICT[card_name]
-        debug_print(f"Will use card[{index}] {card.name}")
-        card.use_with_arg(self, index, *args)
+        detail_card = hand_card.detail_card
+        debug_print(f"将使用卡牌[{index}] {hand_card.name}")
+
+        if detail_card is None:
+            BasicMinionCard.use_with_arg(self, index, *args)
+        else:
+            detail_card.use_with_arg(self, index, *args)
+
         self.my_hand_cards.pop(index)
-        return card.current_cost
+        return hand_card.current_cost
 
 
 if __name__ == "__main__":

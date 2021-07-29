@@ -1,3 +1,5 @@
+import sys
+
 import win32gui
 
 hwnd_title = {}
@@ -12,15 +14,19 @@ def get_all_hwnd(hwnd, mouse):
 if __name__ == "__main__":
     win32gui.EnumWindows(get_all_hwnd, 0)
 
+    print(f"HWND : NAME")
     for h, t in hwnd_title.items():
         if t is not "":
             print(h, ":", t)
 
     hwnd = win32gui.FindWindow(None, NAME)
-    print()
+    if hwnd == 0:
+        print("未找到应用")
+        sys.exit(-1)
+
     title = win32gui.GetWindowText(hwnd)
     clsname = win32gui.GetClassName(hwnd)
-    print(title, ":", clsname)
+    print("\n", title, ":", clsname)
 
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)
     print("\n", left, top, right, bottom)
