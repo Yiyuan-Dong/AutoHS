@@ -7,9 +7,6 @@ from print_info import *
 
 
 class Card:
-    name = "Unknown"
-    cost = 0
-
     # 返回两个东西,第一项是使用这张卡的\delta h,
     # 之后是是用这张卡的最佳参数,参数数目不定
     # 参数是什么呢,比如一张火球术,参数就是指示你
@@ -37,8 +34,11 @@ class SpellCard(Card):
 
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
+        hand_card = state.my_hand_cards[card_index]
+
         if cls.spell_type == "":
-            warning_print(f"Spell card {cls.name} does not been assigned spell type!")
+            warning_print(f"Spell card {hand_card.name} does not "
+                          f"been assigned spell type!")
             return
 
         if cls.spell_type == SPELL_NO_POINT:
@@ -49,7 +49,7 @@ class SpellCard(Card):
 
         if cls.spell_type == SPELL_POINT_OPPO:
             if len(args) == 0:
-                warning_print(f"Spell {cls.name} should use with one arg!")
+                warning_print(f"Spell {hand_card.name} should use with one arg!")
                 return
 
             oppo_index = args[0]
@@ -61,7 +61,7 @@ class SpellCard(Card):
 
         if cls.spell_type == SPELL_POINT_MINE:
             if len(args) == 0:
-                warning_print(f"Spell {cls.name} should use with one arg!")
+                warning_print(f"Spell {hand_card.name} should use with one arg!")
                 return
 
             mine_index = args[0]
@@ -71,9 +71,10 @@ class SpellCard(Card):
             time.sleep(cls.wait_time)
             return
 
-        warning_print(f"{cls.name} has unknown spell type: {cls.spell_type}")
+        warning_print(f"{hand_card.name} has unknown spell type: {cls.spell_type}")
 
 
+# 幸运币
 class Coin(SpellCard):
     spell_type = SPELL_NO_POINT
 
@@ -143,15 +144,13 @@ class WeaponCard(Card):
     # TODO: 还什么都没实现...
 
 
+# 护甲商贩
 class ArmorVendor(BasicMinionCard):
-    name = "护甲商贩"
-    cost = 1
     value = 2
 
 
+# 神圣惩击
 class HolySmite(SpellCard):
-    name = "神圣惩击"
-    cost = 1
     spell_type = SPELL_POINT_OPPO
     wait_time = 2
     # 加个bias,一是包含了消耗的水晶的代价，二是包含了消耗了手牌的代价
@@ -172,9 +171,8 @@ class HolySmite(SpellCard):
         return best_delta_h, best_oppo_index
 
 
+# 倦怠光波
 class WaveOfApathy(SpellCard):
-    name = "倦怠光波"
-    cost = 1
     spell_type = SPELL_NO_POINT
     wait_time = 2
     bias = -4
@@ -189,15 +187,13 @@ class WaveOfApathy(SpellCard):
         return tmp + cls.bias,
 
 
+# 噬骨殴斗者
 class BonechewerBrawler(BasicMinionCard):
-    name = "噬骨斗殴者"
-    cost = 2
     value = 2
 
 
+# 暗言术灭
 class ShadowWordDeath(SpellCard):
-    name = "暗言术灭"
-    cost = 2
     spell_type = SPELL_POINT_OPPO
     wait_time = 1.5
     bias = -6
@@ -221,9 +217,8 @@ class ShadowWordDeath(SpellCard):
         return best_delta_h, best_oppo_index
 
 
+# 神圣化身
 class Apotheosis(SpellCard):
-    name = "神圣化身"
-    cost = 3
     spell_type = SPELL_POINT_MINE
     bias = -6
 
@@ -245,15 +240,13 @@ class Apotheosis(SpellCard):
         return best_delta_h, best_mine_index
 
 
+# 亡首教徒
 class DeathsHeadCultist(BasicMinionCard):
-    name = "亡首教徒"
-    cost = 3
     value = 1
 
 
+# 噬灵疫病
 class DevouringPlague(SpellCard):
-    name = "噬灵疫病"
-    cost = 3
     spell_type = SPELL_NO_POINT
     wait_time = 4
     bias = -4  # 把吸的血直接算进bias
@@ -275,15 +268,13 @@ class DevouringPlague(SpellCard):
         return sum / sample_times + cls.bias,
 
 
+# 狂傲的兽人
 class OverconfidentOrc(BasicMinionCard):
-    name = "狂傲的兽人"
-    cost = 3
     value = 3
 
 
+# 神圣新星
 class HolyNova(SpellCard):
-    name = "神圣新星"
-    cost = 4
     spell_type = SPELL_NO_POINT
     bias = -8
 
@@ -293,9 +284,8 @@ class HolyNova(SpellCard):
                                for minion in state.oppo_minions]),
 
 
+# 狂乱
 class Hysteria(SpellCard):
-    name = "狂乱"
-    cost = 4
     wait_time = 5
     spell_type = SPELL_POINT_OPPO
     bias = -9  # 我觉得狂乱应该要能力挽狂澜
@@ -354,9 +344,8 @@ class Hysteria(SpellCard):
         return best_delta_h + cls.bias, best_arg
 
 
+# 暗言术毁
 class ShadowWordRuin(SpellCard):
-    name = "暗言术毁"
-    cost = 4
     spell_type = SPELL_NO_POINT
     bias = -8
 
@@ -367,9 +356,8 @@ class ShadowWordRuin(SpellCard):
                                if minion.attack >= 5]),
 
 
+# 除奇致胜
 class AgainstAllOdds(SpellCard):
-    name = "除奇致胜"
-    cost = 5
     spell_type = SPELL_NO_POINT
     bias = -9
 
@@ -384,34 +372,29 @@ class AgainstAllOdds(SpellCard):
                     if minion.attack % 2 == 1]),
 
 
+# 锈骑劫匪
 class RuststeedRaider(BasicMinionCard):
-    name = "锈骑劫匪"
-    cost = 5
     value = 3
     # TODO: 也许我可以为突袭随从专门写一套价值评判?
 
 
+# 泰兰佛丁
 class TaelanFordring(BasicMinionCard):
-    name = "泰兰佛丁"
-    cost = 5
     value = 3
 
 
+# 凯恩血蹄
 class CairneBloodhoof(BasicMinionCard):
-    name = "凯恩血蹄"
-    cost = 6
     value = 6
 
 
+# 吃手手鱼
 class MutanusTheDevourer(BasicMinionCard):
-    name = "吃手手鱼"
-    cost = 7
     value = 5
 
 
+# 灵魂之镜
 class SoulMirror(SpellCard):
-    name = "灵魂之镜"
-    cost = 7
     spell_type = SPELL_NO_POINT
     wait_time = 5
     bias = -16
@@ -426,7 +409,6 @@ class SoulMirror(SpellCard):
         return h_sum + cls.bias,
 
 
+# 戈霍恩之血
 class BloodOfGhuun(BasicMinionCard):
-    name = "戈霍恩之血"
-    cost = 9
     value = 8

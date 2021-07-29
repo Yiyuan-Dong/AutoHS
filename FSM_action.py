@@ -137,7 +137,7 @@ def Battling():
 
         # 考虑要不要用技能
         if strategy_state.my_last_mana >= 2 \
-                and strategy_state.can_use_power:
+                and not strategy_state.my_hero_power.exhausted:
             click.use_skill_point()
             continue
 
