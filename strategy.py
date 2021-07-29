@@ -3,7 +3,7 @@ import keyboard
 import sys
 import random
 
-from card import BasicMinionCard
+from card import MinionNoPoint
 from game_state import *
 from log_op import *
 from strategy_entity import *
@@ -223,9 +223,7 @@ class StrategyState:
         max_my_index = -1
         max_oppo_index = -1
 
-        for my_index in range(len(self.my_minions)):
-            my_minion = self.my_minions[my_index]
-
+        for my_index, my_minion in enumerate(self.my_minions):
             if not my_minion.can_attack_minion:
                 continue
 
@@ -254,6 +252,7 @@ class StrategyState:
         return max_my_index, max_oppo_index
 
     def copy_new_one(self):
+        # TODO: 有必要吗
         tmp = copy.deepcopy(self)
         for i in range(self.oppo_minion_num):
             tmp.oppo_minions[i] = copy.deepcopy(self.oppo_minions[i])
@@ -269,10 +268,9 @@ class StrategyState:
         best_index = -1
         best_args = []
 
-        for hand_card_index in range(self.my_hand_card_num):
+        for hand_card_index, hand_card in enumerate(self.my_hand_cards):
             delta_h = 0
             args = []
-            hand_card = self.my_hand_cards[hand_card_index]
 
             if hand_card.current_cost > self.my_last_mana:
                 debug_print(f"跳过第[{hand_card_index}]张卡牌({hand_card.name})")
@@ -281,7 +279,7 @@ class StrategyState:
             detail_card = hand_card.detail_card
             if detail_card is None:
                 if hand_card.cardtype == CARD_MINION and not hand_card.battlecry:
-                    delta_h, *args = BasicMinionCard.best_h_and_arg(self, hand_card_index)
+                    delta_h, *args = MinionNoPoint.best_h_and_arg(self, hand_card_index)
                     debug_print(f"(默认行为) card[{hand_card_index}]({hand_card.name}) "
                                 f"delta_h: {delta_h}, *args: {[]}")
                 else:
@@ -307,7 +305,7 @@ class StrategyState:
         debug_print(f"将使用卡牌[{index}] {hand_card.name}")
 
         if detail_card is None:
-            BasicMinionCard.use_with_arg(self, index, *args)
+            MinionNoPoint.use_with_arg(self, index, *args)
         else:
             detail_card.use_with_arg(self, index, *args)
 

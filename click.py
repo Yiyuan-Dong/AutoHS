@@ -88,7 +88,6 @@ def put_minion(gap_index, minion_num):
     y = 600
     left_click(x, y)
     time.sleep(OPERATE_INTERVAL)
-    cancel_click()
 
 
 def click_button(x, y, button):

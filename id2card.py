@@ -4,6 +4,7 @@ ID2CARD_DICT = {
     # 特殊项-幸运币
     "COIN": Coin,
 
+    # 标准模式-牧师
     "YOP_032": ArmorVendor,  # 护甲商贩
     "CORE_CS1_130": HolySmite,  # 神圣惩击
     "CS1_130": HolySmite,  # 神圣惩击
@@ -28,4 +29,14 @@ ID2CARD_DICT = {
     "WC_030": MutanusTheDevourer,  # 吞噬者穆坦努斯
     "BT_198": SoulMirror,  # 灵魂之镜
     "DMF_053": BloodOfGhuun,  # 戈霍恩之血
+
+    # 经典模式
+    "VAN_CS2_042": FireElemental,
+    "VAN_EX1_562": Onyxia,
+    "VAN_EX1_248": FeralSpirit,
+    "VAN_EX1_246": Hex,
+    "VAN_EX1_238": LightingBolt,
+    "VAN_EX1_085": MindControlTech,
+    "VAN_EX1_284": AzureDrake,
+    "VAN_EX1_259": LightningStorm,
 }
