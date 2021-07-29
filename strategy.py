@@ -180,6 +180,10 @@ class StrategyState:
             minium = min(minium, hand_card.current_cost)
         return minium
 
+    @property
+    def my_total_spell_power(self):
+        return sum([minion.spell_power for minion in self.my_minions])
+
     def fight_between(self, oppo_index, my_index):
         oppo_minion = self.oppo_minions[oppo_index]
         my_minion = self.my_minions[my_index]

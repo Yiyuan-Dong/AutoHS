@@ -427,9 +427,10 @@ class LightingBolt(SpellPointOppo):
     def best_h_and_arg(cls, state, hand_card_index, value=0):
         best_delta_h = 0
         best_oppo_index = -1
+        spell_power = state.my_total_spell_power
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):
-            delta_h = oppo_minion.delta_h_after_damage(3)
+            delta_h = oppo_minion.delta_h_after_damage(3 + spell_power)
             if best_delta_h < delta_h:
                 best_delta_h = delta_h
                 best_oppo_index = oppo_index
@@ -463,9 +464,11 @@ class LightningStorm(SpellNoPoint):
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index, value=0):
         h_sum = 0
+        spell_power = state.my_total_spell_power
+
         for oppo_minion in state.oppo_minions:
-            h_sum += (oppo_minion.delta_h_after_damage(2) +
-                      oppo_minion.delta_h_after_damage(3)) / 2
+            h_sum += (oppo_minion.delta_h_after_damage(2 + spell_power) +
+                      oppo_minion.delta_h_after_damage(3 + spell_power)) / 2
 
         return h_sum + cls.bias,
 
