@@ -167,7 +167,7 @@ def QuittingBattle():
             return state
         click.cancel_click()
         click.test_click()
-        click.click_middle()
+        click.left_click(960, 650)
         count += 1
         if count == 50:
             return HandleErrorAction()
