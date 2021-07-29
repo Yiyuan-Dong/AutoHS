@@ -8,11 +8,19 @@ import get_screen
 from strategy import StrategyState
 from game_state import *
 
-
 FSM_state = ""
 time_snap = 0.0
-game_count = 1
+game_count = 0
+win_count = 0
+quitting_flag = False
 LOG_ITER = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
+
+
+def system_exit():
+    global quitting_flag
+    quitting_flag = True
+    sys_print(f"一共完成了{game_count}场对战, 赢了{win_count}场")
+    sys.exit(0)
 
 
 def print_out():
@@ -30,7 +38,7 @@ def print_out():
         print()
 
     if FSM_state == FSM_MATCHING:
-        sys_print("The " + str(game_count) + " game begins")
+        sys_print("The " + str(game_count + 1) + " game begins")
         game_count += 1
         time_snap = show_time(time_snap)
 
@@ -67,6 +75,8 @@ def ChoosingCardAction():
 
 
 def Battling():
+    global win_count
+
     print_out()
     game_state = GameState()
     not_mine_count = 0
@@ -74,6 +84,9 @@ def Battling():
     last_controller_is_me = False
 
     while True:
+        if quitting_flag:
+            sys.exit(0)
+
         log_container = next(LOG_ITER)
         if log_container.log_type == LOG_CONTAINER_ERROR:
             return FSM_ERROR
@@ -86,6 +99,8 @@ def Battling():
                 f.write(str(game_state))
 
         if game_state.is_end:
+            if game_state.my_entity.query_tag("PLAYSTATE") == "WON":
+                win_count += 1
             return FSM_QUITTING_BATTLE
 
         if not game_state.is_my_turn:
@@ -100,7 +115,8 @@ def Battling():
 
         # 接下来考虑在我的回合的出牌逻辑
         if not last_controller_is_me:
-            time.sleep(3)
+            time.sleep(4)
+
         last_controller_is_me = True
         not_mine_count = 0
         action_in_one_turn += 1
@@ -142,15 +158,20 @@ def Battling():
 
 def QuittingBattle():
     count = 0
-    while get_screen.get_state() != FSM_CHOOSING_HERO:
+    while True:
+        if quitting_flag:
+            sys.exit(0)
+
+        state = get_screen.get_state()
+        if state in [FSM_CHOOSING_HERO, FSM_LEAVE_HS]:
+            return state
         click.cancel_click()
         click.test_click()
+        click.click_middle()
         count += 1
         if count == 50:
             return HandleErrorAction()
         time.sleep(STATE_CHECK_INTERVAL)
-
-    return FSM_CHOOSING_HERO
 
 
 def LeaveHSAction():
@@ -165,12 +186,12 @@ def LeaveHSAction():
 
 def MainMenuAction():
     print_out()
-    global FSM_state
-    while FSM_state == FSM_MAIN_MENU:
+    state = get_screen.get_state()
+    while state == FSM_MAIN_MENU:
         click.enter_battle_mode()
         time.sleep(5)
-        FSM_state = get_screen.get_state()
-    return FSM_state
+        state = get_screen.get_state()
+    return state
 
 
 def HandleErrorAction():
@@ -233,12 +254,14 @@ def AutoHS_automata():
     global FSM_state
 
     while 1:
+        if quitting_flag:
+            sys.exit(0)
         if FSM_state == "":
             FSM_state = get_screen.get_state()
         FSM_state = FSM_dispatch(FSM_state)
 
 
 if __name__ == "__main__":
-    keyboard.add_hotkey("ctrl+q", sys.exit)
+    keyboard.add_hotkey("ctrl+q", system_exit)
 
     Battling()
