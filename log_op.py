@@ -181,9 +181,9 @@ def log_iter_func(path=HEARTHSTONE_POWER_LOG_PATH):
                     line = f.readline()
 
                     if line == "":
-                        time.sleep(0.1)
+                        time.sleep(0.2)
                         empty_line_count += 1
-                        if empty_line_count == 3:
+                        if empty_line_count == 2:
                             break
                     else:
                         empty_line_count = 0

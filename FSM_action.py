@@ -25,8 +25,12 @@ def update_game_state():
 
     for log_line_container in log_container.message_list:
         ok = update_state(game_state, log_line_container)
-        if not ok:
-            return False
+        # if not ok:
+        #     return False
+
+    if DEBUG_PRINT:
+        with open("game_state_snapshot.txt", "w", encoding="utf8") as f:
+            f.write(str(game_state))
 
     return True
 
@@ -50,7 +54,6 @@ def print_out():
         warning_print("Wow, What happened?")
         show_time(0.0)
         warning_print("Try to go back to HS")
-        print()
 
     if FSM_state == FSM_MATCHING:
         sys_print("The " + str(game_count + 1) + " game begins")
@@ -75,8 +78,10 @@ def MatchingAction():
         time.sleep(STATE_CHECK_INTERVAL)
 
         ok = update_game_state()
-        if ok and not game_state.is_end:
-            return FSM_CHOOSING_CARD
+        if ok:
+            debug_print(str(game_state.is_end))
+            if not game_state.is_end:
+                return FSM_CHOOSING_CARD
 
         curr_state = get_screen.get_state()
         if curr_state == FSM_CHOOSING_HERO:
@@ -90,7 +95,7 @@ def MatchingAction():
 def ChoosingCardAction():
     print_out()
     # TODO: 选牌时要不要做点什么
-    time.sleep(21)
+    time.sleep(25)
     click.commit_choose_card()
     loop_count = 0
 
@@ -104,7 +109,7 @@ def ChoosingCardAction():
             return FSM_QUITTING_BATTLE
 
         loop_count += 1
-        if loop_count >= 100:
+        if loop_count >= 120:
             return FSM_ERROR
         time.sleep(STATE_CHECK_INTERVAL)
 
@@ -127,10 +132,6 @@ def Battling():
         if not ok:
             return FSM_ERROR
 
-        if DEBUG_PRINT:
-            with open("game_state_snapshot.txt", "w", encoding="utf8") as f:
-                f.write(str(game_state))
-
         if game_state.is_end:
             if game_state.my_entity.query_tag("PLAYSTATE") == "WON":
                 win_count += 1
@@ -141,7 +142,7 @@ def Battling():
             action_in_one_turn = 0
 
             not_mine_count += 1
-            if not_mine_count >= 1000:
+            if not_mine_count >= 400:
                 return FSM_ERROR
 
             # time.sleep(0.5)
@@ -160,8 +161,10 @@ def Battling():
         last_controller_is_me = True
         not_mine_count = 0
         action_in_one_turn += 1
-        if action_in_one_turn == 16:
+        if action_in_one_turn >= 16:
             click.end_turn()
+            click.commit_error_report()
+            click.cancel_click()
             time.sleep(STATE_CHECK_INTERVAL)
         # time.sleep(0.5)
 
@@ -212,8 +215,8 @@ def QuittingBattle():
         click.commit_error_report()
 
         loop_count += 1
-        if loop_count == 100:
-            return HandleErrorAction()
+        if loop_count >= 15:
+            return FSM_ERROR
 
         time.sleep(STATE_CHECK_INTERVAL)
 
@@ -311,4 +314,4 @@ def AutoHS_automata():
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", system_exit)
 
-    ChoosingCardAction()
+    QuittingBattle()

@@ -260,7 +260,7 @@ class StrategyState:
                         max_my_index = my_index
                         max_oppo_index = -1
 
-                    debug_print(f"攻击决策：[{my_index}]({my_minion})打脸, "
+                    debug_print(f"攻击决策：[{my_index}]({my_minion.name})打脸, "
                                 f"delta_h_val:{face_delta_h}")
 
         return max_my_index, max_oppo_index
