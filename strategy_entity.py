@@ -88,7 +88,7 @@ class StrategyMinion(StrategyEntity):
     @property
     def can_beat_face(self):
         return self.exhausted == 0 and self.attack > 0 \
-                and not self.frozen and not self.cant_attack
+               and not self.frozen and not self.cant_attack
 
     @property
     def can_attack_minion(self):
@@ -185,6 +185,18 @@ class StrategyMinion(StrategyEntity):
                 h_val += self.attack / 4
 
         return h_val
+
+    @property
+    def can_point_by_spell(self):
+        return not self.stealth and not self.not_targeted_by_spell
+
+    @property
+    def can_point_by_hero_power(self):
+        return not self.stealth and not self.not_targeted_by_power
+
+    @property
+    def can_point_by_minion(self):
+        return not self.stealth
 
     def delta_h_after_damage(self, damage):
         temp_minion = copy.copy(self)

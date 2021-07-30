@@ -226,6 +226,7 @@ class StrategyState:
         max_delta_h_val = 0
         max_my_index = -1
         max_oppo_index = -1
+        max_attack = 0
 
         for my_index, my_minion in enumerate(self.my_minions):
             if not my_minion.can_attack_minion:
@@ -233,17 +234,23 @@ class StrategyState:
 
             for oppo_index in could_attack_oppos:
                 oppo_minion = self.oppo_minions[oppo_index]
+                if oppo_minion.stealth:
+                    continue
                 tmp_delta_h_val = 0
 
                 tmp_delta_h_val -= my_minion.delta_h_after_damage(oppo_minion.attack)
                 tmp_delta_h_val += oppo_minion.delta_h_after_damage(my_minion.attack)
 
-                if tmp_delta_h_val > max_delta_h_val:
+                if tmp_delta_h_val > max_delta_h_val or \
+                        tmp_delta_h_val == max_delta_h_val and my_minion.attack < max_attack:
                     max_delta_h_val = tmp_delta_h_val
                     max_my_index = my_index
                     max_oppo_index = oppo_index
+                    max_attack = my_minion.attack
 
-                # print(my_index, oppo_index, tmp_delta_h_val)
+                debug_print(f"攻击决策：[{my_index}]({my_minion})->"
+                            f"[{oppo_index}]({oppo_minion}) delta_h_val: {tmp_delta_h_val}")
+
             # 如果没有墙,自己又能打脸,应该试一试
             if not has_taunt:
                 if my_minion.can_beat_face:
@@ -252,6 +259,9 @@ class StrategyState:
                         max_delta_h_val = face_delta_h
                         max_my_index = my_index
                         max_oppo_index = -1
+
+                    debug_print(f"攻击决策：[{my_index}]({my_minion})打脸, "
+                                f"delta_h_val:{face_delta_h}")
 
         return max_my_index, max_oppo_index
 

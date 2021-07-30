@@ -112,14 +112,14 @@ def right_click(x, y):
 
 def match_opponent():
     # 一些奇怪的错误提示
-    left_click(960, 650)
+    commit_error_report()
     time.sleep(OPERATE_INTERVAL)
     left_click(1400, 900)
 
 
 def enter_battle_mode():
     # 一些奇怪的错误提示
-    left_click(960, 650)
+    commit_error_report()
     time.sleep(OPERATE_INTERVAL)
     left_click(950, 320)
 
@@ -132,11 +132,22 @@ def end_turn():
     left_click(1550, 500)
 
 
-def emoj():
-    emoj_list = [(800, 780), (1140, 780), (800, 680), (1150, 680)]
+def commit_error_report():
+    # 一些奇怪的错误提示
+    left_click(1100, 820)
+    # 如果已断线, 点这里时取消
+    left_click(960, 650)
+
+
+def emoj(target=None):
+    emoj_list = [(800, 880), (800, 780), (800, 680), (1150, 680), (1150, 780)]
     right_click(960, 830)
     time.sleep(OPERATE_INTERVAL)
-    x, y = emoj_list[random.randint(0, 3)]
+
+    if target is None:
+        x, y = emoj_list[random.randint(1, 4)]
+    else:
+        x, y = emoj_list[target]
     left_click(x, y)
     time.sleep(OPERATE_INTERVAL)
 
@@ -192,7 +203,4 @@ def enter_HS():
 
 
 if __name__ == "__main__":
-    n = 1
-    for i in range(n):
-        choose_card(i, n)
-        cancel_click()
+    emoj(0)

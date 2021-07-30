@@ -1,3 +1,5 @@
+import sys
+
 from log_op import *
 from json_op import *
 from strategy_entity import *
@@ -65,7 +67,7 @@ class GameState:
 
     @property
     def is_end(self):
-        return self.game_entity.query_tag("STATE") == "COMPLETE"
+        return self.game_state == "COMPLETE"
 
     @property
     def current_update_entity(self):
@@ -102,11 +104,15 @@ class GameState:
 
     @property
     def game_step(self):
-        return self.game_entity.query("STEP")
+        return self.game_entity.query_tag("STEP")
 
     @property
     def game_state(self):
-        return self.game_entity.query("STATE")
+        return self.game_entity.query_tag("STATE")
+
+    @property
+    def game_num_turns_in_play(self):
+        return int(self.game_entity.query_tag("NUM_TURNS_IN_PLAY"))
 
 
 class Entity:
@@ -291,6 +297,9 @@ def update_state(state, line_info_container):
         else:
             entity_id = entity_string
 
+        if entity_id not in state.entity_dict:
+            return False
+
         tag = line_info_container.info_dict["tag"]
         value = line_info_container.info_dict["value"]
 
@@ -311,6 +320,8 @@ def update_state(state, line_info_container):
         else:
             state.my_name = player_name
             state.my_player_id = player_id
+
+    return True
 
 
 if __name__ == "__main__":
