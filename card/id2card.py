@@ -1,8 +1,15 @@
-from card import *
+from card.basic_card import Coin
+from card.standard_card import *
+from card.classic_card import *
+from card.hero_power_card import *
 
 ID2CARD_DICT = {
     # 特殊项-幸运币
     "COIN": Coin,
+
+    # 英雄技能
+    "TOTEMIC_CALL": TotemicCall,
+    "LESSER_HEAL": LesserHeal,
 
     # 标准模式-牧师
     "YOP_032": ArmorVendor,  # 护甲商贩

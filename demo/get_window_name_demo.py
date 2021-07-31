@@ -1,9 +1,6 @@
 import sys
 
-import win32api
 import win32gui
-import win32process
-import win32con
 
 hwnd_title = {}
 NAME = "炉石传说"

@@ -1,4 +1,3 @@
-import add_parent_dir
 from strategy import *
 
 if __name__ == "__main__":

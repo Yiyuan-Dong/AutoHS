@@ -5,6 +5,7 @@ from json_op import *
 from strategy_entity import *
 from print_info import *
 
+
 class GameState:
     def __init__(self):
         self.game_entity_id = 0
@@ -17,9 +18,9 @@ class GameState:
         self.current_update_id = 0
 
     def __str__(self):
-        res = "---------------State---------------\n"
-        res += \
-            f"""game_entity_id: {self.game_entity_id}
+        res = \
+            f"""GameState:
+    game_entity_id: {self.game_entity_id}
     my_name: {self.my_name}
     oppo_name: {self.oppo_name}
     my_player_id: {self.my_player_id}
@@ -43,27 +44,6 @@ class GameState:
             res += "\n"
 
         return res
-
-    def flush(self):
-        self.__init__()
-
-    def add_entity(self, entity_id, entity):
-        assert entity_id.isdigit()
-        self.entity_dict[entity_id] = entity
-
-    def set_game_entity(self, game_entity_id, game_entity):
-        self.game_entity_id = game_entity_id
-        self.add_entity(game_entity_id, game_entity)
-
-    def fetch_game_entity(self):
-        return self.entity_dict[self.game_entity_id]
-
-    def add_player_entity(self, player_entity_id, player_id, player_entity):
-        self.add_entity(player_entity_id, player_entity)
-        self.player_id_map_dict[player_id] = player_entity_id
-
-    def is_my_entity(self, entity):
-        return entity.query_tag("CONTROLLER") == self.my_player_id
 
     @property
     def is_end(self):
@@ -114,6 +94,31 @@ class GameState:
     def game_num_turns_in_play(self):
         return int(self.game_entity.query_tag("NUM_TURNS_IN_PLAY"))
 
+    @property
+    def available(self):
+        return self.game_entity_id != 0
+
+    def flush(self):
+        self.__init__()
+
+    def add_entity(self, entity_id, entity):
+        assert entity_id.isdigit()
+        self.entity_dict[entity_id] = entity
+
+    def set_game_entity(self, game_entity_id, game_entity):
+        self.game_entity_id = game_entity_id
+        self.add_entity(game_entity_id, game_entity)
+
+    def fetch_game_entity(self):
+        return self.entity_dict[self.game_entity_id]
+
+    def add_player_entity(self, player_entity_id, player_id, player_entity):
+        self.add_entity(player_entity_id, player_entity)
+        self.player_id_map_dict[player_id] = player_entity_id
+
+    def is_my_entity(self, entity):
+        return entity.query_tag("CONTROLLER") == self.my_player_id
+
 
 class Entity:
     def __init__(self):
@@ -128,8 +133,8 @@ class Entity:
     def set_tag(self, tag, val):
         self.tag_dict[tag] = val
 
-    def query_tag(self, tag):
-        return self.tag_dict.get(tag, "0")
+    def query_tag(self, tag, default_val="0"):
+        return self.tag_dict.get(tag, default_val)
 
     @property
     def cardtype(self):
@@ -184,7 +189,7 @@ class CardEntity(Entity):
                 rush=int(self.query_tag("RUSH")),
                 frozen=int(self.query_tag("FROZEN")),
                 attackable_by_rush=int(self.query_tag("ATTACKABLE_BY_RUSH")),
-                exhausted=int(self.query_tag("EXHAUSTED")),
+                exhausted=int(self.query_tag("EXHAUSTED", "1")),
                 cant_attack=int(self.query_tag("CANT_ATTACK"))
             )
         elif self.cardtype == "SPELL":

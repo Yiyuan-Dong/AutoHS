@@ -7,7 +7,6 @@ import cv2
 import time
 import math
 
-import add_parent_dir
 import get_screen
 
 
@@ -76,7 +75,7 @@ def show_area(img, top_left, bottom_right, print_out=False):
 
 
 if __name__ == "__main__":
-    im_opencv = get_screen.catch_screen("炉石传说")
+    im_opencv = get_screen.catch_screen("Hearthstone")
     if im_opencv is None:
         print("未找到应用")
         sys.exit(-1)

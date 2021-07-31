@@ -3,7 +3,7 @@ import keyboard
 import sys
 import random
 
-from card import MinionNoPoint
+from card.basic_card import MinionNoPoint
 from game_state import *
 from log_op import *
 from strategy_entity import *
@@ -184,6 +184,10 @@ class StrategyState:
     def my_total_spell_power(self):
         return sum([minion.spell_power for minion in self.my_minions])
 
+    @property
+    def my_detail_hero_power(self):
+        return self.my_hero_power.detail_hero_power
+
     def fight_between(self, oppo_index, my_index):
         oppo_minion = self.oppo_minions[oppo_index]
         my_minion = self.my_minions[my_index]
@@ -226,7 +230,7 @@ class StrategyState:
         max_delta_h_val = 0
         max_my_index = -1
         max_oppo_index = -1
-        max_attack = 0
+        min_attack = 0
 
         for my_index, my_minion in enumerate(self.my_minions):
             if not my_minion.can_attack_minion:
@@ -242,11 +246,11 @@ class StrategyState:
                 tmp_delta_h_val += oppo_minion.delta_h_after_damage(my_minion.attack)
 
                 if tmp_delta_h_val > max_delta_h_val or \
-                        tmp_delta_h_val == max_delta_h_val and my_minion.attack < max_attack:
+                        tmp_delta_h_val == max_delta_h_val and my_minion.attack < min_attack:
                     max_delta_h_val = tmp_delta_h_val
                     max_my_index = my_index
                     max_oppo_index = oppo_index
-                    max_attack = my_minion.attack
+                    min_attack = my_minion.attack
 
                 debug_print(f"攻击决策：[{my_index}]({my_minion})->"
                             f"[{oppo_index}]({oppo_minion}) delta_h_val: {tmp_delta_h_val}")
@@ -266,7 +270,7 @@ class StrategyState:
         return max_my_index, max_oppo_index
 
     def copy_new_one(self):
-        # TODO: 有必要吗
+        # TODO: 有必要deepcopy吗
         tmp = copy.deepcopy(self)
         for i in range(self.oppo_minion_num):
             tmp.oppo_minions[i] = copy.deepcopy(self.oppo_minions[i])
@@ -310,6 +314,7 @@ class StrategyState:
 
         debug_print(f"决策结果: best_delta_h:{best_delta_h}, "
                     f"best_index:{best_index}, best_args:{best_args}")
+        debug_print()
         return best_delta_h, best_index, best_args
 
     # 会返回这张卡的cost
@@ -317,6 +322,7 @@ class StrategyState:
         hand_card = self.my_hand_cards[index]
         detail_card = hand_card.detail_card
         debug_print(f"将使用卡牌[{index}] {hand_card.name}")
+        debug_print()
 
         if detail_card is None:
             MinionNoPoint.use_with_arg(self, index, *args)

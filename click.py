@@ -9,11 +9,36 @@ from print_info import *
 import sys
 
 
+def click_button(x, y, button):
+    x += random.randint(-5, 5)
+    y += random.randint(-5, 5)
+    mouse = Controller()
+    time.sleep(0.1)
+    mouse.position = (x, y)
+    time.sleep(0.1)
+    mouse.press(button)
+    time.sleep(0.1)
+    mouse.release(button)
+
+
+def left_click(x, y):
+    click_button(x, y, Button.left)
+
+
+def right_click(x, y):
+    click_button(x, y, Button.right)
+
+
 def choose_my_minion(mine_index, mine_num):
     time.sleep(OPERATE_INTERVAL)
     x = 960 - (mine_num - 1) * 70 + mine_index * 140
     y = 600
     left_click(x, y)
+
+
+def choose_my_hero():
+    time.sleep(OPERATE_INTERVAL)
+    left_click(960, 850)
 
 
 def choose_opponent_minion(oppo_index, oppo_num):
@@ -54,6 +79,8 @@ HAND_CARD_X = [
 
 
 def choose_card(card_index, card_num):
+    time.sleep(OPERATE_INTERVAL)
+
     if card_index >= card_num or card_num > 10 \
             or card_num <= 0 or card_index < 0:
         return
@@ -63,14 +90,15 @@ def choose_card(card_index, card_num):
 
     y = 1000
     left_click(x, y)
-    time.sleep(OPERATE_INTERVAL)
 
 
 def click_middle():
+    time.sleep(OPERATE_INTERVAL)
     left_click(960, 500)
 
 
 def click_setting():
+    time.sleep(OPERATE_INTERVAL)
     left_click(1880, 1050)
 
 
@@ -81,33 +109,14 @@ def choose_and_use_spell(card_index, card_num):
 
 # 第[i]个随从左边那个空隙记为第[i]个gap
 def put_minion(gap_index, minion_num):
+    time.sleep(OPERATE_INTERVAL)
+
     if minion_num >= 7:
         warning_print(f"Try to put a minion but there has already been {minion_num} minions")
 
     x = 960 - (minion_num - 1) * 70 + 140 * gap_index - 70
     y = 600
     left_click(x, y)
-    time.sleep(OPERATE_INTERVAL)
-
-
-def click_button(x, y, button):
-    x += random.randint(-5, 5)
-    y += random.randint(-5, 5)
-    mouse = Controller()
-    time.sleep(0.1)
-    mouse.position = (x, y)
-    time.sleep(0.1)
-    mouse.press(button)
-    time.sleep(0.1)
-    mouse.release(button)
-
-
-def left_click(x, y):
-    click_button(x, y, Button.left)
-
-
-def right_click(x, y):
-    click_button(x, y, Button.right)
 
 
 def match_opponent():
@@ -125,10 +134,12 @@ def enter_battle_mode():
 
 
 def commit_choose_card():
+    time.sleep(OPERATE_INTERVAL)
     left_click(960, 850)
 
 
 def end_turn():
+    time.sleep(OPERATE_INTERVAL)
     left_click(1550, 500)
 
 
@@ -152,18 +163,25 @@ def emoj(target=None):
     time.sleep(OPERATE_INTERVAL)
 
 
-def use_skill():
-    left_click(1150, 850)
-    cancel_click()
-    time.sleep(1)
-
-
-def use_skill_point():
-    left_click(1150, 850)
+def click_skill():
     time.sleep(OPERATE_INTERVAL)
-    left_click(960, 850)
+    left_click(1150, 850)
+
+
+def use_skill_no_point():
+    click_skill()
     cancel_click()
-    time.sleep(1.5)
+
+
+def use_skill_point_mine(my_index, my_num):
+    click_skill()
+
+    if my_index < 0:
+        choose_my_hero()
+    else:
+        choose_my_minion(my_index, my_num)
+
+    cancel_click()
 
 
 def minion_beat_minion(mine_index, mine_number, oppo_index, oppo_num):

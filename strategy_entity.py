@@ -1,11 +1,7 @@
-from print_info import *
 from json_op import *
-from abc import ABC, abstractmethod
-from id2card import ID2CARD_DICT
+from abc import abstractmethod
+from card.id2card import ID2CARD_DICT
 import copy
-import re
-
-BASE_COIN_PATTERN = re.compile(r".*_COIN\d$")
 
 
 class StrategyEntity:
@@ -32,9 +28,7 @@ class StrategyEntity:
 
     @property
     def is_coin(self):
-        if self.card_id in ["GAME_005", "GAME_005e"]:
-            return True
-        return BASE_COIN_PATTERN.match(self.card_id) is not None
+        return self.name == "幸运币"
 
     @property
     def detail_card(self):
@@ -87,14 +81,15 @@ class StrategyMinion(StrategyEntity):
 
     @property
     def can_beat_face(self):
-        return self.exhausted == 0 and self.attack > 0 \
-               and not self.frozen and not self.cant_attack
+        return self.attack > 0 and not self.frozen \
+               and not self.cant_attack and \
+               (self.exhausted == 0 or self.charge)
 
     @property
     def can_attack_minion(self):
         return not self.frozen and self.attack > 0 and \
                not self.cant_attack and \
-               self.exhausted == 0 or self.attackable_by_rush
+               (self.exhausted == 0 or self.attackable_by_rush)
 
     def __str__(self):
         temp = f"[{self.zone_pos}] {self.name} " \
@@ -149,11 +144,11 @@ class StrategyMinion(StrategyEntity):
                 return True
         return False
 
-    def get_restore(self, restore):
-        if restore > self.damage:
+    def get_heal(self, heal):
+        if heal > self.damage:
             self.damage = 0
         else:
-            self.damage -= restore
+            self.damage -= heal
 
     # 简单介绍一下卡费理论
     # 一点法力水晶 = 抽0.5张卡 = 造成1点伤害
@@ -202,6 +197,11 @@ class StrategyMinion(StrategyEntity):
         temp_minion = copy.copy(self)
         temp_minion.get_damaged(damage)
         return self.heuristic_val - temp_minion.heuristic_val
+
+    def delta_h_after_heal(self, heal):
+        temp_minion = copy.copy(self)
+        temp_minion.get_heal(heal)
+        return temp_minion.heuristic_val - self.heuristic_val
 
 
 class StrategyWeapon(StrategyEntity):
@@ -287,10 +287,21 @@ class StrategyHero(StrategyEntity):
             self.armor = 0
             self.damage += last_damage
 
+    def get_heal(self, heal):
+        if heal >= self.damage:
+            self.damage = 0
+        else:
+            self.damage -= heal
+
     def delta_h_after_damage(self, damage):
         temp_hero = copy.copy(self)
         temp_hero.get_damaged(damage)
         return self.heuristic_val - temp_hero.heuristic_val
+
+    def delta_h_after_heal(self, heal):
+        temp_hero = copy.copy(self)
+        temp_hero.get_heal(heal)
+        return temp_hero.heuristic_val - self.heuristic_val
 
 
 class StrategySpell(StrategyEntity):
@@ -310,3 +321,11 @@ class StrategyHeroPower(StrategyEntity):
     @property
     def cardtype(self):
         return CARD_HERO_POWER
+
+    @property
+    def detail_hero_power(self):
+        if self.name == "次级治疗术":
+            return ID2CARD_DICT["LESSER_HEAL"]
+        if self.name == "图腾召唤":
+            return ID2CARD_DICT["TOTEMIC_CALL"]
+        return None
