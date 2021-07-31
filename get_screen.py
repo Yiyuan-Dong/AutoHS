@@ -5,6 +5,8 @@
 import win32gui
 import win32ui
 import win32con
+import win32api
+import win32process
 import numpy
 import imagehash
 from PIL import Image
@@ -95,6 +97,14 @@ def image_hash(img):
 
 def hash_diff(str1, str2):
     return bin(int(str1, 16) ^ int(str2, 16))[2:].count("1")
+
+
+def terminate_HS():
+    hwnd = win32gui.FindWindow(None, "炉石传说")
+    _, process_id = win32process.GetWindowThreadProcessId(hwnd)
+    handle = win32api.OpenProcess(win32con.PROCESS_TERMINATE, 0, process_id)
+    win32api.TerminateProcess(handle, 0)
+    win32api.CloseHandle(handle)
 
 
 if __name__ == "__main__":

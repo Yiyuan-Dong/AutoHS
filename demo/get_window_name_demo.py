@@ -1,9 +1,13 @@
 import sys
 
+import win32api
 import win32gui
+import win32process
+import win32con
 
 hwnd_title = {}
-NAME = "战网"
+NAME = "炉石传说"
+# NAME = "战网"
 
 
 def get_all_hwnd(hwnd, mouse):
@@ -26,7 +30,7 @@ if __name__ == "__main__":
 
     title = win32gui.GetWindowText(hwnd)
     clsname = win32gui.GetClassName(hwnd)
-    print("\n", title, ":", clsname)
+    print(title, ":", clsname)
 
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)
-    print("\n", left, top, right, bottom)
+    print("位置:", left, top, right, bottom)

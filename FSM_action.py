@@ -179,9 +179,10 @@ def Battling():
             continue
 
         # 考虑要不要用技能
-        if strategy_state.my_last_mana >= 2 \
-                and not strategy_state.my_hero_power.exhausted:
-            click.use_skill_point()
+        if strategy_state.my_last_mana >= 2 and \
+                strategy_state.my_minion_num < 7 and \
+                not strategy_state.my_hero_power.exhausted:
+            click.use_skill()
             continue
 
         # 考虑随从怎么打架
@@ -221,7 +222,7 @@ def QuittingBattle():
         time.sleep(STATE_CHECK_INTERVAL)
 
 
-def LeaveHSAction():
+def GoBackHSAction():
     print_out()
 
     global FSM_state
@@ -238,7 +239,7 @@ def MainMenuAction():
     state = get_screen.get_state()
     while state == FSM_MAIN_MENU:
         click.enter_battle_mode()
-        time.sleep(5)
+        time.sleep(STATE_CHECK_INTERVAL)
         state = get_screen.get_state()
     return state
 
@@ -247,25 +248,16 @@ def HandleErrorAction():
     print_out()
 
     if not get_screen.test_hs_available():
-        return LeaveHSAction()
+        return FSM_LEAVE_HS
     else:
-        while get_screen.get_state() != FSM_LEAVE_HS:
-            click.commit_error_report()
-            click.click_setting()
-            time.sleep(0.5)
-            # 先点认输
-            click.left_click(960, 380)
+        click.commit_error_report()
+        click.click_setting()
+        time.sleep(0.5)
+        # 先尝试点认输
+        click.left_click(960, 380)
 
-            time.sleep(10)
-            for i in range(3):
-                click.test_click()
-                click.cancel_click()
-
-            click.click_setting()
-            time.sleep(0.5)
-            # 再点退出
-            click.left_click(960, 470)
-            time.sleep(6)
+        get_screen.terminate_HS()
+        time.sleep(STATE_CHECK_INTERVAL)
 
         return FSM_LEAVE_HS
 
@@ -283,7 +275,7 @@ def show_time(time_last):
 
 def FSM_dispatch(next_state):
     dispatch_dict = {
-        FSM_LEAVE_HS: LeaveHSAction,
+        FSM_LEAVE_HS: GoBackHSAction,
         FSM_MAIN_MENU: MainMenuAction,
         FSM_CHOOSING_HERO: ChoosingHeroAction,
         FSM_MATCHING: MatchingAction,
