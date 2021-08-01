@@ -69,7 +69,13 @@ class StrategyMinion(StrategyEntity):
         self.attackable_by_rush = attackable_by_rush
         self.frozen = frozen
         self.cant_attack = cant_attack
+
         self.exhausted = exhausted
+        if self.exhausted == -1:
+            if self.charge or self.rush:
+                self.exhausted = 0
+            else:
+                self.exhausted = 1
 
     @property
     def cardtype(self):
@@ -82,8 +88,7 @@ class StrategyMinion(StrategyEntity):
     @property
     def can_beat_face(self):
         return self.attack > 0 and not self.frozen \
-               and not self.cant_attack and \
-               (self.exhausted == 0 or self.charge)
+               and not self.cant_attack and self.exhausted == 0
 
     @property
     def can_attack_minion(self):

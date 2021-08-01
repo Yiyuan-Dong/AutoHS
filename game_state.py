@@ -189,7 +189,8 @@ class CardEntity(Entity):
                 rush=int(self.query_tag("RUSH")),
                 frozen=int(self.query_tag("FROZEN")),
                 attackable_by_rush=int(self.query_tag("ATTACKABLE_BY_RUSH")),
-                exhausted=int(self.query_tag("EXHAUSTED", "1")),
+                # -1代表标签缺失, 有两种情况会产生 -1: 断线重连; 卡刚从手牌中被打出来
+                exhausted=int(self.query_tag("EXHAUSTED", "-1")),
                 cant_attack=int(self.query_tag("CANT_ATTACK"))
             )
         elif self.cardtype == "SPELL":

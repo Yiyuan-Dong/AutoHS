@@ -90,7 +90,6 @@ def MatchingAction():
 
         ok = update_game_state()
         if ok:
-            debug_print(str(game_state.is_end))
             if not game_state.is_end:
                 return FSM_CHOOSING_CARD
 
@@ -164,7 +163,7 @@ def Battling():
 
         # 接下来考虑在我的回合的出牌逻辑
         if not last_controller_is_me:
-            time.sleep(4)
+            time.sleep(7)
             if game_state.game_num_turns_in_play <= 2:
                 click.emoj(0)
             else:
