@@ -1,12 +1,14 @@
 import win32gui
 import win32api
 import win32con
+import pywintypes
 import time
 from pynput.mouse import Button, Controller
 import random
+import sys
+
 from constants.constants import *
 from print_info import *
-import sys
 
 
 def click_button(x, y, button):
@@ -212,7 +214,11 @@ def enter_HS():
 
     # left_click(180, 910)
     # 把战网客户端拉回前台以便点击
-    win32gui.SetForegroundWindow(hwnd)
+    try:
+        win32gui.SetForegroundWindow(hwnd)
+    except Exception:
+        warning_print("Error while try to move BattleNet foreground")
+
     win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
     time.sleep(1)
 

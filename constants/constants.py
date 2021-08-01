@@ -1,6 +1,9 @@
-# 你的Power.log的路径,应该在你的炉石安装目录下的`Logs/`文件夹中,这里放的是我的路径
+# 你的Power.log的路径, 应该在你的炉石安装目录下的`Logs/`文件夹中, 这里放的是我的路径
 # ** 一定要修改成自己电脑上的路径 **
 HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
+
+# 你的炉石用户名, 注意英文标点符号, 把后面的数字也带上
+YOUR_NAME = "ChangeThis#54321"
 
 # 关于信息打印的设置
 DEBUG_PRINT = True
@@ -16,7 +19,7 @@ EMOJ_RATE = 0.15
 IF_PRINTOUT = 1
 OPERATE_INTERVAL = 0.2
 SMALL_OPERATE_INTERVAL = 0.1
-BASIC_MINION_PUT_INTERVAL = 2
+BASIC_MINION_PUT_INTERVAL = 1.2
 
 # 把鼠标移到卡牌上到试图截图所需的时间
 CARD_APPEAR_INTERVAL = 0.02

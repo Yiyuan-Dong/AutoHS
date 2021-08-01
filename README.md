@@ -7,17 +7,17 @@
 
 ### 如何运行
 
-0. 安装 `Python3`
+0. 安装 `Python3`。
 
 1. 安装所需依赖:
 ```
 pip install -r requirements.txt
 ```
 
-2. 在 `constants/constants` 里有一些参数可以设置，其中名为
- `HEARTHSTONE_POWER_LOG_PATH` 的变量必须修改成你的电脑上的炉石传说日志
-   `Power.log` 的路径，`Power.log` 在炉石安装路径下的 `Logs/`文件夹中。
-   
+2. 在 `constants/constants` 里有一些参数可以设置，其中有两项必须修改：
+    - 名为`HEARTHSTONE_POWER_LOG_PATH`的变量必须修改成你的电脑上的炉石传说日志`Power.log` 的路径，`Power.log` 在炉石安装路径下的 `Logs/`文件夹中。  
+    - 名为`YOUR_NAME`的变量需要改成你的炉石用户名，形如`为所欲为、异灵术#54321`。
+
 > `Power.log` 中记录了对战过程中每一个**对象**(**Entity**)的每一项**属性**(**tag**)的变化。
 > 这个**对象**包括玩家、英雄、英雄技能、卡牌(无论在牌库里、手牌中、战场上还是坟地里)等。
 > 
@@ -26,36 +26,38 @@ pip install -r requirements.txt
 > 关于炉石log的更多信息可以查看这个
 > [Reddit帖子](https://www.reddit.com/r/hearthstone/comments/268fkk/simple_hearthstone_logging_see_your_complete_play/) 。
 
-3. 可以先跑一跑 `demo/` 下的一些文件
+3. 可以先跑一跑 `demo/` 下的一些文件。
 
-4. 若要启动脚本，将当前目录切换到`AutoHS/`下（重要!），运行 `python main.py` 即可。注意脚本需要屏幕分辨率为`1920 * 1080`、炉石全屏且语言为简体中文，且在最前台。 你可以把战网客户端最小化到任务栏，或是放在炉石应用下面，但请不要关闭战网客户端。有时炉石会意外关闭，这时程序会试图重新打开炉石。
+4. 若要启动脚本，将当前目录切换到`AutoHS/`下（重要!），运行 `python main.py` 即可。注意脚本需要屏幕分辨率为 **1920 * 1080**、炉石**全屏**且语言为**简体中文**，放在**最前台**。 你可以把战网客户端最小化到任务栏，或是放在炉石应用下面，但请不要关闭战网客户端。有时炉石会意外关闭，这时程序会试图重新打开炉石。
    
 
 ### 我目前用的挂机卡组 
-标准模式-解解拖拖牧
-- 2x (1) 倦怠光波
-- 2x (1) 护甲商贩
-- 2x (1) 神圣惩击
-- 2x (2) 噬骨殴斗者
-- 2x (2) 暗言术：灭
-- 2x (3) 亡首教徒
-- 2x (3) 噬灵疫病
-- 2x (3) 狂傲的兽人
-- 1x (4) 暗言术：毁
-- 2x (4) 狂乱
-- 2x (4) 神圣新星
-- 1x (5) 泰兰·弗丁
-- 2x (5) 锈骑劫匪
-- 1x (5) 除奇致胜
+#### 经典模式－摆烂萨
+- 1x (1) 银色侍从
+- 2x (1) 闪电箭
+- 1x (2) 血法师萨尔诺斯
+- 2x (3) 妖术
+- 2x (3) 精神控制技师
+- 2x (3) 苦痛侍僧
+- 2x (3) 闪电风暴
+- 2x (3) 麦田傀儡
+- 2x (4) 冰风雪人
+- 2x (4) 森金持盾卫士
+- 2x (5) 土元素
+- 2x (5) 碧蓝幼龙
 - 1x (6) 凯恩·血蹄
-- 1x (7) 吞噬者穆坦努斯
-- 1x (7) 灵魂之镜
-- 2x (9) 戈霍恩之血
+- 2x (6) 火元素
+- 2x (6) 烈日行者
+- 1x (8) 炎魔之王拉格纳罗斯
+- 1x (8) 风领主奥拉基尔
+- 1x (9) 奥妮克希亚
 
 神秘代码:
 ```
-AAECAa0GBsi+A/PuA6bvA6iKBPCfBKOgBAzXvgPcvgPmvgPLzQP63wP44wOS5AOY6gOb6wOEnwSFnwTBnwQA
+AAEDAfWfAwayoQS1oQTboQSYogTaogS+owQM7ZUEr5YEsJYE55YEsaEEvqEE0KEEhKIEi6IEjqIEk6IE1KIEAA==
 ```
+
+带了很多传说卡牌，只是为了让它看起来不那么像脚本。所有卡牌可以替换成任意**非战吼随从**。
 
 [comment]: <> (### 如果想要用自己的卡组)
 
@@ -81,7 +83,7 @@ AAECAa0GBsi+A/PuA6bvA6iKBPCfBKOgBAzXvgPcvgPmvgPLzQP63wP44wOS5AOY6gOb6wOEnwSFnwTB
 - `demo/catch_screen_demo.py` : 运行此文件会获取炉石传说进程的整个截屏
 (无论是在前台还是后台)，并画上一些坐标基准线，方便判断想实现的操作的坐标值
 - `demo/game_state_snapshot_demo.py` : 在控制台显示目前的炉石战局情况，包括显示手牌情况，英雄情况，随从情况等；
-  还会在`demp/`目录下创建一个名为`game_state_sanpshot.txt`的文件，记录log分析情况。
+  还会在`demo/`目录下创建一个名为`game_state_sanpshot.txt`的文件，记录log分析情况。
   需要在 `Power.log` 存在，即进入对战模式后调用。
 - `demo/get_window_name.py` : 显示当前所有窗口的名称和编号，可以用来看炉石传说叫什么名字……
 - `demo/mouse_control_demo.py` : 一个样例程序展现了如何控制鼠标

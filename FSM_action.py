@@ -98,7 +98,7 @@ def MatchingAction():
             return FSM_CHOOSING_HERO
 
         loop_count += 1
-        if loop_count >= 80:
+        if loop_count >= 50:
             return FSM_ERROR
 
 
@@ -216,6 +216,8 @@ def Battling():
 def QuittingBattle():
     print_out()
 
+    time.sleep(5)
+
     loop_count = 0
     while True:
         if quitting_flag:
@@ -239,7 +241,8 @@ def GoBackHSAction():
     global FSM_state
 
     print_out()
-    time.sleep(10)
+    time.sleep(3)
+
     while not get_screen.test_hs_available():
         click.enter_HS()
         time.sleep(10)
@@ -332,4 +335,4 @@ def AutoHS_automata():
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", system_exit)
 
-    QuittingBattle()
+    MatchingAction()

@@ -4,6 +4,15 @@ from log_op import *
 from json_op import *
 from strategy_entity import *
 from print_info import *
+import constants.constants
+
+MY_NAME = constants.constants.YOUR_NAME
+
+
+def check_name():
+    global MY_NAME
+    if MY_NAME == "ChangeThis#54321":
+        MY_NAME = input("请输入你的炉石用户名, 例子: \"为所欲为、异灵术#54321\"")
 
 
 class GameState:
@@ -248,6 +257,7 @@ class CardEntity(Entity):
 
 def update_state(state, line_info_container):
     if line_info_container.line_type == LOG_LINE_CREATE_GAME:
+        debug_print("Create new game and flush")
         state.flush()
 
     if line_info_container.line_type == LOG_LINE_GAME_ENTITY:
@@ -288,16 +298,21 @@ def update_state(state, line_info_container):
         # 情形一 "TAG_CHANGE Entity=GameEntity"
         if entity_string == "GameEntity":
             entity_id = state.game_entity_id
+
         # 情形二 "TAG_CHANGE Entity=Example#51234"
         elif not entity_string.isdigit():
-            if entity_string == state.my_name:
+            # 关于为什么用 "in" 而非 "==", 我觉得这里肯定有人输错, 想鲁棒一点......
+            if MY_NAME in entity_string:
                 entity_id = state.my_entity_id
+                if entity_string != state.my_name:
+                    state.my_name = entity_string
             else:
                 entity_id = state.oppo_entity_id
                 if entity_string != state.oppo_name:
                     state.oppo_name = entity_string
 
             assert int(entity_id) <= 3
+
         # 情形三 "TAG_CHANGE Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=14 ...]"
         # 此时的EntityId已经被提取出来了
         else:
@@ -316,18 +331,39 @@ def update_state(state, line_info_container):
     if line_info_container.line_type == LOG_LINE_TAG:
         tag = line_info_container.info_dict["tag"]
         value = line_info_container.info_dict["value"]
+
+        # 在对战的一开始的时候, 对手的任何牌对你都是不可见的.
+        # 故而在日志中发现的第一个不是英雄, 不是英雄技能, 而且
+        # 你知道它的 CardID 的 Entity 一定是你的牌. 利用这
+        # 张牌确定双方的 PlayerID
+        if state.my_player_id == 0:
+            if tag == "CARDTYPE" and \
+                    value not in ["HERO", "HERO_POWER", "PLAYER", "GAME"] and \
+                    "CONTROLLER" in state.current_update_entity.tag_dict:
+                state.my_player_id = state.current_update_entity.tag_dict["CONTROLLER"]
+                # 双方PlayerID, 一个是1, 一个是2
+                state.oppo_player_id = str(3 - int(state.my_player_id))
+                debug_print(f"my_player_id: {state.my_player_id}")
+
         state.current_update_entity.set_tag(tag, value)
 
     if line_info_container.line_type == LOG_LINE_PLAYER_ID:
         player_id = line_info_container.info_dict["player"]
         player_name = line_info_container.info_dict["name"]
 
-        # 比如 "旅店老板", "UNKNOWN HUMAN PLAYER" (PVP时不会立刻显示对手昵称)
-        if "#" not in player_name:
-            state.oppo_player_id = player_id
-        else:
-            state.my_name = player_name
-            state.my_player_id = player_id
+        if player_id == state.my_player_id and \
+                player_name == "UNKNOWN HUMAN PLAYER":
+            warning_print("My name unknown")
+
+        # 我发现用这种方法很不靠谱, 有时两个 player_name
+        # 都是 "UNKNOWN HUMAN PLAYER", 有时又都是已知
+
+        # if "#" not in player_name:
+        # # 比如 "旅店老板", "UNKNOWN HUMAN PLAYER" (PVP时不会立刻显示对手昵称)
+        #     state.oppo_player_id = player_id
+        # else:
+        #     state.my_name = player_name
+        #     state.my_player_id = player_id
 
     return True
 
