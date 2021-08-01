@@ -56,12 +56,12 @@ def choose_oppo_hero():
 
 
 def cancel_click():
-    time.sleep(SMALL_OPERATE_INTERVAL)
+    time.sleep(TINY_OPERATE_INTERVAL)
     right_click(50, 400)
 
 
 def test_click():
-    time.sleep(SMALL_OPERATE_INTERVAL)
+    time.sleep(TINY_OPERATE_INTERVAL)
     left_click(50, 400)
 
 

@@ -240,10 +240,12 @@ class StrategyState:
                 oppo_minion = self.oppo_minions[oppo_index]
                 if oppo_minion.stealth:
                     continue
-                tmp_delta_h_val = 0
 
-                tmp_delta_h_val -= my_minion.delta_h_after_damage(oppo_minion.attack)
-                tmp_delta_h_val += oppo_minion.delta_h_after_damage(my_minion.attack)
+                tmp_delta_h_val = 0
+                tmp_delta_h_val -= MY_DELTA_H_FACTOR * \
+                                   my_minion.delta_h_after_damage(oppo_minion.attack)
+                tmp_delta_h_val += OPPO_DELTA_H_FACTOR * \
+                                   oppo_minion.delta_h_after_damage(my_minion.attack)
 
                 if tmp_delta_h_val > max_delta_h_val or \
                         tmp_delta_h_val == max_delta_h_val and my_minion.attack < min_attack:

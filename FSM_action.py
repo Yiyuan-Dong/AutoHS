@@ -58,8 +58,7 @@ def print_out():
     global time_snap
     global game_count
 
-    if IF_PRINTOUT:
-        sys_print("Entering State " + str(FSM_state))
+    sys_print("Entering State " + str(FSM_state))
 
     if FSM_state == FSM_LEAVE_HS:
         warning_print("Wow, What happened?")
@@ -163,11 +162,11 @@ def Battling():
 
         # 接下来考虑在我的回合的出牌逻辑
         if not last_controller_is_me:
-            time.sleep(7)
+            time.sleep(5.5)
             if game_state.game_num_turns_in_play <= 2:
                 click.emoj(0)
             else:
-                if random.random() < EMOJ_RATE:
+                if random.random() < EMOJ_RATIO:
                     click.emoj()
 
         last_controller_is_me = True

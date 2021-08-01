@@ -3,6 +3,7 @@ import time
 from abc import ABC, abstractmethod
 import click
 from constants.constants import *
+from print_info import *
 
 
 class Card(ABC):
@@ -28,7 +29,7 @@ class Card(ABC):
 
 
 class SpellCard(Card):
-    wait_time = 1.5
+    wait_time = BASIC_SPELL_WAIT_TIME
 
     @classmethod
     def get_card_type(cls):
@@ -48,6 +49,7 @@ class SpellPointOppo(SpellCard):
     def use_with_arg(cls, state, card_index, *args):
         if len(args) == 0:
             hand_card = state.my_hand_cards[card_index]
+            warning_print(f"Receive 0 args in using SpellPointOppo card {hand_card.name}")
             return
 
         oppo_index = args[0]
@@ -65,6 +67,7 @@ class SpellPointMine(SpellCard):
     def use_with_arg(cls, state, card_index, *args):
         if len(args) == 0:
             hand_card = state.my_hand_cards[card_index]
+            warning_print(f"Receive 0 args in using SpellPointMine card {hand_card.name}")
             return
 
         mine_index = args[0]
@@ -153,7 +156,7 @@ class Coin(SpellNoPoint):
             else:
                 delta_h = detail_card.best_h_and_arg(state, another_index)[0]
 
-            delta_h -= 1  # 如果跳费之后能使用的卡显著强于不跳费的卡, 就跳币
+            delta_h -= 2  # 如果跳费之后能使用的卡显著强于不跳费的卡, 就跳币
             best_delta_h = max(best_delta_h, delta_h)
 
         return best_delta_h,
