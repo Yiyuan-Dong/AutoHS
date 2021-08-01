@@ -21,6 +21,10 @@ FULL_ENTITY_PATTERN = re.compile(r" *FULL_ENTITY - Creating ID=(\d+) CardID=(.*)
 # "SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=32 zone=DECK zonePos=0 cardId= player=1] CardID=VAN_EX1_539"
 SHOW_ENTITY_PATTERN = re.compile(r" *SHOW_ENTITY - Updating Entity=(.*) CardID=(.*) *")
 
+# CHANGE_ENTITY 比较罕见，主要对应“呱”等变形行为
+# "CHANGE_ENTITY - Updating Entity=[entityName=凯恩·血蹄 id=37 zone=PLAY zonePos=3 cardId=VAN_EX1_110 player=2] CardID=hexfrog"
+CHANGE_ENTITY_PATTERN = re.compile(r" *CHANGE_ENTITY - Updating Entity=(.*) CardID=(.*) *")
+
 # "BLOCK_START BlockType=DEATHS Entity=GameEntity EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1 "
 BLOCK_START_PATTERN = re.compile(r" *BLOCK_START BlockType=([A-Z]+) Entity=(.*) EffectCardId=.*")
 
@@ -136,6 +140,14 @@ def parse_line(line_str):
     if match_obj is not None:
         return LineInfoContainer(
             LOG_LINE_SHOW_ENTITY,
+            entity=fetch_entity_id(match_obj.group(1)),
+            card=match_obj.group(2)
+        )
+
+    match_obj = CHANGE_ENTITY_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_CHANGE_ENTITY,
             entity=fetch_entity_id(match_obj.group(1)),
             card=match_obj.group(2)
         )

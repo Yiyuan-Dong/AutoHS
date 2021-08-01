@@ -292,6 +292,14 @@ def update_state(state, line_info_container):
         card_entity.update_card_id(card_id)
         state.current_update_id = card_entity_id
 
+    if line_info_container.line_type == LOG_LINE_CHANGE_ENTITY:
+        card_id = line_info_container.info_dict["card"]
+        card_entity_id = line_info_container.info_dict["entity"]
+
+        card_entity = state.entity_dict[card_entity_id]
+        card_entity.update_card_id(card_id)
+        state.current_update_id = card_entity_id
+
     if line_info_container.line_type == LOG_LINE_TAG_CHANGE:
         entity_string = line_info_container.info_dict["entity"]
 
