@@ -10,7 +10,7 @@ from strategy import StrategyState
 from game_state import *
 
 FSM_state = ""
-time_snap = 0.0
+time_begin = 0.0
 game_count = 0
 win_count = 0
 quitting_flag = False
@@ -59,19 +59,27 @@ def system_exit():
 
 def print_out():
     global FSM_state
-    global time_snap
+    global time_begin
     global game_count
 
     sys_print("Entering State " + str(FSM_state))
 
     if FSM_state == FSM_LEAVE_HS:
-        show_time(0.0)
+        show_time()
         warn_print("HearthStone not found! Try to go back to HS")
 
     if FSM_state == FSM_CHOOSING_CARD:
-        sys_print("The " + str(game_count + 1) + " game begins")
         game_count += 1
-        time_snap = show_time(time_snap)
+        sys_print("The " + str(game_count) + " game begins")
+        time_begin = show_time()
+
+    if FSM_state == FSM_QUITTING_BATTLE:
+        sys_print("The " + str(game_count) + " game ends")
+        time_now = show_time()
+        if time_begin > 0:
+            info_print("The last game last for : {} mins {} secs"
+                       .format(int((time_now - time_begin) // 60),
+                               int(time_now - time_begin) % 60))
 
     return
 
@@ -296,14 +304,9 @@ def HandleErrorAction():
         return FSM_LEAVE_HS
 
 
-def show_time(time_last):
+def show_time():
     info_print("Now the time is " +
                time.strftime("%m-%d %H:%M:%S", time.localtime()))
-    time_now = time.time()
-    if time_last > 0:
-        info_print("The last game last for : {} mins {} secs"
-                   .format(int((time_now - time_last) // 60),
-                           int(time_now - time_last) % 60))
     return time.time()
 
 
