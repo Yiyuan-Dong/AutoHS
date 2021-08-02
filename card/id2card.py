@@ -46,4 +46,7 @@ ID2CARD_DICT = {
     "VAN_EX1_085": MindControlTech,
     "VAN_EX1_284": AzureDrake,
     "VAN_EX1_259": LightningStorm,
+    "VAN_CS2_189": ElvenArcher,
+    "VAN_CS2_117": EarthenRingFarseer,
+    "VAN_EX1_097": Abomination,
 }

@@ -15,7 +15,7 @@ class Card(ABC):
     # 是要打脸还是打怪
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):
-        return cls.value
+        return cls.value,
 
     @classmethod
     @abstractmethod
@@ -82,20 +82,36 @@ class MinionCard(Card):
     def get_card_type(cls):
         return CARD_MINION
 
-
-class MinionNoPoint(MinionCard):
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
-        # 格子满了
-        if state.my_minion_num == 7:
-            return -1, 0
-        elif cls.value != 0:
+    def basic_delta_h(cls, state, hand_card_index):
+        if state.my_minion_num >= 7:
+            return -1000
+        else:
+            return 0
+
+    @classmethod
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+        if cls.value != 0:
             return cls.value, state.my_minion_num
         else:
+            # 费用越高的应该越厉害吧
             hand_card = state.my_hand_cards[hand_card_index]
-            # 在什么都不知道的时候, 认为费用越高的卡应该越超模
-            return hand_card.current_cost / 2 + 1, state.my_minion_num  # 默认放到最右边
+            return hand_card.current_cost / 2 + 1, \
+                   state.my_minion_num  # 默认放到最右边
 
+    @classmethod
+    def combo_delta_h(cls, state, hand_card_index):
+        return 0
+
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        delta_h, *args = cls.utilize_delta_h_and_arg(state, hand_card_index)
+        delta_h += cls.basic_delta_h(state, hand_card_index)
+        delta_h += cls.combo_delta_h(state, hand_card_index)
+        return (delta_h,) + tuple(args)
+
+
+class MinionNoPoint(MinionCard):
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
         gap_index = args[0]
@@ -117,6 +133,22 @@ class MinionPointOppo(MinionCard):
             click.choose_opponent_minion(oppo_index, state.oppo_minion_num)
         else:
             click.choose_oppo_hero()
+        click.cancel_click()
+        time.sleep(BASIC_MINION_PUT_INTERVAL)
+
+
+class MinionPointMine(MinionCard):
+    @classmethod
+    def use_with_arg(cls, state, card_index, *args):
+        gap_index = args[0]
+        oppo_index = args[1]
+
+        click.choose_card(card_index, state.my_hand_card_num)
+        click.put_minion(gap_index, state.my_minion_num)
+        if oppo_index >= 0:
+            click.choose_my_minion(oppo_index, state.oppo_minion_num)
+        else:
+            click.choose_my_hero()
         click.cancel_click()
         time.sleep(BASIC_MINION_PUT_INTERVAL)
 

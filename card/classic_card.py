@@ -48,7 +48,7 @@ class Hex(SpellPointOppo):
 
 # 闪电风暴
 class LightningStorm(SpellNoPoint):
-    bias = - 10
+    bias = -8
 
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):
@@ -64,13 +64,11 @@ class LightningStorm(SpellNoPoint):
 
 # TC130
 class MindControlTech(MinionNoPoint):
-    value = 1
+    value = 0.2
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
-        if state.my_minion_num >= 7:
-            return 0, -1
-        elif state.oppo_minion_num < 4:
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+        if state.oppo_minion_num < 4:
             return cls.value, state.my_minion_num
         else:
             h_sum = sum([minion.heuristic_val for minion in state.oppo_minions])
@@ -92,7 +90,7 @@ class FeralSpirit(SpellNoPoint):
 
 # 碧蓝幼龙
 class AzureDrake(MinionNoPoint):
-    value = 4
+    value = 3.5
 
 
 # 奥妮克希亚
@@ -103,9 +101,7 @@ class Onyxia(MinionNoPoint):
 # 火元素
 class FireElemental(MinionPointOppo):
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
-        if state.my_minion_num >= 7:
-            return -1, 0
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
         best_h = 3 + state.oppo_hero.delta_h_after_damage(3)
         best_oppo_index = -1
 
@@ -119,3 +115,56 @@ class FireElemental(MinionPointOppo):
                 best_oppo_index = oppo_index
 
         return best_h, state.my_minion_num, best_oppo_index
+
+
+# 精灵弓箭手
+class ElvenArcher(MinionPointOppo):
+    @classmethod
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+        # 不能让她下去点脸, 除非对面快死了
+        best_h = -0.8 + state.oppo_hero.delta_h_after_damage(1)
+        best_oppo_index = -1
+
+        for oppo_index, oppo_minion in enumerate(state.oppo_minions):
+            if not oppo_minion.can_point_by_minion:
+                continue
+
+            delta_h = -0.5 + oppo_minion.delta_h_after_damage(1)
+            if delta_h > best_h:
+                best_h = delta_h
+                best_oppo_index = oppo_index
+
+        return best_h, state.my_minion_num, best_oppo_index
+
+
+# 大地之环先知
+class EarthenRingFarseer(MinionPointMine):
+    @classmethod
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+        best_h = 0.1 + state.my_hero.delta_h_after_heal(3)
+        if state.my_hero.health <= 5:
+            best_h += 4
+        best_my_index = -1
+
+        for my_index, my_minion in enumerate(state.my_minions):
+            delta_h = -0.5 + my_minion.delta_h_after_heal(3)
+            if delta_h > best_h:
+                best_h = delta_h
+                best_my_index = my_index
+
+        return best_h, state.my_minion_num, best_my_index
+
+
+# 憎恶
+class Abomination(MinionNoPoint):
+    @classmethod
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+        h_sum = 0
+        for oppo_minion in state.oppo_minions:
+            h_sum += oppo_minion.delta_h_after_damage(2)
+        for my_minion in state.my_minions:
+            h_sum -= my_minion.delta_h_after_damage(2)
+        h_sum += state.oppo_hero.delta_h_after_damage(2)
+        h_sum -= state.my_hero.delta_h_after_damage(2)
+
+        return h_sum, state.my_minion_num

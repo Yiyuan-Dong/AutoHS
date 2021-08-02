@@ -273,12 +273,14 @@ class StrategyHero(StrategyEntity):
     def heuristic_val(self):
         if self.health <= 0:
             return -10000
+        if self.health <= 5:
+            return self.health
         if self.health <= 10:
-            return self.health * 0.6
+            return 5 + (self.health - 5) * 0.6
         if self.health <= 20:
-            return 6 + (self.health - 10) * 0.4
+            return 8 + (self.health - 10) * 0.4
         else:
-            return 10 + (self.health - 20) * 0.3
+            return 12 + (self.health - 20) * 0.3
 
     @property
     def can_attack(self):
