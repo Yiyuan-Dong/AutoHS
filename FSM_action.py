@@ -34,8 +34,8 @@ def update_game_state():
         # if not ok:
         #     return False
 
-    if DEBUG_PRINT:
-        with open("game_state_snapshot.txt", "w", encoding="utf8") as f:
+    if DEBUG_FILE_WRITE:
+        with open("./log/game_state_snapshot.txt", "w", encoding="utf8") as f:
             f.write(str(game_state))
 
     # 注意如果Power.log没有更新, 这个函数依然会返回. 应该考虑到game_state只是被初始化

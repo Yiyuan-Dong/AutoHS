@@ -359,19 +359,22 @@ def update_state(state, line_info_container):
         player_id = line_info_container.info_dict["player"]
         player_name = line_info_container.info_dict["name"]
 
-        if player_id == state.my_player_id and \
-                player_name == "UNKNOWN HUMAN PLAYER":
-            warn_print("My name unknown")
+        # 我发现用这里的信息很不靠谱, 正常情况下有时两个player_name
+        # 应该对手的是"UNKNOWN HUMAN PLAYER", 你的是自己的用户名,
+        # 但有时两个都是"UNKNOWN HUMAN PLAYER", 有时又都是已知.
+        # 所以只拿来做校验
 
-        # 我发现用这种方法很不靠谱, 有时两个 player_name
-        # 都是 "UNKNOWN HUMAN PLAYER", 有时又都是已知
+        # 下面这种情况明显是发生了错误. 一般会出现在在对战过程中关闭炉石
+        # 再重新启动炉石. 此时在构建过程中看到的第一个确切的卡可能是对手
+        # 场上的怪而非我自己的手牌, 进而误判 my_player_id
+        if player_id == state.oppo_player_id and \
+                MY_NAME in player_name:
+            warn_print("my_player_id may be wrong")
+            state.my_player_id, state.oppo_player_id = \
+                state.oppo_player_id, state.my_player_id
 
-        # if "#" not in player_name:
-        # # 比如 "旅店老板", "UNKNOWN HUMAN PLAYER" (PVP时不会立刻显示对手昵称)
-        #     state.oppo_player_id = player_id
-        # else:
-        #     state.my_name = player_name
-        #     state.my_player_id = player_id
+
+
 
     return True
 
