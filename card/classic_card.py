@@ -163,7 +163,7 @@ class EarthenRingFarseer(MinionPointMine):
 
 # 憎恶
 class Abomination(MinionNoPoint):
-    keep_in_hand_bool = False
+    keep_in_hand_bool = True
 
     @classmethod
     def utilize_delta_h_and_arg(cls, state, hand_card_index):

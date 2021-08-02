@@ -84,7 +84,7 @@ class SpellPointMine(SpellCard):
 
         mine_index = args[0]
         click.choose_card(card_index, state.my_hand_card_num)
-        click.choose_my_minion(mine_index, state.oppo_minion_num)
+        click.choose_my_minion(mine_index, state.my_minion_num)
         click.cancel_click()
         time.sleep(cls.wait_time)
 
@@ -153,12 +153,13 @@ class MinionPointMine(MinionCard):
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
         gap_index = args[0]
-        oppo_index = args[1]
+        my_index = args[1]
 
         click.choose_card(card_index, state.my_hand_card_num)
         click.put_minion(gap_index, state.my_minion_num)
-        if oppo_index >= 0:
-            click.choose_my_minion(oppo_index, state.oppo_minion_num)
+        if my_index >= 0:
+            # 这时这个随从已经在场上了, 其他随从已经移位了
+            click.choose_my_minion(my_index, state.my_minion_num + 1)
         else:
             click.choose_my_hero()
         click.cancel_click()
