@@ -7,6 +7,18 @@ from print_info import *
 
 
 class Card(ABC):
+    # 用来指示是否在留牌阶段把它留下, 默认留下
+    # 在 keep_in_hand 中返回
+    keep_in_hand_bool = True
+
+    @classmethod
+    def keep_in_hand(cls, state, hand_card_index):
+        return cls.keep_in_hand_bool
+
+    # 用来指示这张卡的价值, 在 best_h_and_arg 中返回.
+    # 如果为 0 则代表未设置, 会根据卡牌费用等信息区估算价值.
+    # 一些功能卡不能用一个简单的数值去评判价值, 应针对其另写
+    # 函数
     value = 0
 
     # 返回两个东西,第一项是使用这张卡的\delta h,

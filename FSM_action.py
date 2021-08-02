@@ -109,19 +109,18 @@ def MatchingAction():
 
         loop_count += 1
         if loop_count >= 60:
-            warn_print("Wait time out in Matching Opponent")
+            warn_print("Time out in Matching Opponent")
             return FSM_ERROR
 
 
 def ChoosingCardAction():
     print_out()
-    # TODO: 选牌时要不要做点什么
-    time.sleep(20)
+    time.sleep(21)
     loop_count = 0
 
     while True:
-        click.commit_choose_card()
         ok = update_game_state()
+
         if not ok:
             return FSM_ERROR
         if game_state.game_num_turns_in_play > 0:
@@ -129,9 +128,31 @@ def ChoosingCardAction():
         if game_state.is_end:
             return FSM_QUITTING_BATTLE
 
+        strategy_state = StrategyState(game_state)
+        hand_card_num = strategy_state.my_hand_card_num
+
+        # 等待被替换的卡牌 ZONE=HAND
+        # 注意后手时幸运币会作为第五张卡牌算在手牌里, 故只取前四张手牌
+        # 但是后手时 hand_card_num 仍然是 5
+        for my_hand_index, my_hand_card in \
+                enumerate(strategy_state.my_hand_cards[:4]):
+            detail_card = my_hand_card.detail_card
+
+            if detail_card is None:
+                should_keep_in_hand = \
+                    my_hand_card.current_cost <= REPLACE_COST_BAR
+            else:
+                should_keep_in_hand = \
+                    detail_card.keep_in_hand(strategy_state, my_hand_index)
+
+            if not should_keep_in_hand:
+                click.replace_starting_card(my_hand_index, hand_card_num)
+
+        click.commit_choose_card()
+
         loop_count += 1
         if loop_count >= 60:
-            warn_print("Wait time out in Choosing Opponent")
+            warn_print("Time out in Choosing Opponent")
             return FSM_ERROR
         time.sleep(STATE_CHECK_INTERVAL)
 
@@ -168,7 +189,7 @@ def Battling():
 
             not_mine_count += 1
             if not_mine_count >= 400:
-                warn_print("Wait time out in Opponent's turn")
+                warn_print("Time out in Opponent's turn")
                 return FSM_ERROR
 
             # time.sleep(0.5)
@@ -297,6 +318,7 @@ def HandleErrorAction():
         time.sleep(0.5)
         # 先尝试点认输
         click.left_click(960, 380)
+        time.sleep(2)
 
         get_screen.terminate_HS()
         time.sleep(STATE_CHECK_INTERVAL)
@@ -343,4 +365,4 @@ def AutoHS_automata():
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", system_exit)
 
-    MatchingAction()
+    ChoosingCardAction()

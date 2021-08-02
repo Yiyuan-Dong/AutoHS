@@ -83,15 +83,27 @@ HAND_CARD_X = [
 def choose_card(card_index, card_num):
     time.sleep(OPERATE_INTERVAL)
 
-    if card_index >= card_num or card_num > 10 \
-            or card_num <= 0 or card_index < 0:
-        return
-
+    assert 0 <= card_index < card_num <= 10
     # x = START[card_num] + 65 + STEP[card_num] * card_index
     x = HAND_CARD_X[card_num][card_index]
 
     y = 1000
     left_click(x, y)
+
+
+STARTING_CARD_X = {
+    3: [600, 960, 1320],
+    5: [600, 850, 1100, 1350],
+}
+
+
+def replace_starting_card(card_index, hand_card_num):
+    assert hand_card_num in STARTING_CARD_X
+    assert card_index < len(STARTING_CARD_X[hand_card_num])
+
+    time.sleep(OPERATE_INTERVAL)
+    left_click(STARTING_CARD_X[hand_card_num][card_index], 500)
+
 
 
 def click_middle():

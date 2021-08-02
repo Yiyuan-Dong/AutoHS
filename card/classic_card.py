@@ -27,6 +27,7 @@ class LightingBolt(SpellPointOppo):
 # 呱
 class Hex(SpellPointOppo):
     bias = -8
+    keep_in_hand_bool = False
 
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):
@@ -65,6 +66,7 @@ class LightningStorm(SpellNoPoint):
 # TC130
 class MindControlTech(MinionNoPoint):
     value = 0.2
+    keep_in_hand_bool = False
 
     @classmethod
     def utilize_delta_h_and_arg(cls, state, hand_card_index):
@@ -91,15 +93,19 @@ class FeralSpirit(SpellNoPoint):
 # 碧蓝幼龙
 class AzureDrake(MinionNoPoint):
     value = 3.5
+    keep_in_hand_bool = False
 
 
 # 奥妮克希亚
 class Onyxia(MinionNoPoint):
     value = 10
+    keep_in_hand_bool = False
 
 
 # 火元素
 class FireElemental(MinionPointOppo):
+    keep_in_hand_bool = False
+
     @classmethod
     def utilize_delta_h_and_arg(cls, state, hand_card_index):
         best_h = 3 + state.oppo_hero.delta_h_after_damage(3)
@@ -157,6 +163,8 @@ class EarthenRingFarseer(MinionPointMine):
 
 # 憎恶
 class Abomination(MinionNoPoint):
+    keep_in_hand_bool = False
+
     @classmethod
     def utilize_delta_h_and_arg(cls, state, hand_card_index):
         h_sum = 0
