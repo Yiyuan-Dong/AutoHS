@@ -48,8 +48,12 @@ def update_game_state():
 
 def system_exit():
     global quitting_flag
-    quitting_flag = True
+
     sys_print(f"一共完成了{game_count}场对战, 赢了{win_count}场")
+    print_info_close()
+
+    quitting_flag = True
+
     sys.exit(0)
 
 
@@ -61,9 +65,8 @@ def print_out():
     sys_print("Entering State " + str(FSM_state))
 
     if FSM_state == FSM_LEAVE_HS:
-        warning_print("Wow, What happened?")
         show_time(0.0)
-        warning_print("Try to go back to HS")
+        warn_print("HearthStone not found! Try to go back to HS")
 
     if FSM_state == FSM_CHOOSING_CARD:
         sys_print("The " + str(game_count + 1) + " game begins")
@@ -97,7 +100,8 @@ def MatchingAction():
             return FSM_CHOOSING_HERO
 
         loop_count += 1
-        if loop_count >= 50:
+        if loop_count >= 60:
+            warn_print("Wait time out in Matching Opponent")
             return FSM_ERROR
 
 
@@ -118,7 +122,8 @@ def ChoosingCardAction():
             return FSM_QUITTING_BATTLE
 
         loop_count += 1
-        if loop_count >= 50:
+        if loop_count >= 60:
+            warn_print("Wait time out in Choosing Opponent")
             return FSM_ERROR
         time.sleep(STATE_CHECK_INTERVAL)
 
@@ -155,6 +160,7 @@ def Battling():
 
             not_mine_count += 1
             if not_mine_count >= 400:
+                warn_print("Wait time out in Opponent's turn")
                 return FSM_ERROR
 
             # time.sleep(0.5)

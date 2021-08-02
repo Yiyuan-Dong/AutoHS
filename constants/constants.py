@@ -5,12 +5,19 @@ HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
 # 你的炉石用户名, 注意英文标点符号, 把后面的数字也带上
 YOUR_NAME = "ChangeThis#54321"
 
-# 关于信息打印的设置
-DEBUG_PRINT = True
-WARNING_PRINT = True
+# 关于控制台信息打印的设置
+DEBUG_PRINT = False
+WARN_PRINT = True
 SYS_PRINT = True
 INFO_PRINT = True
 ERROR_PRINT = True
+
+# 关于文件信息输出的设置
+DEBUG_FILE_WRITE = True
+WARN_FILE_WRITE = True
+SYS_FILE_WRITE = True
+INFO_FILE_WRITE = True
+ERROR_FILE_WRITE = True
 
 # 每个回合开始发个表情的概率
 EMOJ_RATIO = 0.15

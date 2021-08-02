@@ -6,6 +6,7 @@ import os
 from print_info import *
 
 
+# 来源于互联网的炉石JSON数据下载API, 更多信息可以访问 https://hearthstonejson.com/
 def download_json(json_path):
     json_url = "https://api.hearthstonejson.com/v1/latest/zhCN/cards.json"
     file = requests.get(json_url)

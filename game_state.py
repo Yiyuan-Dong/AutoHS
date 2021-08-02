@@ -309,7 +309,7 @@ def update_state(state, line_info_container):
 
         # 情形二 "TAG_CHANGE Entity=Example#51234"
         elif not entity_string.isdigit():
-            # 关于为什么用 "in" 而非 "==", 我觉得这里肯定有人输错, 想鲁棒一点......
+            # 关于为什么用 "in" 而非 "==", 因为我总是懒得输入后面的数字
             if MY_NAME in entity_string:
                 entity_id = state.my_entity_id
                 if entity_string != state.my_name:
@@ -327,8 +327,8 @@ def update_state(state, line_info_container):
             entity_id = entity_string
 
         if entity_id not in state.entity_dict:
-            warning_print(f"Invalid entity_id: {entity_id}")
-            warning_print(f"Current line container: {line_info_container}")
+            warn_print(f"Invalid entity_id: {entity_id}")
+            warn_print(f"Current line container: {line_info_container}")
             return False
 
         tag = line_info_container.info_dict["tag"]
@@ -361,7 +361,7 @@ def update_state(state, line_info_container):
 
         if player_id == state.my_player_id and \
                 player_name == "UNKNOWN HUMAN PLAYER":
-            warning_print("My name unknown")
+            warn_print("My name unknown")
 
         # 我发现用这种方法很不靠谱, 有时两个 player_name
         # 都是 "UNKNOWN HUMAN PLAYER", 有时又都是已知

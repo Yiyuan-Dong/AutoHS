@@ -1,26 +1,89 @@
 from constants.constants import *
+import os
+
+error_file_handle = None
+warn_file_handle = None
+debug_file_handle = None
+sys_file_handle = None
+info_file_handle = None
+
+
+def print_info_init():
+    global error_file_handle
+    global warn_file_handle
+    global debug_file_handle
+    global sys_file_handle
+    global info_file_handle
+
+    if not os.path.exists("./log/"):
+        os.mkdir("./log/")
+
+    error_file_handle = open("./log/error_log.txt", "w", encoding="utf8")
+    warn_file_handle = open("./log/warn_log.txt", "w", encoding="utf8")
+    debug_file_handle = open("./log/debug_log.txt", "w", encoding="utf8")
+    sys_file_handle = open("./log/sys_log.txt", "w", encoding="utf8")
+    info_file_handle = open("./log/info_log.txt", "w", encoding="utf8")
+
+
+def print_info_close():
+    global error_file_handle
+    global warn_file_handle
+    global debug_file_handle
+    global sys_file_handle
+    global info_file_handle
+
+    error_file_handle.close()
+    error_file_handle = None
+    warn_file_handle.close()
+    warn_file_handle = None
+    debug_file_handle.close()
+    debug_file_handle = None
+    sys_file_handle.close()
+    sys_file_handle = None
+    info_file_handle.close()
+    info_file_handle = None
 
 
 def error_print(error_str):
+    error_str = "[ERROR]" + error_str
+
     if ERROR_PRINT:
-        print("[ERROR] " + error_str)
+        print(error_str)
+    if ERROR_FILE_WRITE and error_file_handle:
+        error_file_handle.write(error_str + "\n")
 
 
-def warning_print(warning_str):
-    if WARNING_PRINT:
-        print("[WARNING] " + warning_str)
+def warn_print(warn_str):
+    warn_str = "[WARN]" + warn_str
+
+    if WARN_PRINT:
+        print(warn_str)
+    if WARN_FILE_WRITE and warn_file_handle:
+        warn_file_handle.write(warn_str+ "\n")
 
 
 def debug_print(debug_str=""):
+    debug_str = "[DEBUG]" + debug_str
+
     if DEBUG_PRINT:
-        print("[DEBUG] " + debug_str)
+        print(debug_str)
+    if DEBUG_FILE_WRITE and debug_file_handle:
+        debug_file_handle.write(debug_str + "\n")
 
 
 def sys_print(sys_str):
+    sys_str = "[SYS]" + sys_str
+
     if SYS_PRINT:
-        print("[SYS] " + sys_str)
+        print(sys_str)
+    if SYS_FILE_WRITE and sys_file_handle:
+        sys_file_handle.write(sys_str + "\n")
 
 
 def info_print(info_str):
+    info_str = "[INFO]" + info_str
+
     if INFO_PRINT:
-        print("[INFO] " + info_str)
+        print(info_str)
+    if INFO_FILE_WRITE and info_file_handle:
+        info_file_handle.write(info_str + "\n")

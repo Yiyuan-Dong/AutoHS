@@ -114,7 +114,7 @@ def put_minion(gap_index, minion_num):
     time.sleep(OPERATE_INTERVAL)
 
     if minion_num >= 7:
-        warning_print(f"Try to put a minion but there has already been {minion_num} minions")
+        warn_print(f"Try to put a minion but there has already been {minion_num} minions")
 
     x = 960 - (minion_num - 1) * 70 + 140 * gap_index - 70
     y = 600
@@ -217,7 +217,7 @@ def enter_HS():
     try:
         win32gui.SetForegroundWindow(hwnd)
     except Exception:
-        warning_print("Error while try to move BattleNet foreground")
+        warn_print("Error while try to move BattleNet foreground")
 
     win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
     time.sleep(1)
