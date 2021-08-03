@@ -229,7 +229,7 @@ def enter_HS():
     try:
         win32gui.SetForegroundWindow(hwnd)
     except Exception:
-        warn_print("Error while try to move BattleNet foreground")
+        warn_print("Error while trying to move BattleNet foreground")
 
     win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
     time.sleep(1)

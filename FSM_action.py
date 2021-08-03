@@ -20,6 +20,18 @@ log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
 
 def init():
     global game_state, log_iter
+
+    if os.path.exists(HEARTHSTONE_POWER_LOG_PATH):
+        try:
+            file_handle = open(HEARTHSTONE_POWER_LOG_PATH, "w")
+            file_handle.seek(0)
+            file_handle.truncate()
+            info_print("Success to truncate Power.log")
+        except OSError:
+            warn_print("Fail to truncate Power.log, maybe someone is using it")
+    else:
+        info_print("Power.log does not exist")
+
     game_state = GameState()
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
 
@@ -97,6 +109,8 @@ def MatchingAction():
 
     while True:
         time.sleep(STATE_CHECK_INTERVAL)
+
+        click.commit_error_report()
 
         ok = update_game_state()
         if ok:
@@ -365,4 +379,4 @@ def AutoHS_automata():
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", system_exit)
 
-    ChoosingCardAction()
+    init()
