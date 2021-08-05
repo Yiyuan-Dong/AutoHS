@@ -21,6 +21,10 @@ log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
 def init():
     global game_state, log_iter
 
+    # 有时候炉石退出时python握着Power.log的读锁, 因而炉石无法
+    # 删除Power.log. 而当炉石重启时, 炉石会从头开始写Power.log,
+    # 而python会读入完整的Power.log并在末尾等待新的写入. 那样的话
+    # python就一直读不到新的log
     if os.path.exists(HEARTHSTONE_POWER_LOG_PATH):
         try:
             file_handle = open(HEARTHSTONE_POWER_LOG_PATH, "w")
