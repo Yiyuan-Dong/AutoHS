@@ -23,8 +23,12 @@ def init():
 
     # 有时候炉石退出时python握着Power.log的读锁, 因而炉石无法
     # 删除Power.log. 而当炉石重启时, 炉石会从头开始写Power.log,
-    # 而python会读入完整的Power.log并在末尾等待新的写入. 那样的话
-    # python就一直读不到新的log
+    # 但此时python会读入完整的Power.log, 并在原来的末尾等待新的写入. 那
+    # 样的话python就一直读不到新的log. 状态机进而卡死在匹配状态(不
+    # 知道对战已经开始)
+    # 这里是试图在每次初始化文件句柄的时候删除已有的炉石日志. 如果要清空的
+    # 日志是关于当前打开的炉石的, 那么炉石会持有此文件的写锁, 使脚本无法
+    # 清空日志. 这使得脚本不会清空有意义的日志
     if os.path.exists(HEARTHSTONE_POWER_LOG_PATH):
         try:
             file_handle = open(HEARTHSTONE_POWER_LOG_PATH, "w")

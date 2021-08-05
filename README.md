@@ -21,7 +21,7 @@ pip install -r requirements.txt
 > `Power.log` 中记录了对战过程中每一个**对象**(**Entity**)的每一项**属性**(**tag**)的变化。
 > 这个**对象**包括玩家、英雄、英雄技能、卡牌(无论在牌库里、手牌中、战场上还是坟地里)等。
 > 
-> `Power.log` 会在进入炉石后第一次对战开始时创建，在退出炉石后自动删除。
+> `Power.log` 会在进入炉石后第一次对战开始时创建，在退出炉石后会被重命名为`Power_bk.log`，在再一次进入炉石时被删除。
 > 
 > 关于炉石log的更多信息可以查看这个
 > [Reddit帖子](https://www.reddit.com/r/hearthstone/comments/268fkk/simple_hearthstone_logging_see_your_complete_play/) 。
