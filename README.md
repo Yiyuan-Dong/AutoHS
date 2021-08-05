@@ -32,29 +32,29 @@ pip install -r requirements.txt
    
 
 ### 我目前用的挂机卡组 
-#### 经典模式－摆烂萨
-- 1x (1) 银色侍从
-- 2x (1) 闪电箭
+#### 经典模式－摆烂萨V2.0
+- 2x (1) 精灵弓箭手
+- 2x (1) 银色侍从
+- 1x (1) 闪电箭
 - 1x (2) 血法师萨尔诺斯
+- 2x (3) 大地之环先知
 - 2x (3) 妖术
-- 2x (3) 精神控制技师
-- 2x (3) 苦痛侍僧
+- 1x (3) 精神控制技师
+- 1x (3) 苦痛侍僧
 - 2x (3) 闪电风暴
 - 2x (3) 麦田傀儡
 - 2x (4) 冰风雪人
 - 2x (4) 森金持盾卫士
-- 2x (5) 土元素
+- 2x (5) 憎恶
 - 2x (5) 碧蓝幼龙
-- 1x (6) 凯恩·血蹄
 - 2x (6) 火元素
 - 2x (6) 烈日行者
 - 1x (8) 炎魔之王拉格纳罗斯
 - 1x (8) 风领主奥拉基尔
-- 1x (9) 奥妮克希亚
 
 神秘代码:
 ```
-AAEDAfWfAwayoQS1oQTboQSYogTaogS+owQM7ZUEr5YEsJYE55YEsaEEvqEE0KEEhKIEi6IEjqIEk6IE1KIEAA==
+AAEDAfWfAwaxoQS1oQTQoQSEogSYogS+owQM7ZUEr5YEsJYEs5YE55YE+qAEsqEEvqEE1qEEjqIEk6IE1KIEAA==
 ```
 
 带了很多传说卡牌，只是为了让它看起来不那么像脚本。所有卡牌可以替换成任意**非战吼随从**。
