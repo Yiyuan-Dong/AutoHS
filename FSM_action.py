@@ -85,17 +85,16 @@ def print_out():
     sys_print("Entering State " + str(FSM_state))
 
     if FSM_state == FSM_LEAVE_HS:
-        show_time()
         warn_print("HearthStone not found! Try to go back to HS")
 
     if FSM_state == FSM_CHOOSING_CARD:
         game_count += 1
         sys_print("The " + str(game_count) + " game begins")
-        time_begin = show_time()
+        time_begin = time.time()
 
     if FSM_state == FSM_QUITTING_BATTLE:
         sys_print("The " + str(game_count) + " game ends")
-        time_now = show_time()
+        time_now = time.time()
         if time_begin > 0:
             info_print("The last game last for : {} mins {} secs"
                        .format(int((time_now - time_begin) // 60),
@@ -346,12 +345,6 @@ def HandleErrorAction():
         time.sleep(STATE_CHECK_INTERVAL)
 
         return FSM_LEAVE_HS
-
-
-def show_time():
-    info_print("Now the time is " +
-               time.strftime("%m-%d %H:%M:%S", time.localtime()))
-    return time.time()
 
 
 def FSM_dispatch(next_state):
