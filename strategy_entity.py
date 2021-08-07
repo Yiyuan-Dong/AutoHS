@@ -335,4 +335,6 @@ class StrategyHeroPower(StrategyEntity):
             return ID2CARD_DICT["LESSER_HEAL"]
         if self.name == "图腾召唤":
             return ID2CARD_DICT["TOTEMIC_CALL"]
+        if self.name == "稳固射击":
+            return ID2CARD_DICT["BALLISTA_SHOT"]
         return None
