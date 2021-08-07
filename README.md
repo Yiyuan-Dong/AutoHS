@@ -7,28 +7,27 @@
 
 ### 如何运行
 
-0. 安装 `Python3`。
+0. 安装`Python3`。
 
 1. 安装所需依赖:
 ```
 pip install -r requirements.txt
 ```
 
-2. 在 `constants/constants` 里有一些参数可以设置，其中有两项必须修改：
-    - 名为`HEARTHSTONE_POWER_LOG_PATH`的变量必须修改成你的电脑上的炉石传说日志`Power.log` 的路径，`Power.log` 在炉石安装路径下的 `Logs/`文件夹中。  
-    - 名为`YOUR_NAME`的变量需要改成你的炉石用户名，形如`为所欲为、异灵术#54321`。如果不在文件里修改，每次启动脚本时系统都会提示你手动输入用户名。
+2. 在`constants/constants`里有一些参数可以设置，其中有两项必须修改：
+   - 名为`YOUR_NAME`的变量需要改成你的炉石用户名，形如`为所欲为、异灵术#54321`。如果不在文件里修改，每次启动脚本时系统都会提示你手动输入用户名。
+   - 名为`HEARTHSTONE_POWER_LOG_PATH`的变量必须修改成你的电脑上的炉石传说日志`Power.log`的路径，`Power.log`在炉石安装路径下的`Logs/`文件夹中。
 
-> `Power.log` 中记录了对战过程中每一个**对象**(**Entity**)的每一项**属性**(**tag**)的变化。
-> 这个**对象**包括玩家、英雄、英雄技能、卡牌(无论在牌库里、手牌中、战场上还是坟地里)等。
+> `Power.log`中记录了对战过程中每一个**对象**(**Entity**)的每一项**属性**(**tag**)的变化。 这个**对象**包括玩家、英雄、英雄技能、卡牌(无论在牌库里、手牌中、战场上还是坟地里)等。
 > 
-> `Power.log` 会在进入炉石后第一次对战开始时创建，在退出炉石后会被重命名为`Power_bk.log`，在再一次进入炉石时被删除。
+> `Power.log`会在进入炉石后第一次对战开始时创建，在退出炉石后会被重命名为`Power_bk.log`，在再一次进入炉石时被删除。
 > 
 > 关于炉石log的更多信息可以查看这个
 > [Reddit帖子](https://www.reddit.com/r/hearthstone/comments/268fkk/simple_hearthstone_logging_see_your_complete_play/) 。
 
-3. 可以先跑一跑 `demo/` 下的一些文件。
+3. 可以先跑一跑`demo/`下的一些文件。
 
-4. 若要启动脚本，将当前目录切换到`AutoHS/`下（重要!），运行 `python main.py` 即可。注意脚本需要屏幕分辨率为 **1920 * 1080**、炉石**全屏**且语言为**简体中文**，放在**最前台**。 你可以把战网客户端最小化到任务栏，或是放在炉石应用下面，但请不要关闭战网客户端。有时炉石会意外关闭，这时程序会试图重新打开炉石。
+4. 若要启动脚本，将当前目录切换到`AutoHS/`下（重要!），运行`python main.py`即可。注意脚本需要屏幕分辨率为 **1920 * 1080**、炉石**全屏**且语言为**简体中文**，放在**最前台**。 你可以把战网客户端最小化到任务栏，或是放在炉石应用下面，但请不要关闭战网客户端。有时炉石会意外关闭，这时程序会试图重新打开炉石。
    
 
 ### 我目前用的挂机卡组 
@@ -65,28 +64,31 @@ AAEDAfWfAwaxoQS1oQTQoQSEogSYogS+owQM7ZUEr5YEsJYEs5YE55YE+qAEsqEEvqEE1qEEjqIEk6IE
 
 [comment]: <> (- 你需要能认出每一张手牌， AutoHS使用图片哈希来识别图片， )
 
-[comment]: <> (   你需要录入新卡的哈希， 可以通过 `demo/identify_cards.py` )
+[comment]: <> (   你需要录入新卡的哈希， 可以通过`demo/identify_cards.py`)
 
 [comment]: <> (   去读取手牌卡画哈希)
 
-[comment]: <> (- 把哈希和对应名称录入到 `constants/hash_vals.py` 中)
+[comment]: <> (- 把哈希和对应名称录入到`constants/hash_vals.py`中)
 
-[comment]: <> (- 写出卡牌逻辑， 可以参照 `card.py`)
+[comment]: <> (- 写出卡牌逻辑， 可以参照`card.py`)
 
-[comment]: <> (- 把卡牌和中文名对应， 需要更新 `name2card.py`)
+[comment]: <> (- 把卡牌和中文名对应， 需要更新`name2card.py`)
 
 [comment]: <> (好像有点麻烦...)
 
 
 
 ### 文件说明
-- `demo/catch_screen_demo.py` : 运行此文件会获取炉石传说进程的整个截屏
-(无论是在前台还是后台)，并画上一些坐标基准线，方便判断想实现的操作的坐标值
-- `demo/game_state_snapshot_demo.py` : 在控制台显示目前的炉石战局情况，包括显示手牌情况，英雄情况，随从情况等；
-  还会在`demo/`目录下创建一个名为`game_state_sanpshot.txt`的文件，记录log分析情况。
-  需要在 `Power.log` 存在，即进入对战模式后调用。
-- `demo/get_window_name.py` : 显示当前所有窗口的名称和编号，可以用来看炉石传说叫什么名字……
-- `demo/mouse_control_demo.py` : 一个样例程序展现了如何控制鼠标
+- `demo/catch_screen_demo.py`: 运行此文件会获取炉石传说进程的整个截屏(无论是在前台还是后台)，并画上一些坐标基准线，方便判断想实现的操作的坐标值。
+- `demo/game_state_snapshot_demo.py`: 在控制台显示目前的炉石战局情况，包括显示手牌情况，英雄情况，随从情况等； 还会在`demo/`目录下创建一个名为`game_state_sanpshot.txt`的文件，记录log分析情况。 需要在`Power.log`存在，即进入对战模式后调用。
+- `demo/get_window_name.py`: 显示当前所有窗口的名称和编号，可以用来看炉石传说叫什么名字……
+- `demo/mouse_control_demo.py`: 一个样例程序，展示了如何控制鼠标。
+- `click.py`: 包含了与鼠标控制相关的代码。
+- `FSM_action.py`: 包含了脚本在炉石运行中的不同状态（比如选英雄界面、对战时、对扎结束后）应该采取什么行为以及何时进入下一站状态的代码。
+- `lop_op.py`: 包含了与读取`Power.log`相关的代码，比如针对不同日志行的正则表达式。
+- `game_state.py`: 读取`log.py`提取的日志信息，并把他们转化成字典的列表的形式。每一个字典是一个 **Entity**，**Entity** 由不同的 **tag** 及其对应值构成。
+- `strategy.py`: 读取`game_state.py`提取的信息，并从中提取出手牌信息，战场信息，墓地信息等，再根据这些具体信息思考行动策略。
+- `card/`: 用于存放针对某些特殊卡牌的具体逻辑。
 
 
 [comment]: <> (### 关于截取屏幕，以及opnecv2)
