@@ -188,6 +188,41 @@ class StrategyState:
     def my_detail_hero_power(self):
         return self.my_hero_power.detail_hero_power
 
+    @property
+    def touchable_oppo_minions(self):
+        ret = []
+
+        for oppo_minion in self.oppo_minions:
+            if oppo_minion.taunt and not oppo_minion.stealth:
+                ret.append(oppo_minion)
+
+        if len(ret) == 0:
+            for oppo_minion in self.oppo_minions:
+                if not oppo_minion.stealth:
+                    ret.append(oppo_minion)
+
+        return ret
+
+    @property
+    def oppo_has_taunt(self):
+        for oppo_minion in self.oppo_minions:
+            if oppo_minion.taunt and not oppo_minion.stealth:
+                return True
+
+        return False
+
+    @property
+    def my_total_attack(self):
+        count = 0
+        for my_minion in self.my_minions:
+            if my_minion.can_beat_face:
+                count += my_minion.attack
+
+        if self.my_hero.can_attack:
+            count += self.my_hero.attack
+
+        return count
+
     def fight_between(self, oppo_index, my_index):
         oppo_minion = self.oppo_minions[oppo_index]
         my_minion = self.my_minions[my_index]
@@ -216,16 +251,9 @@ class StrategyState:
                 self.my_minions.pop(my_index)
 
     def get_best_attack_target(self):
-        could_attack_oppos = []
-        has_taunt = False
-
-        for i in range(len(self.oppo_minions)):
-            if self.oppo_minions[i].taunt:
-                could_attack_oppos.append(i)
-                has_taunt = True
-
-        if not has_taunt:
-            could_attack_oppos = [i for i in range(len(self.oppo_minions))]
+        touchable_oppo_minions = self.touchable_oppo_minions
+        has_taunt = self.oppo_has_taunt
+        beat_face_win = self.my_total_attack >= self.oppo_hero.health
 
         max_delta_h_val = 0
         max_my_index = -2
@@ -237,16 +265,34 @@ class StrategyState:
             if not my_minion.can_attack_minion:
                 continue
 
-            for oppo_index in could_attack_oppos:
-                oppo_minion = self.oppo_minions[oppo_index]
-                if oppo_minion.stealth:
-                    continue
+            # 如果没有墙,自己又能打脸,应该试一试
+            if not has_taunt and my_minion.can_beat_face:
+                if beat_face_win:
+                    debug_print(f"攻击决策: [{my_index}]({my_minion.name})->"
+                                f"[-1]({self.oppo_hero.name}) "
+                                f"斩杀了")
+                    return my_index, -1
+
+                tmp_delta_h = self.oppo_hero.delta_h_after_damage(my_minion.attack)
+
+                debug_print(f"攻击决策: [{my_index}]({my_minion.name})->"
+                            f"[-1]({self.oppo_hero.name}) "
+                            f"delta_h_val:{tmp_delta_h}")
+
+                if tmp_delta_h > max_delta_h_val:
+                    max_delta_h_val = tmp_delta_h
+                    max_my_index = my_index
+                    max_oppo_index = -1
+                    min_attack = 999
+
+            for oppo_minion in touchable_oppo_minions:
+                oppo_index = oppo_minion.zone_pos - 1
 
                 tmp_delta_h = 0
                 tmp_delta_h -= MY_DELTA_H_FACTOR * \
-                                   my_minion.delta_h_after_damage(oppo_minion.attack)
+                               my_minion.delta_h_after_damage(oppo_minion.attack)
                 tmp_delta_h += OPPO_DELTA_H_FACTOR * \
-                                   oppo_minion.delta_h_after_damage(my_minion.attack)
+                               oppo_minion.delta_h_after_damage(my_minion.attack)
 
                 debug_print(f"攻击决策：[{my_index}]({my_minion.name})->"
                             f"[{oppo_index}]({oppo_minion.name}) "
@@ -259,29 +305,21 @@ class StrategyState:
                     max_oppo_index = oppo_index
                     min_attack = my_minion.attack
 
-            # 如果没有墙,自己又能打脸,应该试一试
-            if not has_taunt:
-                if my_minion.can_beat_face:
-                    tmp_delta_h = self.oppo_hero.delta_h_after_damage(my_minion.attack)
-
-                    debug_print(f"攻击决策: [{my_index}]({my_minion.name})打脸, "
-                                f"delta_h_val:{tmp_delta_h}")
-
-                    if tmp_delta_h > max_delta_h_val:
-                        max_delta_h_val = tmp_delta_h
-                        max_my_index = my_index
-                        max_oppo_index = -1
-
         # 试一试英雄攻击
         if self.my_hero.can_attack:
-            for oppo_index in could_attack_oppos:
-                oppo_minion = self.oppo_minions[oppo_index]
-                if oppo_minion.stealth:
-                    continue
+            if not has_taunt:
+                if beat_face_win:
+                    debug_print(f"攻击决策: [-1]({self.my_hero.name})->"
+                                f"[-1]({self.oppo_hero.name}) "
+                                f"斩杀了")
+                    return -1, -1
+
+            for oppo_minion in touchable_oppo_minions:
+                oppo_index = oppo_minion.zone_pos - 1
 
                 tmp_delta_h = 0
                 tmp_delta_h += OPPO_DELTA_H_FACTOR * \
-                                   oppo_minion.delta_h_after_damage(self.my_hero.attack)
+                               oppo_minion.delta_h_after_damage(self.my_hero.attack)
                 tmp_delta_h -= self.my_hero.delta_h_after_damage(oppo_minion.attack)
                 if self.my_weapon is not None:
                     tmp_delta_h -= self.my_weapon.attack
@@ -293,6 +331,9 @@ class StrategyState:
                 if tmp_delta_h >= max_delta_h_val:
                     max_my_index = -1
                     max_oppo_index = oppo_index
+
+        debug_print(f"最终决策: max_my_index: {max_my_index}, "
+                    f"max_oppo_index: {max_oppo_index}")
 
         return max_my_index, max_oppo_index
 
@@ -332,7 +373,7 @@ class StrategyState:
             args = []
 
             if hand_card.current_cost > self.my_last_mana:
-                debug_print(f"跳过第[{hand_card_index}]张卡牌({hand_card.name})")
+                debug_print(f"卡牌-[{hand_card_index}]({hand_card.name}) 跳过")
                 continue
 
             detail_card = hand_card.detail_card
@@ -361,7 +402,7 @@ class StrategyState:
 
             delta_h, *args = hero_power.best_h_and_arg(self, -1)
 
-            debug_print(f"技能-{self.my_hero_power.name} "
+            debug_print(f"技能-[-1]({self.my_hero_power.name}) "
                         f"delta_h: {delta_h} "
                         f"*args: {args}")
 
@@ -369,7 +410,7 @@ class StrategyState:
                 best_index = -1
                 best_args = args
         else:
-            debug_print("跳过使用技能")
+            debug_print(f"技能-[-1]({self.my_hero_power.name}) 跳过")
 
         debug_print(f"决策结果: best_delta_h:{best_delta_h}, "
                     f"best_index:{best_index}, best_args:{best_args}")
