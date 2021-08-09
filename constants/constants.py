@@ -2,7 +2,8 @@
 # ** 一定要修改成自己电脑上的路径 **
 HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
 
-# 你的炉石用户名, 注意英文标点符号, 把后面的数字也带上
+# 你的炉石用户名, 注意英文标点符号'#', 把后面的数字也带上
+# 可以输入中文
 YOUR_NAME = "ChangeThis#54321"
 
 # 关于控制台信息打印的设置
@@ -21,6 +22,7 @@ ERROR_FILE_WRITE = True
 
 # 每个回合开始发个表情的概率
 EMOJ_RATIO = 0.15
+
 # 随从相互攻击的启发值包括两个部分：敌方随从受伤的带来的收益；
 # 以及我方随从受伤带来的损失。下面两个比例表示这两个启发值变化
 # 数值应该以怎样权值比例相加。如果是控制卡组，可以略微调高
@@ -28,6 +30,8 @@ EMOJ_RATIO = 0.15
 OPPO_DELTA_H_FACTOR = 1.2
 MY_DELTA_H_FACTOR = 1
 
+# 对于没有单独建一个类去描述的卡牌, 如果它的法力值花费大于这个值,
+# 就在流留牌阶段被换掉
 REPLACE_COST_BAR = 3
 
 OPERATE_INTERVAL = 0.2
@@ -38,9 +42,6 @@ BASIC_SPELL_WAIT_TIME = 1.5
 BASIC_WEAPON_WAIT_TIME = 1
 
 # 我觉得这行注释之后的内容应该不需要修改……
-STEP = [0, 0, 140, 139, 131, 105, 88, 75, 66, 58, 52]
-START = [0, 819, 749, 679, 622, 608, 599, 593, 588, 585, 582]
-
 FSM_LEAVE_HS = "Leave Hearth Stone"
 FSM_MAIN_MENU = "Main Menu"
 FSM_CHOOSING_HERO = "Choosing Hero"

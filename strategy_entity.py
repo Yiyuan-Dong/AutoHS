@@ -38,6 +38,15 @@ class StrategyEntity:
             return ID2CARD_DICT.get(self.card_id, None)
 
 
+CRITICAL_MINION = {
+    "VAN_NEW1_019": 1.5,  # 飞刀杂耍者
+    "VAN_EX1_162": 1.5,  # 恐狼前锋
+    "VAN_CS2_235": 1.5,  # 北郡牧师
+    "VAN_CS2_237": 2,  # 饥饿的秃鹫
+    "VAN_EX1_004": 1.5,  # 年轻的女祭司
+}
+
+
 class StrategyMinion(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
                  current_cost, overload,
@@ -183,6 +192,8 @@ class StrategyMinion(StrategyEntity):
         if self.zone == "HAND":
             if self.rush or self.attack:
                 h_val += self.attack / 4
+
+        h_val *= CRITICAL_MINION.get(self.card_id, 1)
 
         return h_val
 

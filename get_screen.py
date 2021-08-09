@@ -13,9 +13,6 @@ from PIL import Image
 
 from constants.constants import *
 
-step = STEP
-start = START
-
 
 def test_hs_available():
     return win32gui.FindWindow(None, "炉石传说") != 0
