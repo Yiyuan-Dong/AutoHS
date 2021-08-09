@@ -228,10 +228,11 @@ class StrategyState:
             could_attack_oppos = [i for i in range(len(self.oppo_minions))]
 
         max_delta_h_val = 0
-        max_my_index = -1
-        max_oppo_index = -1
+        max_my_index = -2
+        max_oppo_index = -2
         min_attack = 0
 
+        # 枚举每一个己方随从
         for my_index, my_minion in enumerate(self.my_minions):
             if not my_minion.can_attack_minion:
                 continue
@@ -241,35 +242,72 @@ class StrategyState:
                 if oppo_minion.stealth:
                     continue
 
-                tmp_delta_h_val = 0
-                tmp_delta_h_val -= MY_DELTA_H_FACTOR * \
+                tmp_delta_h = 0
+                tmp_delta_h -= MY_DELTA_H_FACTOR * \
                                    my_minion.delta_h_after_damage(oppo_minion.attack)
-                tmp_delta_h_val += OPPO_DELTA_H_FACTOR * \
+                tmp_delta_h += OPPO_DELTA_H_FACTOR * \
                                    oppo_minion.delta_h_after_damage(my_minion.attack)
 
-                if tmp_delta_h_val > max_delta_h_val or \
-                        tmp_delta_h_val == max_delta_h_val and my_minion.attack < min_attack:
-                    max_delta_h_val = tmp_delta_h_val
+                debug_print(f"攻击决策：[{my_index}]({my_minion.name})->"
+                            f"[{oppo_index}]({oppo_minion.name}) "
+                            f"delta_h_val: {tmp_delta_h}")
+
+                if tmp_delta_h > max_delta_h_val or \
+                        tmp_delta_h == max_delta_h_val and my_minion.attack < min_attack:
+                    max_delta_h_val = tmp_delta_h
                     max_my_index = my_index
                     max_oppo_index = oppo_index
                     min_attack = my_minion.attack
 
-                debug_print(f"攻击决策：[{my_index}]({my_minion})->"
-                            f"[{oppo_index}]({oppo_minion}) delta_h_val: {tmp_delta_h_val}")
-
             # 如果没有墙,自己又能打脸,应该试一试
             if not has_taunt:
                 if my_minion.can_beat_face:
-                    face_delta_h = self.oppo_hero.delta_h_after_damage(my_minion.attack)
-                    if face_delta_h > max_delta_h_val:
-                        max_delta_h_val = face_delta_h
+                    tmp_delta_h = self.oppo_hero.delta_h_after_damage(my_minion.attack)
+
+                    debug_print(f"攻击决策: [{my_index}]({my_minion.name})打脸, "
+                                f"delta_h_val:{tmp_delta_h}")
+
+                    if tmp_delta_h > max_delta_h_val:
+                        max_delta_h_val = tmp_delta_h
                         max_my_index = my_index
                         max_oppo_index = -1
 
-                    debug_print(f"攻击决策：[{my_index}]({my_minion.name})打脸, "
-                                f"delta_h_val:{face_delta_h}")
+        # 试一试英雄攻击
+        if self.my_hero.can_attack:
+            for oppo_index in could_attack_oppos:
+                oppo_minion = self.oppo_minions[oppo_index]
+                if oppo_minion.stealth:
+                    continue
+
+                tmp_delta_h = 0
+                tmp_delta_h += OPPO_DELTA_H_FACTOR * \
+                                   oppo_minion.delta_h_after_damage(self.my_hero.attack)
+                tmp_delta_h -= self.my_hero.delta_h_after_damage(oppo_minion.attack)
+                if self.my_weapon is not None:
+                    tmp_delta_h -= self.my_weapon.attack
+
+                debug_print(f"攻击决策: [-1]({self.my_hero.name})->"
+                            f"[{oppo_index}]({oppo_minion.name}) "
+                            f"delta_h_val: {tmp_delta_h}")
+
+                if tmp_delta_h >= max_delta_h_val:
+                    max_my_index = -1
+                    max_oppo_index = oppo_index
 
         return max_my_index, max_oppo_index
+
+    def my_entity_attack_oppo(self, my_index, oppo_index):
+        if my_index == -1:
+            if oppo_index == -1:
+                click.hero_beat_hero()
+            else:
+                click.hero_beat_minion(oppo_index, self.oppo_minion_num)
+        else:
+            if oppo_index == -1:
+                click.minion_beat_hero(my_index, self.my_minion_num)
+            else:
+                click.minion_beat_minion(my_index, self.my_minion_num,
+                                         oppo_index, self.oppo_minion_num)
 
     def copy_new_one(self):
         # TODO: 有必要deepcopy吗
@@ -285,9 +323,10 @@ class StrategyState:
     def best_h_index_arg(self):
         debug_print()
         best_delta_h = 0
-        best_index = -1
+        best_index = -2
         best_args = []
 
+        # 考虑使用手牌
         for hand_card_index, hand_card in enumerate(self.my_hand_cards):
             delta_h = 0
             args = []
@@ -300,24 +339,50 @@ class StrategyState:
             if detail_card is None:
                 if hand_card.cardtype == CARD_MINION and not hand_card.battlecry:
                     delta_h, *args = MinionNoPoint.best_h_and_arg(self, hand_card_index)
-                    debug_print(f"(默认行为) card[{hand_card_index}]({hand_card.name}) "
-                                f"delta_h: {delta_h}, *args: {[]}")
+                    debug_print(f"卡牌-[{hand_card_index}]({hand_card.name}) "
+                                f"delta_h: {delta_h}, *args: {[]} (默认行为) ")
                 else:
                     debug_print(f"卡牌[{hand_card_index}]({hand_card.name})无法评判")
             else:
                 delta_h, *args = detail_card.best_h_and_arg(self, hand_card_index)
-                debug_print(f"(手写行为) card[{hand_card_index}]({hand_card.name}) "
-                            f"delta_h: {delta_h}, *args: {args}")
+                debug_print(f"卡牌-[{hand_card_index}]({hand_card.name}) "
+                            f"delta_h: {delta_h}, *args: {args} (手写行为)")
 
             if delta_h > best_delta_h:
                 best_delta_h = delta_h
                 best_index = hand_card_index
                 best_args = args
 
+        # 考虑使用英雄技能
+        if self.my_last_mana >= 2 and \
+                self.my_detail_hero_power and \
+                not self.my_hero_power.exhausted:
+            hero_power = self.my_detail_hero_power
+
+            delta_h, *args = hero_power.best_h_and_arg(self, -1)
+
+            debug_print(f"技能-{self.my_hero_power.name} "
+                        f"delta_h: {delta_h} "
+                        f"*args: {args}")
+
+            if delta_h > best_delta_h:
+                best_index = -1
+                best_args = args
+        else:
+            debug_print("跳过使用技能")
+
         debug_print(f"决策结果: best_delta_h:{best_delta_h}, "
                     f"best_index:{best_index}, best_args:{best_args}")
         debug_print()
-        return best_delta_h, best_index, best_args
+        return best_index, best_args
+
+    def use_best_entity(self, index, args):
+        if index == -1:
+            debug_print("将使用技能")
+            hero_power = self.my_detail_hero_power
+            hero_power.use_with_arg(self, -1, *args)
+        else:
+            self.use_card(index, *args)
 
     # 会返回这张卡的cost
     def use_card(self, index, *args):

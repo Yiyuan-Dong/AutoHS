@@ -105,7 +105,6 @@ def replace_starting_card(card_index, hand_card_num):
     left_click(STARTING_CARD_X[hand_card_num][card_index], 500)
 
 
-
 def click_middle():
     time.sleep(OPERATE_INTERVAL)
     left_click(960, 500)
@@ -210,10 +209,15 @@ def minion_beat_hero(mine_index, mine_number):
     cancel_click()
 
 
-def hero_attack():
-    left_click(960, 830)
-    time.sleep(OPERATE_INTERVAL)
-    left_click(960, 200)
+def hero_beat_minion(oppo_index, oppo_num):
+    choose_my_hero()
+    choose_opponent_minion(oppo_index, oppo_num)
+    cancel_click()
+
+
+def hero_beat_hero():
+    choose_my_hero()
+    choose_oppo_hero()
     cancel_click()
 
 

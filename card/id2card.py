@@ -49,4 +49,8 @@ ID2CARD_DICT = {
     "VAN_CS2_189": ElvenArcher,
     "VAN_CS2_117": EarthenRingFarseer,
     "VAN_EX1_097": Abomination,
+    "VAN_NEW1_021": DoomSayer,
+    "VAN_NEW1_041": StampedingKodo,
+    "VAN_EX1_590": BloodKnight,
+    "VAN_EX1_247": StormforgedAxe,
 }

@@ -108,16 +108,34 @@ class MinionCard(Card):
         else:
             # 费用越高的应该越厉害吧
             hand_card = state.my_hand_cards[hand_card_index]
-            return hand_card.current_cost / 2 + 1, \
-                   state.my_minion_num  # 默认放到最右边
+            delta_h = hand_card.current_cost / 2 + 1
+
+            if state.my_hero.health <= 10 and hand_card.taunt:
+                delta_h *= 1.5
+
+            return delta_h, state.my_minion_num  # 默认放到最右边
 
     @classmethod
     def combo_delta_h(cls, state, hand_card_index):
-        return 0
+        h_sum = 0
+
+        for my_minion in state.my_minions:
+            # 有末日就别下怪了
+            if my_minion.card_id == "VAN_NEW1_021":
+                h_sum += -1000
+
+            # 有飞刀可以多下怪
+            if my_minion.card_id == "VAN_NEW1_019":
+                h_sum += 0.5
+
+        return h_sum
 
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):
         delta_h, *args = cls.utilize_delta_h_and_arg(state, hand_card_index)
+        if len(args) == 0:
+            args = [state.my_minion_num]
+
         delta_h += cls.basic_delta_h(state, hand_card_index)
         delta_h += cls.combo_delta_h(state, hand_card_index)
         return (delta_h,) + tuple(args)
@@ -171,6 +189,18 @@ class WeaponCard(Card):
     def get_card_type(cls):
         return CARD_WEAPON
 
+    @classmethod
+    def use_with_arg(cls, state, card_index, *args):
+        click.choose_and_use_spell(card_index, state.my_hand_card_num)
+        click.cancel_click()
+        time.sleep(BASIC_WEAPON_WAIT_TIME)
+
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        if state.my_weapon:
+            return 0,
+        else:
+            return cls.value,
     # TODO: 还什么都没实现...
 
 

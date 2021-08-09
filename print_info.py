@@ -48,7 +48,7 @@ def current_time():
     return time.strftime("%H:%M:%S", time.localtime())
 
 def error_print(error_str):
-    error_str = f"[ERROR]-{current_time()}-{error_str}"
+    error_str = f"[{current_time()} ERROR] {error_str}"
 
     if ERROR_PRINT:
         print(error_str)
@@ -57,7 +57,7 @@ def error_print(error_str):
 
 
 def warn_print(warn_str):
-    warn_str = f"[WARN]-{current_time()}-{warn_str}"
+    warn_str = f"[{current_time()} WARN] {warn_str}"
 
     if WARN_PRINT:
         print(warn_str)
@@ -66,7 +66,7 @@ def warn_print(warn_str):
 
 
 def debug_print(debug_str=""):
-    debug_str = f"[DEBUG]-{current_time()}-{debug_str}"
+    debug_str = f"[{current_time()} DEBUG] {debug_str}"
 
     if DEBUG_PRINT:
         print(debug_str)
@@ -75,7 +75,7 @@ def debug_print(debug_str=""):
 
 
 def sys_print(sys_str):
-    sys_str = f"[SYS]-{current_time()}-{sys_str}"
+    sys_str = f"[{current_time()} SYS] {sys_str}"
 
     if SYS_PRINT:
         print(sys_str)
@@ -84,7 +84,7 @@ def sys_print(sys_str):
 
 
 def info_print(info_str):
-    info_str = f"[INFO]-{current_time()}-{info_str}"
+    info_str = f"[{current_time()} INFO] {info_str}"
 
     if INFO_PRINT:
         print(info_str)

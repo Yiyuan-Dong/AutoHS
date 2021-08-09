@@ -26,7 +26,7 @@ class LightingBolt(SpellPointOppo):
 
 # 呱
 class Hex(SpellPointOppo):
-    bias = -8
+    bias = -6
     keep_in_hand_bool = False
 
     @classmethod
@@ -75,10 +75,10 @@ class MindControlTech(MinionNoPoint):
         else:
             h_sum = sum([minion.heuristic_val for minion in state.oppo_minions])
             h_sum /= state.oppo_minion_num
-            return cls.value + h_sum * 2, state.my_minion_num
+            return cls.value + h_sum * 2,
 
 
-# 　野性狼魂
+# 野性狼魂
 class FeralSpirit(SpellNoPoint):
     value = 2.4
 
@@ -147,7 +147,7 @@ class ElvenArcher(MinionPointOppo):
 class EarthenRingFarseer(MinionPointMine):
     @classmethod
     def utilize_delta_h_and_arg(cls, state, hand_card_index):
-        best_h = 0.1 + state.my_hero.delta_h_after_heal(3)
+        best_h = 0.2 + state.my_hero.delta_h_after_heal(3)
         if state.my_hero.health <= 5:
             best_h += 4
         best_my_index = -1
@@ -175,4 +175,76 @@ class Abomination(MinionNoPoint):
         h_sum += state.oppo_hero.delta_h_after_damage(2)
         h_sum -= state.my_hero.delta_h_after_damage(2)
 
-        return h_sum, state.my_minion_num
+        return h_sum,
+
+
+# 狂奔科多兽
+class StampedingKodo(MinionNoPoint):
+    keep_in_hand_bool = False
+
+    @classmethod
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+        h_sum = 2
+        temp_sum = 0
+        temp_count = 0
+
+        for oppo_minion in state.oppo_minions:
+            if oppo_minion.attack <= 2:
+                temp_sum += oppo_minion.heuristic_val
+                temp_count += 1
+        if temp_count > 0:
+            h_sum += temp_sum / temp_count
+
+        return h_sum,
+
+
+# 血骑士
+class BloodKnight(MinionNoPoint):
+    keep_in_hand_bool = False
+
+    @classmethod
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+        h_sum = 1
+
+        for oppo_minion in state.oppo_minions:
+            if oppo_minion.divine_shield:
+                h_sum += oppo_minion.attack + 6
+        for my_minion in state.my_minions:
+            if my_minion.divine_shield:
+                h_sum += -my_minion.attack + 6
+
+        return h_sum,
+
+
+# 末日
+class DoomSayer(MinionNoPoint):
+    keep_in_hand_bool = True
+
+    @classmethod
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+        # 一费别跳末日
+        if state.my_total_mana == 1:
+            return 0,
+
+        # 二三费压末日就完事了
+        if state.my_total_mana <= 3:
+            return 1000,
+
+        # 优势不能上末日
+        if state.my_heuristic_value >= state.oppo_heuristic_value:
+            return 0,
+
+        oppo_attack_sum = 0
+        for oppo_minion in state.oppo_minions:
+            oppo_attack_sum += oppo_minion.attack
+
+        if oppo_attack_sum >= 7:
+            # 当个嘲讽也好
+            return 1,
+        else:
+            return state.oppo_heuristic_value - state.my_heuristic_value,
+
+
+class StormforgedAxe(WeaponCard):
+    keep_in_hand_bool = True
+    value = 2.5
