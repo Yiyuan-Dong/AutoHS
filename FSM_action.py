@@ -184,10 +184,11 @@ def ChoosingCardAction():
             if not has_print:
                 debug_print(f"手牌-[{my_hand_index}]({my_hand_card.name})"
                             f"是否保留: {should_keep_in_hand}")
-                has_print = 1
 
             if not should_keep_in_hand:
                 click.replace_starting_card(my_hand_index, hand_card_num)
+
+        has_print = 1
 
         click.commit_choose_card()
 
@@ -317,6 +318,8 @@ def GoBackHSAction():
     time.sleep(3)
 
     while not get_screen.test_hs_available():
+        if quitting_flag:
+            sys.exit(0)
         click.enter_HS()
         time.sleep(10)
 
