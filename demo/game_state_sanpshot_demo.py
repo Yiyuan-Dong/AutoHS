@@ -17,3 +17,4 @@ if __name__ == "__main__":
         f.write(str(state))
 
     strategy_state = StrategyState(state)
+    strategy_state.debug_print_out()

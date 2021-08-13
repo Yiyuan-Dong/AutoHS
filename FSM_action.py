@@ -139,6 +139,7 @@ def ChoosingCardAction():
     print_out()
     time.sleep(21)
     loop_count = 0
+    has_print = 0
 
     while True:
         ok = update_game_state()
@@ -166,6 +167,11 @@ def ChoosingCardAction():
             else:
                 should_keep_in_hand = \
                     detail_card.keep_in_hand(strategy_state, my_hand_index)
+
+            if not has_print:
+                debug_print(f"手牌-[{my_hand_index}]({my_hand_card.name})"
+                            f"是否保留: {should_keep_in_hand}")
+                has_print = 1
 
             if not should_keep_in_hand:
                 click.replace_starting_card(my_hand_index, hand_card_num)
@@ -244,8 +250,9 @@ def Battling():
             click.cancel_click()
             time.sleep(STATE_CHECK_INTERVAL)
 
-        debug_print("-" * 80)
+        debug_print("-" * 60)
         strategy_state = StrategyState(game_state)
+        strategy_state.debug_print_out()
 
         # 考虑要不要出牌
         index, args = strategy_state.best_h_index_arg()

@@ -77,8 +77,6 @@ class StrategyState:
         self.oppo_minions.sort(key=lambda temp: temp.zone_pos)
         self.my_hand_cards.sort(key=lambda temp: temp.zone_pos)
 
-        self.debug_print_out()
-
     def debug_print_battlefield(self):
         if not DEBUG_PRINT:
             return
@@ -402,7 +400,7 @@ class StrategyState:
 
             delta_h, *args = hero_power.best_h_and_arg(self, -1)
 
-            debug_print(f"技能-[-1]({self.my_hero_power.name}) "
+            debug_print(f"技能-[ ]({self.my_hero_power.name}) "
                         f"delta_h: {delta_h} "
                         f"*args: {args}")
 
@@ -430,7 +428,6 @@ class StrategyState:
         hand_card = self.my_hand_cards[index]
         detail_card = hand_card.detail_card
         debug_print(f"将使用卡牌[{index}] {hand_card.name}")
-        debug_print()
 
         if detail_card is None:
             MinionNoPoint.use_with_arg(self, index, *args)
@@ -453,6 +450,7 @@ if __name__ == "__main__":
             for x in log_container.message_list:
                 update_state(state, x)
             strategy_state = StrategyState(state)
+            strategy_state.debug_print_out()
 
             with open("game_state_snapshot.txt", "w", encoding="utf8") as f:
                 f.write(str(state))
