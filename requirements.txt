@@ -6,3 +6,4 @@ pillow
 sklearn
 numpy
 pywin32
+requests
