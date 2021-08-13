@@ -254,7 +254,8 @@ class StormforgedAxe(WeaponCard):
         if state.my_total_mana == 2:
             for oppo_minion in state.touchable_oppo_minions:
                 # 如果能提起刀解了, 那太好了
-                if oppo_minion.health <= 2:
+                if oppo_minion.health <= 2 and \
+                        not oppo_minion.divine_shield:
                     return 2000,
 
         return cls.value,

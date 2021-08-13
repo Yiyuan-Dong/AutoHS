@@ -16,7 +16,7 @@ win_count = 0
 quitting_flag = False
 game_state = GameState()
 log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
-
+choose_hero_count = 0
 
 def init():
     global game_state, log_iter
@@ -104,6 +104,16 @@ def print_out():
 
 
 def ChoosingHeroAction():
+    global choose_hero_count
+
+    # 有时脚本会卡在某个地方, 从而在FSM_Matching
+    # 和FSM_CHOOSING_HERO之间反复横跳. 这时候要
+    # 重启炉石
+    # choose_hero_count会在每一次开始留牌时重置
+    choose_hero_count += 1
+    if choose_hero_count >= 20:
+        return FSM_ERROR
+
     print_out()
     time.sleep(2)
     click.match_opponent()
@@ -136,6 +146,9 @@ def MatchingAction():
 
 
 def ChoosingCardAction():
+    global choose_hero_count
+    choose_hero_count = 0
+
     print_out()
     time.sleep(21)
     loop_count = 0
@@ -227,7 +240,7 @@ def Battling():
 
         # 如果是这个我的回合的第一次操作
         if not last_controller_is_me:
-            time.sleep(5.5)
+            time.sleep(4)
             # 在游戏的第一个我的回合, 发一个你好
             # game_num_turns_in_play在每一个回合开始时都会加一, 即
             # 后手放第一个回合这个数是2

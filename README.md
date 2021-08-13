@@ -22,41 +22,56 @@ pip install -r requirements.txt
 > 
 > `Power.log`会在进入炉石后第一次对战开始时创建，在退出炉石后会被重命名为`Power_bk.log`，在再一次进入炉石时被删除。
 > 
+> 如果你在`Logs/`目录下没有找到`Power.log`（指对战开始后），那稍微有一些麻烦。你需要到`C:\Users\YOURUSER\AppData\Local\Blizzard\Hearthstone`目录下新建一个叫`log.config`的文件（如果已经有就不用新建了），然后把下面这段代码放进去（如果已经有`[Power]`相关则更改相关设置）:
+> ```
+> [Power]
+> LogLevel=1
+> FilePrinting=True
+> ConsolePrinting=False
+> ScreenPrinting=False
+> Verbose=True
+> ```
+> 
 > 关于炉石log的更多信息可以查看这个
 > [Reddit帖子](https://www.reddit.com/r/hearthstone/comments/268fkk/simple_hearthstone_logging_see_your_complete_play/) 。
 
 3. 可以先跑一跑`demo/`下的一些文件。
 
-4. 若要启动脚本，将当前目录切换到`AutoHS/`下（重要!），运行`python main.py`即可。注意脚本需要屏幕分辨率为 **1920 * 1080**、炉石**全屏**且语言为**简体中文**，放在**最前台**。 你可以把战网客户端最小化到任务栏，或是放在炉石应用下面，但请不要关闭战网客户端。有时炉石会意外关闭，这时程序会试图重新打开炉石。
+4. 若要启动脚本，将当前目录切换到`AutoHS/`下（重要），运行`python main.py`即可。注意以下几点：
+   - **显示分辨率**（在桌面右击的显示设置里调整）以及**炉石分辨率**为**1920 * 1080**。
+   - 项目大小缩放比例为**100%**（同样在显示设置里调整）。
+   - 炉石**全屏**且语言为**简体中文**。
+   - 炉石放在**最前台**。 
+   - 你可以把战网客户端最小化到任务栏，或是放在炉石应用下面，但请不要关闭战网客户端。有时炉石会意外关闭，这时程序会试图重新打开炉石。
    
 
 ### 我目前用的挂机卡组 
-#### 经典模式－摆烂萨V2.0
+#### 经典模式－动物园的亲爹
 - 2x (1) 精灵弓箭手
 - 2x (1) 银色侍从
-- 1x (1) 闪电箭
+- 2x (2) 战利品贮藏者
+- 2x (2) 末日预言者
 - 1x (2) 血法师萨尔诺斯
+- 2x (2) 雷铸战斧
 - 2x (3) 大地之环先知
-- 2x (3) 妖术
-- 1x (3) 精神控制技师
-- 1x (3) 苦痛侍僧
+- 1x (3) 妖术
+- 2x (3) 精神控制技师
+- 2x (3) 苦痛侍僧
+- 1x (3) 血骑士
 - 2x (3) 闪电风暴
-- 2x (3) 麦田傀儡
-- 2x (4) 冰风雪人
+- 1x (4) 冰风雪人
 - 2x (4) 森金持盾卫士
-- 2x (5) 憎恶
-- 2x (5) 碧蓝幼龙
-- 2x (6) 火元素
+- 2x (5) 土元素
+- 2x (5) 狂奔科多兽
 - 2x (6) 烈日行者
-- 1x (8) 炎魔之王拉格纳罗斯
-- 1x (8) 风领主奥拉基尔
+
 
 神秘代码:
 ```
-AAEDAfWfAwaxoQS1oQTQoQSEogSYogS+owQM7ZUEr5YEsJYEs5YE55YE+qAEsqEEvqEE1qEEjqIEk6IE1KIEAA==
+AAEDAfWfAwSwlgTnlgS1oQSWowQNr5YEs5YE+qAEsaEEsqEEvqEE0KEE1aEEiKIEi6IEjqIExaME0qMEAA==
 ```
 
-带了很多传说卡牌，只是为了让它看起来不那么像脚本。所有卡牌可以替换成任意**非战吼随从**。
+没必要特意去合卡，所有卡牌可以替换成任意**非战吼随从**。
 
 [comment]: <> (### 如果想要用自己的卡组)
 
