@@ -200,7 +200,8 @@ class CardEntity(Entity):
                 attackable_by_rush=int(self.query_tag("ATTACKABLE_BY_RUSH")),
                 # -1代表标签缺失, 有两种情况会产生 -1: 断线重连; 卡刚从手牌中被打出来
                 exhausted=int(self.query_tag("EXHAUSTED", "-1")),
-                cant_attack=int(self.query_tag("CANT_ATTACK"))
+                cant_attack=int(self.query_tag("CANT_ATTACK")),
+                just_played = int(self.query_tag("JUST_PLAYED")),
             )
         elif self.cardtype == "SPELL":
             return StrategySpell(
