@@ -99,7 +99,8 @@ class StrategyMinion(StrategyEntity):
     @property
     def can_beat_face(self):
         return self.attack > 0 and not self.frozen \
-               and not self.cant_attack and self.exhausted == 0
+               and not self.cant_attack and self.exhausted == 0 \
+               and not self.rush  # 看见冲刺怪打脸，加个判定似乎好点？
 
     @property
     def can_attack_minion(self):
