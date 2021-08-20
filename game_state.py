@@ -203,8 +203,7 @@ class CardEntity(Entity):
                 immune=int(self.query_tag("IMMUNE")),
                 # -1代表标签缺失, 有两种情况会产生 -1: 断线重连; 卡刚从手牌中被打出来
                 exhausted=int(self.query_tag("EXHAUSTED", "-1")),
-                cant_attack=int(self.query_tag("CANT_ATTACK")),
-                just_played=int(self.query_tag("JUST_PLAYED")),
+                cant_attack=int(self.query_tag("CANT_ATTACK"))
             )
         elif self.cardtype == "SPELL":
             return StrategySpell(
@@ -213,7 +212,6 @@ class CardEntity(Entity):
                 zone_pos=int(self.query_tag("ZONE_POSITION")),
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
-                # corrupted=int(self.query_tag("CORRUPTED")),  # 有计划加入腐化， 吸血之类的参数吗？
             )
         elif self.cardtype == "WEAPON":
             return StrategyWeapon(
