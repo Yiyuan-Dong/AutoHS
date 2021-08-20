@@ -103,6 +103,7 @@ class StrategyMinion(StrategyEntity):
                and not self.cant_attack and self.exhausted == 0 \
                and (not self.just_played or self.charge)
 
+
     @property
     def can_attack_minion(self):
         return not self.frozen and self.attack > 0 and \
