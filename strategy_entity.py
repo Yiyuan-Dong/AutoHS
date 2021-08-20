@@ -59,7 +59,7 @@ class StrategyMinion(StrategyEntity):
                  not_targeted_by_spell=0, not_targeted_by_power=0,
                  charge=0, rush=0,
                  attackable_by_rush=0, frozen=0,
-                 cant_attack=0, exhausted=1):
+                 cant_attack=0, exhausted=1, just_played=0):
         super().__init__(card_id, zone, zone_pos, current_cost, overload)
         self.attack = attack
         self.max_health = max_health
@@ -80,6 +80,7 @@ class StrategyMinion(StrategyEntity):
         self.attackable_by_rush = attackable_by_rush
         self.frozen = frozen
         self.cant_attack = cant_attack
+        self.just_played = just_played
 
         self.exhausted = exhausted
         if self.exhausted == -1:
@@ -99,7 +100,8 @@ class StrategyMinion(StrategyEntity):
     @property
     def can_beat_face(self):
         return self.attack > 0 and not self.frozen \
-               and not self.cant_attack and self.exhausted == 0
+               and not self.cant_attack and self.exhausted == 0 \
+               and (not self.just_played or self.charge)
 
     @property
     def can_attack_minion(self):
