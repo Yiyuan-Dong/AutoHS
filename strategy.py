@@ -148,6 +148,15 @@ class StrategyState:
     def my_hand_card_num(self):
         return len(self.my_hand_cards)
 
+    # 加入墓地手下数量（死者复生）
+    @property
+    def my_graveyard_minion_num(self):
+        count = 0
+        for entity in self.my_graveyard:
+            if entity.cardtype == CARD_MINION:
+                count +=1
+        return count
+
     # 用卡费体系算启发值
     @property
     def oppo_heuristic_value(self):
