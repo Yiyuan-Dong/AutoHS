@@ -213,6 +213,7 @@ class CardEntity(Entity):
                 zone_pos=int(self.query_tag("ZONE_POSITION")),
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
+                # corrupted=int(self.query_tag("CORRUPTED")),  # 有计划加入腐化， 吸血之类的参数吗？
             )
         elif self.cardtype == "WEAPON":
             return StrategyWeapon(
