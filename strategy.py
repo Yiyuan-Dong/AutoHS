@@ -257,8 +257,14 @@ class StrategyState:
             if minion.get_damaged(damage):
                 self.my_minions.pop(my_index)
 
-    def get_best_attack_target(self):
+    def get_best_attack_target(self, *args):
         touchable_oppo_minions = self.touchable_oppo_minions
+
+        # 移除不能攻击的对像
+        if args:
+            for i in args:
+                touchable_oppo_minions.remove(i)
+
         has_taunt = self.oppo_has_taunt
         beat_face_win = self.my_total_attack >= self.oppo_hero.health
 
