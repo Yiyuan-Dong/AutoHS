@@ -14,8 +14,21 @@ from PIL import Image
 from constants.constants import *
 
 
+def get_HS_hwnd():
+    hwnd = win32gui.FindWindow(None, "炉石传说")
+    if hwnd != 0:
+        return hwnd
+
+    hwnd = win32gui.FindWindow(None, "《爐石戰記》")
+    if hwnd != 0:
+        return hwnd
+
+    hwnd = win32gui.FindWindow(None, "Hearthstone")
+    return hwnd
+
+
 def test_hs_available():
-    return win32gui.FindWindow(None, "炉石传说") != 0
+    return get_HS_hwnd() != 0
 
 
 def max_diff(img, pixel_list):
@@ -29,11 +42,15 @@ def max_diff(img, pixel_list):
     return ans
 
 
-def catch_screen(name="炉石传说"):
+def catch_screen(name=None):
     # 第一个参数是类名，第二个参数是窗口名字
     # hwnd -> Handle to a Window !
     # 如果找不到对应名字的窗口，返回0
-    hwnd = win32gui.FindWindow(None, name)
+    if name is not None:
+        hwnd = win32gui.FindWindow(None, name)
+    else:
+        hwnd = get_HS_hwnd()
+
     if hwnd == 0:
         return
 
@@ -69,7 +86,7 @@ def catch_screen(name="炉石传说"):
 
 
 def get_state():
-    hwnd = win32gui.FindWindow(None, "炉石传说")
+    hwnd = get_HS_hwnd()
     if hwnd == 0:
         return FSM_LEAVE_HS
 
@@ -87,17 +104,19 @@ def get_state():
     return FSM_BATTLING
 
 
-def image_hash(img):
-    img = Image.fromarray(img)
-    return imagehash.phash(img)
-
-
-def hash_diff(str1, str2):
-    return bin(int(str1, 16) ^ int(str2, 16))[2:].count("1")
+# def image_hash(img):
+#     img = Image.fromarray(img)
+#     return imagehash.phash(img)
+#
+#
+# def hash_diff(str1, str2):
+#     return bin(int(str1, 16) ^ int(str2, 16))[2:].count("1")
 
 
 def terminate_HS():
-    hwnd = win32gui.FindWindow(None, "炉石传说")
+    hwnd = get_HS_hwnd()
+    if hwnd == 0:
+        return
     _, process_id = win32process.GetWindowThreadProcessId(hwnd)
     handle = win32api.OpenProcess(win32con.PROCESS_TERMINATE, 0, process_id)
     win32api.TerminateProcess(handle, 0)

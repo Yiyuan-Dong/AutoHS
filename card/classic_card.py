@@ -251,6 +251,9 @@ class StormforgedAxe(WeaponCard):
 
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):
+        # 不要已经有刀了再顶刀
+        if state.my_weapon is not None:
+            return 0,
         if state.my_total_mana == 2:
             for oppo_minion in state.touchable_oppo_minions:
                 # 如果能提起刀解了, 那太好了

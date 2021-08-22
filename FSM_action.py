@@ -126,6 +126,9 @@ def MatchingAction():
     loop_count = 0
 
     while True:
+        if quitting_flag:
+            sys.exit(0)
+
         time.sleep(STATE_CHECK_INTERVAL)
 
         click.commit_error_report()
