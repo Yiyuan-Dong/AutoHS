@@ -154,7 +154,7 @@ class StrategyState:
         count = 0
         for entity in self.my_graveyard:
             if entity.cardtype == CARD_MINION:
-                count +=1
+                count += 1
         return count
 
     # 用卡费体系算启发值
@@ -211,6 +211,21 @@ class StrategyState:
         return ret
 
     @property
+    def targetable_oppo_minions(self):
+        ret = []
+
+        # 如果有防护长袍，所有随从都不能指定
+        for minion in self.oppo_minions:
+            if 'SCH_146' == minion.card_id:
+                return ret
+
+        for oppo_minion in self.oppo_minions:
+            if not oppo_minion.not_targeted_by_spell and not oppo_minion.stealth:
+                ret.append(oppo_minion)
+
+        return ret
+
+    @property
     def oppo_has_taunt(self):
         for oppo_minion in self.oppo_minions:
             if oppo_minion.taunt and not oppo_minion.stealth:
@@ -261,8 +276,8 @@ class StrategyState:
         touchable_oppo_minions = self.touchable_oppo_minions
 
         # 移除不能攻击的对像
-        if args:
-            for i in args:
+        for i in args:
+            if i >= 0:
                 touchable_oppo_minions.remove(i)
 
         has_taunt = self.oppo_has_taunt
@@ -279,7 +294,7 @@ class StrategyState:
                 continue
 
             # 如果没有墙,自己又能打脸,应该试一试
-            if not has_taunt and my_minion.can_beat_face:
+            if not has_taunt and my_minion.can_beat_face and -1 not in args:
                 if beat_face_win:
                     debug_print(f"攻击决策: [{my_index}]({my_minion.name})->"
                                 f"[-1]({self.oppo_hero.name}) "
@@ -320,7 +335,7 @@ class StrategyState:
 
         # 试一试英雄攻击
         if self.my_hero.can_attack:
-            if not has_taunt:
+            if not has_taunt and -1 not in args:
                 if beat_face_win:
                     debug_print(f"攻击决策: [-1]({self.my_hero.name})->"
                                 f"[-1]({self.oppo_hero.name}) "
@@ -374,7 +389,7 @@ class StrategyState:
             tmp.my_hand_cards[i] = copy.deepcopy(self.my_hand_cards[i])
         return tmp
 
-    def best_h_index_arg(self):
+    def best_h_index_arg(self, *args):
         debug_print()
         best_delta_h = 0
         best_index = -2
