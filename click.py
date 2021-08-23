@@ -222,7 +222,7 @@ def hero_beat_hero():
 
 
 def enter_HS():
-    hwnd = win32gui.FindWindow(None, "战网")
+    hwnd = win32gui.FindWindow(None, BATTLE_NET)
 
     if hwnd == 0:
         error_print("未找到应用战网")

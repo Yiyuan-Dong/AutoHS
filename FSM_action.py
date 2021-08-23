@@ -18,6 +18,7 @@ game_state = GameState()
 log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
 choose_hero_count = 0
 
+
 def init():
     global game_state, log_iter
 
@@ -209,10 +210,16 @@ def Battling():
     mine_count = 0
     last_controller_is_me = False
 
+    # 对于不能完成的动作，AI会无限制重复，为此加入限制次数
     # 加入对比参数
+    prev_hand_index = 999
+    prev_args = 999
+    attempt_card_play = 0
+    block_card_index = []
+
     prev_my_index = 999
     prev_oppo_index = 999
-    attempt_count = 0
+    attempt_action = 0
     block_oppo_index = []
 
     while True:
@@ -275,38 +282,60 @@ def Battling():
         strategy_state.debug_print_out()
 
         # 考虑要不要出牌
-        index, args = strategy_state.best_h_index_arg()
+        index, args = strategy_state.best_h_index_arg(*block_card_index)
+
+        # 如果连续做出3次同样决策就把card_index加入黑名单
+        if attempt_card_play >= RETRY_CARD_PLAY:
+            prev_hand_index = 999
+            prev_args = 999
+            attempt_card_play = 0
+            block_card_index.append(index)
+            click.emoj(4)
+            continue
+        elif prev_hand_index == index and prev_args == args:
+            attempt_card_play += 1
 
         # index == -1 代表使用技能, -2 代表不出牌
         if index != -2:
+            prev_hand_index = index
+            prev_args = args
             strategy_state.use_best_entity(index, args)
+            time.sleep(attempt_card_play * 2)
             continue
 
         # 如果不出牌, 考虑随从怎么打架
         my_index, oppo_index = strategy_state.get_best_attack_target(*block_oppo_index)
 
         # 如果连续做出3次同样决策就把oppo_index加入黑名单
-        if attempt_count >= 3:
+        if attempt_action >= RETRY_ACTION:
             prev_my_index = 999
             prev_oppo_index = 999
-            attempt_count = 0
+            attempt_action = 0
             block_oppo_index.append(oppo_index)
-            click.emoj(3)
+            click.emoj(4)
             continue
         elif prev_my_index == my_index and prev_oppo_index == oppo_index:
-            attempt_count += 1
+            attempt_action += 1
 
         # my_index == -1代表英雄攻击, -2 代表不攻击
         if my_index != -2:
+            prev_my_index = my_index
+            prev_oppo_index = oppo_index
             strategy_state.my_entity_attack_oppo(my_index, oppo_index)
             # 如果连续尝试则越想越久
-            time.sleep(attempt_count * 2)
+            time.sleep(attempt_action * 2)
         else:
             # 回合完成后移除黑名单和重置参数
+            prev_hand_index = 999
+            prev_args = 999
+            attempt_card_play = 0
+            block_card_index.clear()
+
             prev_my_index = 999
             prev_oppo_index = 999
-            attempt_count = 0
+            attempt_action = 0
             block_oppo_index.clear()
+
             click.end_turn()
             time.sleep(STATE_CHECK_INTERVAL)
 
