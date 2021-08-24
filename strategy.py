@@ -327,6 +327,7 @@ class StrategyState:
                             f"delta_h_val: {tmp_delta_h}")
 
                 if tmp_delta_h >= max_delta_h_val:
+                    max_delta_h_val = tmp_delta_h
                     max_my_index = -1
                     max_oppo_index = oppo_index
 
