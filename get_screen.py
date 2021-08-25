@@ -8,8 +8,6 @@ import win32con
 import win32api
 import win32process
 import numpy
-import imagehash
-from PIL import Image
 
 from constants.constants import *
 
@@ -24,6 +22,15 @@ def get_HS_hwnd():
         return hwnd
 
     hwnd = win32gui.FindWindow(None, "Hearthstone")
+    return hwnd
+
+
+def get_battlenet_hwnd():
+    hwnd = win32gui.FindWindow(None, "战网")
+    if hwnd != 0:
+        return hwnd
+
+    hwnd = win32gui.FindWindow(None, "Battle.net")
     return hwnd
 
 

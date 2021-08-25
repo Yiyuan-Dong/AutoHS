@@ -9,6 +9,7 @@ import sys
 
 from constants.constants import *
 from print_info import *
+from get_screen import get_battlenet_hwnd
 
 
 def click_button(x, y, button):
@@ -222,7 +223,7 @@ def hero_beat_hero():
 
 
 def enter_HS():
-    hwnd = win32gui.FindWindow(None, "战网")
+    hwnd = get_battlenet_hwnd()
 
     if hwnd == 0:
         error_print("未找到应用战网")
