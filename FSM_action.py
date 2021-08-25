@@ -212,12 +212,6 @@ def Battling():
     mine_count = 0
     last_controller_is_me = False
 
-    # 加入对比参数
-    prev_my_index = 999
-    prev_oppo_index = 999
-    attempt_count = 0
-    block_oppo_index = []
-
     while True:
         if quitting_flag:
             sys.exit(0)
@@ -286,30 +280,12 @@ def Battling():
             continue
 
         # 如果不出牌, 考虑随从怎么打架
-        my_index, oppo_index = strategy_state.get_best_attack_target(*block_oppo_index)
-
-        # 如果连续做出3次同样决策就把oppo_index加入黑名单
-        if attempt_count >= 3:
-            prev_my_index = 999
-            prev_oppo_index = 999
-            attempt_count = 0
-            block_oppo_index.append(oppo_index)
-            click.emoj(3)
-            continue
-        elif prev_my_index == my_index and prev_oppo_index == oppo_index:
-            attempt_count += 1
+        my_index, oppo_index = strategy_state.get_best_attack_target()
 
         # my_index == -1代表英雄攻击, -2 代表不攻击
         if my_index != -2:
             strategy_state.my_entity_attack_oppo(my_index, oppo_index)
-            # 如果连续尝试则越想越久
-            time.sleep(attempt_count * 2)
         else:
-            # 回合完成后移除黑名单和重置参数
-            prev_my_index = 999
-            prev_oppo_index = 999
-            attempt_count = 0
-            block_oppo_index.clear()
             click.end_turn()
             time.sleep(STATE_CHECK_INTERVAL)
 

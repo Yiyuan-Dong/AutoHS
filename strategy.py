@@ -148,15 +148,6 @@ class StrategyState:
     def my_hand_card_num(self):
         return len(self.my_hand_cards)
 
-    # 加入墓地手下数量（死者复生）
-    @property
-    def my_graveyard_minion_num(self):
-        count = 0
-        for entity in self.my_graveyard:
-            if entity.cardtype == CARD_MINION:
-                count +=1
-        return count
-
     # 用卡费体系算启发值
     @property
     def oppo_heuristic_value(self):
@@ -257,14 +248,8 @@ class StrategyState:
             if minion.get_damaged(damage):
                 self.my_minions.pop(my_index)
 
-    def get_best_attack_target(self, *args):
+    def get_best_attack_target(self):
         touchable_oppo_minions = self.touchable_oppo_minions
-
-        # 移除不能攻击的对像
-        if args:
-            for i in args:
-                touchable_oppo_minions.remove(i)
-
         has_taunt = self.oppo_has_taunt
         beat_face_win = self.my_total_attack >= self.oppo_hero.health
 

@@ -6,6 +6,9 @@ HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
 # 可以输入中文
 YOUR_NAME = "ChangeThis#54321"
 
+# 英文版换成 Battle.net
+BATTLE_NET = "战网"
+
 # 关于控制台信息打印的设置
 DEBUG_PRINT = True
 WARN_PRINT = True
@@ -79,3 +82,7 @@ CARD_ENCHANTMENT = "ENCHANTMENT"
 SPELL_NO_POINT = 0
 SPELL_POINT_OPPO = 1
 SPELL_POINT_MINE = 2
+
+# 尝试次数
+RETRY_CARD_PLAY = 3
+RETRY_ACTION = 3
