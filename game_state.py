@@ -196,8 +196,11 @@ class CardEntity(Entity):
                 not_targeted_by_power=int(self.query_tag("CANT_BE_TARGETED_BY_HERO_POWERS")),
                 charge=int(self.query_tag("CHARGE")),
                 rush=int(self.query_tag("RUSH")),
-                frozen=int(self.query_tag("FROZEN")),
                 attackable_by_rush=int(self.query_tag("ATTACKABLE_BY_RUSH")),
+                frozen=int(self.query_tag("FROZEN")),
+                dormant=int(self.query_tag("DORMANT")),
+                untouchable=int(self.query_tag("UNTOUCHABLE")),
+                immune=int(self.query_tag("IMMUNE")),
                 # -1代表标签缺失, 有两种情况会产生 -1: 断线重连; 卡刚从手牌中被打出来
                 exhausted=int(self.query_tag("EXHAUSTED", "-1")),
                 cant_attack=int(self.query_tag("CANT_ATTACK")),
@@ -232,9 +235,13 @@ class CardEntity(Entity):
                 overload=int(self.query_tag("OVERLOAD")),
                 max_health=int(self.query_tag("HEALTH")),
                 damage=int(self.query_tag("DAMAGE")),
+                stealth=int(self.query_tag("STEALTH")),
+                immune=int(self.query_tag("IMMUNE")),
+                not_targeted_by_spell=int(self.query_tag("CANT_BE_TARGETED_BY_SPELLS")),
+                not_targeted_by_power=int(self.query_tag("CANT_BE_TARGETED_BY_HERO_POWERS")),
+                armor=int(self.query_tag("ARMOR")),
                 attack=int(self.query_tag("ATK")),
                 exhausted=int(self.query_tag("EXHAUSTED")),
-                armor=int(self.query_tag("ARMOR")),
             )
         elif self.cardtype == "HERO_POWER":
             return StrategyHeroPower(

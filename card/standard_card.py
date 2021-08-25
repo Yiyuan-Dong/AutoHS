@@ -4,6 +4,7 @@ from card.basic_card import *
 # 护甲商贩
 class ArmorVendor(MinionNoPoint):
     value = 2
+    keep_in_hand_bool = True
 
 
 # 神圣惩击
@@ -18,6 +19,8 @@ class HolySmite(SpellPointOppo):
         best_delta_h = 0
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):
+            if not oppo_minion.can_be_pointed_by_spell:
+                continue
             temp_delta_h = oppo_minion.delta_h_after_damage(3) + cls.bias
             if temp_delta_h > best_delta_h:
                 best_delta_h = temp_delta_h
@@ -44,6 +47,7 @@ class WaveOfApathy(SpellNoPoint):
 # 噬骨殴斗者
 class BonechewerBrawler(MinionNoPoint):
     value = 2
+    keep_in_hand_bool = True
 
 
 # 暗言术灭
@@ -58,6 +62,8 @@ class ShadowWordDeath(SpellPointOppo):
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):
             if oppo_minion.attack < 5:
+                continue
+            if not oppo_minion.can_be_pointed_by_spell:
                 continue
 
             tmp = oppo_minion.heuristic_val + cls.bias
@@ -78,6 +84,9 @@ class Apotheosis(SpellPointMine):
         best_mine_index = -1
 
         for my_index, my_minion in enumerate(state.my_minions):
+            if not my_minion.can_be_pointed_by_spell:
+                continue
+
             tmp = cls.bias + 3 + (my_minion.health + 2) / 4 + \
                   (my_minion.attack + 1) / 2
             if my_minion.can_attack_minion:
@@ -92,6 +101,7 @@ class Apotheosis(SpellPointMine):
 # 亡首教徒
 class DeathsHeadCultist(MinionNoPoint):
     value = 1
+    keep_in_hand_bool = True
 
 
 # 噬灵疫病
@@ -119,6 +129,7 @@ class DevouringPlague(SpellNoPoint):
 # 狂傲的兽人
 class OverconfidentOrc(MinionNoPoint):
     value = 3
+    keep_in_hand_bool = True
 
 
 # 神圣新星
@@ -135,6 +146,7 @@ class HolyNova(SpellNoPoint):
 class Hysteria(SpellPointOppo):
     wait_time = 5
     bias = -9  # 我觉得狂乱应该要能力挽狂澜
+    keep_in_hand_bool = False
 
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):
@@ -145,12 +157,14 @@ class Hysteria(SpellPointOppo):
         if state.oppo_minion_num == 0 or state.oppo_minion_num + state.my_minion_num == 1:
             return 0, -1
 
-        for chosen_index in range(state.oppo_minion_num):
+        for chosen_index, chosen_minion in enumerate(state.oppo_minions):
+            if not chosen_minion.can_be_pointed_by_spell:
+                continue
+
             delta_h_count = 0
 
             for i in range(sample_times):
                 tmp_state = state.copy_new_one()
-                chosen_minion = tmp_state.oppo_minions[chosen_index]
                 tmp_chosen_index = chosen_index
 
                 while True:
@@ -193,6 +207,7 @@ class Hysteria(SpellPointOppo):
 # 暗言术毁
 class ShadowWordRuin(SpellNoPoint):
     bias = -8
+    keep_in_hand_bool = False
 
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):
@@ -204,6 +219,7 @@ class ShadowWordRuin(SpellNoPoint):
 # 除奇致胜
 class AgainstAllOdds(SpellNoPoint):
     bias = -9
+    keep_in_hand_bool = False
 
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):
@@ -219,28 +235,33 @@ class AgainstAllOdds(SpellNoPoint):
 # 锈骑劫匪
 class RuststeedRaider(MinionNoPoint):
     value = 3
+    keep_in_hand_bool = False
     # TODO: 也许我可以为突袭随从专门写一套价值评判?
 
 
 # 泰兰佛丁
 class TaelanFordring(MinionNoPoint):
     value = 3
+    keep_in_hand_bool = False
 
 
 # 凯恩血蹄
 class CairneBloodhoof(MinionNoPoint):
     value = 6
+    keep_in_hand_bool = False
 
 
 # 吃手手鱼
 class MutanusTheDevourer(MinionNoPoint):
     value = 5
+    keep_in_hand_bool = False
 
 
 # 灵魂之镜
 class SoulMirror(SpellNoPoint):
     wait_time = 5
     bias = -16
+    keep_in_hand_bool = False
 
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):
@@ -255,3 +276,4 @@ class SoulMirror(SpellNoPoint):
 # 戈霍恩之血
 class BloodOfGhuun(MinionNoPoint):
     value = 8
+    keep_in_hand_bool = False

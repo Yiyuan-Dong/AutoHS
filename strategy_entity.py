@@ -59,6 +59,7 @@ class StrategyMinion(StrategyEntity):
                  not_targeted_by_spell=0, not_targeted_by_power=0,
                  charge=0, rush=0,
                  attackable_by_rush=0, frozen=0,
+                 dormant=0, untouchable=0, immune=0,
                  cant_attack=0, exhausted=1, just_played=0):
         super().__init__(card_id, zone, zone_pos, current_cost, overload)
         self.attack = attack
@@ -79,6 +80,10 @@ class StrategyMinion(StrategyEntity):
         self.rush = rush
         self.attackable_by_rush = attackable_by_rush
         self.frozen = frozen
+        self.dormant = dormant
+        # UNTOUCHABLE作用不明, 不过休眠的随从会在休眠时具有UNTOUCHABLE属性
+        # self.untouchable = untouchable
+        self.immune = immune
         self.cant_attack = cant_attack
         self.just_played = just_played
 
@@ -88,26 +93,6 @@ class StrategyMinion(StrategyEntity):
                 self.exhausted = 0
             else:
                 self.exhausted = 1
-
-    @property
-    def cardtype(self):
-        return CARD_MINION
-
-    @property
-    def health(self):
-        return self.max_health - self.damage
-
-    @property
-    def can_beat_face(self):
-        return self.attack > 0 and not self.frozen \
-               and not self.cant_attack and self.exhausted == 0 \
-               and (not self.just_played or self.charge)
-
-    @property
-    def can_attack_minion(self):
-        return not self.frozen and self.attack > 0 and \
-               not self.cant_attack and \
-               (self.exhausted == 0 or self.attackable_by_rush)
 
     def __str__(self):
         temp = f"[{self.zone_pos}] {self.name} " \
@@ -120,6 +105,10 @@ class StrategyMinion(StrategyEntity):
         else:
             temp += " [不能动]"
 
+        if self.dormant:
+            temp += " 休眠"
+        if self.immune:
+            temp += " 免疫"
         if self.frozen:
             temp += " 被冻结"
         if self.taunt:
@@ -151,22 +140,56 @@ class StrategyMinion(StrategyEntity):
 
         return temp
 
-    def get_damaged(self, damage):
-        if damage <= 0:
-            return False
-        if self.divine_shield:
-            self.divine_shield = False
-        else:
-            self.damage += damage
-            if self.health <= 0:
-                return True
-        return False
+    @property
+    def cardtype(self):
+        return CARD_MINION
 
-    def get_heal(self, heal):
-        if heal > self.damage:
-            self.damage = 0
-        else:
-            self.damage -= heal
+    @property
+    def health(self):
+        return self.max_health - self.damage
+
+    @property
+    def can_beat_face(self):
+        return self.attack > 0 \
+               and not self.dormant \
+               and not self.frozen \
+               and not self.cant_attack \
+               and self.exhausted == 0 \
+               and (not self.just_played or self.charge)
+
+    @property
+    def can_attack_minion(self):
+        return not self.frozen \
+               and not self.dormant \
+               and self.attack > 0 \
+               and not self.cant_attack \
+               and (self.exhausted == 0 or self.attackable_by_rush)
+
+    @property
+    def can_be_pointed_by_spell(self):
+        return not self.stealth \
+               and not self.not_targeted_by_spell \
+               and not self.dormant \
+               and not self.immune
+
+    @property
+    def can_be_pointed_by_hero_power(self):
+        return not self.stealth \
+               and not self.not_targeted_by_power \
+               and not self.dormant \
+               and not self.immune
+
+    @property
+    def can_be_pointed_by_minion(self):
+        return not self.stealth \
+               and not self.dormant \
+               and not self.immune
+
+    @property
+    def can_be_attacked(self):
+        return not self.stealth \
+               and not self.immune \
+               and not self.dormant
 
     # 简单介绍一下卡费理论
     # 一点法力水晶 = 抽0.5张卡 = 造成1点伤害
@@ -201,17 +224,22 @@ class StrategyMinion(StrategyEntity):
 
         return h_val
 
-    @property
-    def can_point_by_spell(self):
-        return not self.stealth and not self.not_targeted_by_spell
+    def get_damaged(self, damage):
+        if damage <= 0:
+            return False
+        if self.divine_shield:
+            self.divine_shield = False
+        else:
+            self.damage += damage
+            if self.health <= 0:
+                return True
+        return False
 
-    @property
-    def can_point_by_hero_power(self):
-        return not self.stealth and not self.not_targeted_by_power
-
-    @property
-    def can_point_by_minion(self):
-        return not self.stealth
+    def get_heal(self, heal):
+        if heal > self.damage:
+            self.damage = 0
+        else:
+            self.damage -= heal
 
     def delta_h_after_damage(self, damage):
         temp_minion = copy.copy(self)
@@ -258,23 +286,37 @@ class StrategyHero(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
                  current_cost, overload,
                  max_health, damage=0,
+                 stealth=0, immune=0,
+                 not_targeted_by_spell=0, not_targeted_by_power=0,
                  armor=0, attack=0, exhausted=1):
         super().__init__(card_id, zone, zone_pos, current_cost, overload)
+
         self.max_health = max_health
         self.damage = damage
+        self.stealth = stealth
+        self.immune = immune
+        self.not_targeted_by_spell = not_targeted_by_spell
+        self.not_targeted_by_power = not_targeted_by_power
         self.armor = armor
         self.attack = attack
         self.exhausted = exhausted
 
     def __str__(self):
-        res = f"{self.name} {self.attack}-{self.health}" \
-              f"({self.max_health - self.damage}+{self.armor})"
+        temp = f"{self.name} {self.attack}-{self.health}" \
+               f"({self.max_health - self.damage}+{self.armor})"
+
         if self.can_attack:
-            res += " [能动]"
+            temp += " [能动]"
         else:
-            res += " [不能动]"
-        res += f" h_val:{self.heuristic_val}"
-        return res
+            temp += " [不能动]"
+
+        if self.stealth:
+            temp += " 潜行"
+        if self.immune:
+            temp += " 免疫"
+
+        temp += f" h_val:{self.heuristic_val}"
+        return temp
 
     @property
     def cardtype(self):
@@ -300,6 +342,27 @@ class StrategyHero(StrategyEntity):
     @property
     def can_attack(self):
         return self.attack > 0 and not self.exhausted
+
+    @property
+    def can_be_pointed_by_spell(self):
+        return not self.stealth \
+               and not self.not_targeted_by_spell \
+               and not self.immune
+
+    @property
+    def can_be_pointed_by_hero_power(self):
+        return not self.stealth \
+               and not self.not_targeted_by_power \
+               and not self.immune
+
+    @property
+    def can_be_pointed_by_minion(self):
+        return not self.stealth \
+               and not self.immune
+
+    @property
+    def can_be_attacked(self):
+        return not self.stealth and not self.immune
 
     def get_damaged(self, damage):
         if damage <= self.armor:

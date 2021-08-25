@@ -14,7 +14,7 @@ class LightingBolt(SpellPointOppo):
         best_oppo_index = -1
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):
-            if not oppo_minion.can_point_by_spell:
+            if not oppo_minion.can_be_pointed_by_spell:
                 continue
             delta_h = oppo_minion.delta_h_after_damage(damage)
             if best_delta_h < delta_h:
@@ -35,7 +35,7 @@ class Hex(SpellPointOppo):
         best_oppo_index = -1
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):
-            if not oppo_minion.can_point_by_spell:
+            if not oppo_minion.can_be_pointed_by_spell:
                 continue
 
             delta_h = oppo_minion.heuristic_val - 1
@@ -112,7 +112,7 @@ class FireElemental(MinionPointOppo):
         best_oppo_index = -1
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):
-            if not oppo_minion.can_point_by_minion:
+            if not oppo_minion.can_be_pointed_by_minion:
                 continue
 
             delta_h = 3 + oppo_minion.delta_h_after_damage(3)
@@ -132,7 +132,7 @@ class ElvenArcher(MinionPointOppo):
         best_oppo_index = -1
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):
-            if not oppo_minion.can_point_by_minion:
+            if not oppo_minion.can_be_pointed_by_minion:
                 continue
 
             delta_h = -0.5 + oppo_minion.delta_h_after_damage(1)

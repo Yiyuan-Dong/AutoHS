@@ -191,12 +191,12 @@ class StrategyState:
         ret = []
 
         for oppo_minion in self.oppo_minions:
-            if oppo_minion.taunt and not oppo_minion.stealth:
+            if oppo_minion.taunt and oppo_minion.can_be_pointed_by_minion:
                 ret.append(oppo_minion)
 
         if len(ret) == 0:
             for oppo_minion in self.oppo_minions:
-                if not oppo_minion.stealth:
+                if oppo_minion.can_be_pointed_by_minion:
                     ret.append(oppo_minion)
 
         return ret
@@ -264,7 +264,9 @@ class StrategyState:
                 continue
 
             # 如果没有墙,自己又能打脸,应该试一试
-            if not has_taunt and my_minion.can_beat_face:
+            if not has_taunt \
+                    and my_minion.can_beat_face \
+                    and self.oppo_hero.can_be_pointed_by_minion:
                 if beat_face_win:
                     debug_print(f"攻击决策: [{my_index}]({my_minion.name})->"
                                 f"[-1]({self.oppo_hero.name}) "
@@ -305,7 +307,7 @@ class StrategyState:
 
         # 试一试英雄攻击
         if self.my_hero.can_attack:
-            if not has_taunt:
+            if not has_taunt and self.oppo_hero.can_be_pointed_by_minion:
                 if beat_face_win:
                     debug_print(f"攻击决策: [-1]({self.my_hero.name})->"
                                 f"[-1]({self.oppo_hero.name}) "
@@ -409,7 +411,7 @@ class StrategyState:
                 best_index = -1
                 best_args = args
         else:
-            debug_print(f"技能-[-1]({self.my_hero_power.name}) 跳过")
+            debug_print(f"技能-[ ]({self.my_hero_power.name}) 跳过")
 
         debug_print(f"决策结果: best_delta_h:{best_delta_h}, "
                     f"best_index:{best_index}, best_args:{best_args}")
