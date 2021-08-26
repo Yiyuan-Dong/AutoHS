@@ -7,19 +7,20 @@ import keyboard
 import click
 import get_screen
 from strategy import StrategyState
-from game_state import *
+from log_state import *
 
 FSM_state = ""
 time_begin = 0.0
 game_count = 0
 win_count = 0
 quitting_flag = False
-game_state = GameState()
+log_state = LogState()
 log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
 choose_hero_count = 0
 
+
 def init():
-    global game_state, log_iter
+    global log_state, log_iter
 
     # 有时候炉石退出时python握着Power.log的读锁, 因而炉石无法
     # 删除Power.log. 而当炉石重启时, 炉石会从头开始写Power.log,
@@ -40,27 +41,27 @@ def init():
     else:
         info_print("Power.log does not exist")
 
-    game_state = GameState()
+    log_state = LogState()
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
 
 
-def update_game_state():
+def update_log_state():
     log_container = next(log_iter)
     if log_container.log_type == LOG_CONTAINER_ERROR:
         return False
 
     for log_line_container in log_container.message_list:
-        ok = update_state(game_state, log_line_container)
+        ok = update_state(log_state, log_line_container)
         # if not ok:
         #     return False
 
     if DEBUG_FILE_WRITE:
         with open("./log/game_state_snapshot.txt", "w", encoding="utf8") as f:
-            f.write(str(game_state))
+            f.write(str(log_state))
 
     # 注意如果Power.log没有更新, 这个函数依然会返回. 应该考虑到game_state只是被初始化
     # 过而没有进一步更新的可能
-    if game_state.game_entity_id == 0:
+    if log_state.game_entity_id == 0:
         return False
 
     return True
@@ -133,9 +134,9 @@ def MatchingAction():
 
         click.commit_error_report()
 
-        ok = update_game_state()
+        ok = update_log_state()
         if ok:
-            if not game_state.is_end:
+            if not log_state.is_end:
                 return FSM_CHOOSING_CARD
 
         curr_state = get_screen.get_state()
@@ -158,16 +159,16 @@ def ChoosingCardAction():
     has_print = 0
 
     while True:
-        ok = update_game_state()
+        ok = update_log_state()
 
         if not ok:
             return FSM_ERROR
-        if game_state.game_num_turns_in_play > 0:
+        if log_state.game_num_turns_in_play > 0:
             return FSM_BATTLING
-        if game_state.is_end:
+        if log_state.is_end:
             return FSM_QUITTING_BATTLE
 
-        strategy_state = StrategyState(game_state)
+        strategy_state = StrategyState(log_state)
         hand_card_num = strategy_state.my_hand_card_num
 
         # 等待被替换的卡牌 ZONE=HAND
@@ -204,7 +205,7 @@ def ChoosingCardAction():
 
 def Battling():
     global win_count
-    global game_state
+    global log_state
 
     print_out()
 
@@ -216,12 +217,12 @@ def Battling():
         if quitting_flag:
             sys.exit(0)
 
-        ok = update_game_state()
+        ok = update_log_state()
         if not ok:
             return FSM_ERROR
 
-        if game_state.is_end:
-            if game_state.my_entity.query_tag("PLAYSTATE") == "WON":
+        if log_state.is_end:
+            if log_state.my_entity.query_tag("PLAYSTATE") == "WON":
                 win_count += 1
                 info_print("你赢得了这场对战")
             else:
@@ -229,7 +230,7 @@ def Battling():
             return FSM_QUITTING_BATTLE
 
         # 在对方回合等就行了
-        if not game_state.is_my_turn:
+        if not log_state.is_my_turn:
             last_controller_is_me = False
             mine_count = 0
 
@@ -248,7 +249,7 @@ def Battling():
             # 在游戏的第一个我的回合, 发一个你好
             # game_num_turns_in_play在每一个回合开始时都会加一, 即
             # 后手放第一个回合这个数是2
-            if game_state.game_num_turns_in_play <= 2:
+            if log_state.game_num_turns_in_play <= 2:
                 click.emoj(0)
             else:
                 # 在之后每个回合开始时有概率发表情
@@ -268,7 +269,7 @@ def Battling():
             time.sleep(STATE_CHECK_INTERVAL)
 
         debug_print("-" * 60)
-        strategy_state = StrategyState(game_state)
+        strategy_state = StrategyState(log_state)
         strategy_state.debug_print_out()
 
         # 考虑要不要出牌
@@ -348,8 +349,8 @@ def MainMenuAction():
 
         # 重新连接对战之类的
         if state == FSM_BATTLING:
-            ok = update_game_state()
-            if ok and game_state.available:
+            ok = update_log_state()
+            if ok and log_state.available:
                 return FSM_BATTLING
         if state == FSM_CHOOSING_HERO:
             return FSM_CHOOSING_HERO

@@ -6,12 +6,13 @@ import copy
 
 class StrategyEntity:
     def __init__(self, card_id, zone, zone_pos,
-                 current_cost, overload):
+                 current_cost, overload, is_mine):
         self.card_id = card_id
         self.zone = zone
         self.zone_pos = zone_pos
         self.current_cost = current_cost
         self.overload = overload
+        self.is_mine = is_mine
 
     @property
     def name(self):
@@ -51,7 +52,7 @@ CRITICAL_MINION = {
 
 class StrategyMinion(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
-                 current_cost, overload,
+                 current_cost, overload, is_mine,
                  attack, max_health, damage=0,
                  taunt=0, divine_shield=0, stealth=0,
                  windfury=0, poisonous=0, life_steal=0,
@@ -61,7 +62,8 @@ class StrategyMinion(StrategyEntity):
                  attackable_by_rush=0, frozen=0,
                  dormant=0, untouchable=0, immune=0,
                  cant_attack=0, exhausted=1, just_played=0):
-        super().__init__(card_id, zone, zone_pos, current_cost, overload)
+        super().__init__(card_id, zone, zone_pos,
+                         current_cost, overload, is_mine)
         self.attack = attack
         self.max_health = max_health
         self.damage = damage
@@ -254,9 +256,10 @@ class StrategyMinion(StrategyEntity):
 
 class StrategyWeapon(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
-                 current_cost, overload,
+                 current_cost, overload, is_mine,
                  attack, durability, damage=0, windfury=0):
-        super().__init__(card_id, zone, zone_pos, current_cost, overload)
+        super().__init__(card_id, zone, zone_pos,
+                         current_cost, overload, is_mine)
         self.attack = attack
         self.durability = durability
         self.damage = damage
@@ -284,13 +287,13 @@ class StrategyWeapon(StrategyEntity):
 
 class StrategyHero(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
-                 current_cost, overload,
+                 current_cost, overload, is_mine,
                  max_health, damage=0,
                  stealth=0, immune=0,
                  not_targeted_by_spell=0, not_targeted_by_power=0,
                  armor=0, attack=0, exhausted=1):
-        super().__init__(card_id, zone, zone_pos, current_cost, overload)
-
+        super().__init__(card_id, zone, zone_pos,
+                         current_cost, overload, is_mine)
         self.max_health = max_health
         self.damage = damage
         self.stealth = stealth
@@ -397,10 +400,10 @@ class StrategySpell(StrategyEntity):
 
 class StrategyHeroPower(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
-                 current_cost, overload,
+                 current_cost, overload, is_mine,
                  exhausted):
         super().__init__(card_id, zone, zone_pos,
-                         current_cost, overload)
+                         current_cost, overload, is_mine)
         self.exhausted = exhausted
 
     @property

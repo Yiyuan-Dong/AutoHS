@@ -2,7 +2,7 @@ from strategy import *
 
 if __name__ == "__main__":
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
-    state = GameState()
+    state = LogState()
     DEBUG_PRINT = 1
 
     log_container = next(log_iter)

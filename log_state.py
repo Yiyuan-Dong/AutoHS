@@ -15,14 +15,14 @@ def check_name():
         MY_NAME = input("请输入你的炉石用户名, 例子: \"为所欲为、异灵术#54321\" (不用输入引号!)\n").strip()
 
 
-class GameState:
+class LogState:
     def __init__(self):
         self.game_entity_id = 0
         self.player_id_map_dict = {}
         self.my_name = ""
         self.oppo_name = ""
-        self.my_player_id = 0
-        self.oppo_player_id = 0
+        self.my_player_id = "0"
+        self.oppo_player_id = "0"
         self.entity_dict = {}
         self.current_update_id = 0
 
@@ -67,6 +67,7 @@ class GameState:
         return self.entity_dict[self.game_entity_id]
 
     @property
+    # 这不是my_player_id, 而是指代表我这个玩家的那个entity的index
     def my_entity_id(self):
         return self.player_id_map_dict.get(self.my_player_id, 0)
 
@@ -172,8 +173,7 @@ class CardEntity(Entity):
                "name: " + self.name + "\n" + \
                super().__str__()
 
-    @property
-    def corresponding_entity(self):
+    def generate_strategy_entity(self, log_state):
         if self.cardtype == "MINION":
             return StrategyMinion(
                 card_id=self.card_id,
@@ -181,6 +181,7 @@ class CardEntity(Entity):
                 zone_pos=int(self.query_tag("ZONE_POSITION")),
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
+                is_mine=log_state.is_my_entity(self),
                 attack=int(self.query_tag("ATK")),
                 max_health=int(self.query_tag("HEALTH")),
                 damage=int(self.query_tag("DAMAGE")),
@@ -201,7 +202,7 @@ class CardEntity(Entity):
                 dormant=int(self.query_tag("DORMANT")),
                 untouchable=int(self.query_tag("UNTOUCHABLE")),
                 immune=int(self.query_tag("IMMUNE")),
-                # -1代表标签缺失, 有两种情况会产生 -1: 断线重连; 卡刚从手牌中被打出来
+                # -1代表标签缺失, 有两种情况会产生-1: 断线重连; 卡刚从手牌中被打出来
                 exhausted=int(self.query_tag("EXHAUSTED", "-1")),
                 cant_attack=int(self.query_tag("CANT_ATTACK")),
                 just_played=int(self.query_tag("JUST_PLAYED")),
@@ -213,6 +214,7 @@ class CardEntity(Entity):
                 zone_pos=int(self.query_tag("ZONE_POSITION")),
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
+                is_mine=log_state.is_my_entity(self),
             )
         elif self.cardtype == "WEAPON":
             return StrategyWeapon(
@@ -221,6 +223,7 @@ class CardEntity(Entity):
                 zone_pos=int(self.query_tag("ZONE_POSITION")),
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
+                is_mine=log_state.is_my_entity(self),
                 attack=int(self.query_tag("ATK")),
                 durability=int(self.query_tag("DURABILITY")),
                 damage=int(self.query_tag("DAMAGE")),
@@ -233,6 +236,7 @@ class CardEntity(Entity):
                 zone_pos=int(self.query_tag("ZONE_POS")),
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
+                is_mine=log_state.is_my_entity(self),
                 max_health=int(self.query_tag("HEALTH")),
                 damage=int(self.query_tag("DAMAGE")),
                 stealth=int(self.query_tag("STEALTH")),
@@ -250,6 +254,7 @@ class CardEntity(Entity):
                 zone_pos=int(self.query_tag("ZONE_POS")),
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
+                is_mine=log_state.is_my_entity(self),
                 exhausted=int(self.query_tag("EXHAUSTED")),
             )
         else:
@@ -352,11 +357,11 @@ def update_state(state, line_info_container):
         # 故而在日志中发现的第一个不是英雄, 不是英雄技能, 而且
         # 你知道它的 CardID 的 Entity 一定是你的牌. 利用这
         # 张牌确定双方的 PlayerID
-        if state.my_player_id == 0:
-            if tag == "CARDTYPE" and \
-                    value not in ["HERO", "HERO_POWER", "PLAYER", "GAME"] and \
-                    "CONTROLLER" in state.current_update_entity.tag_dict:
-                state.my_player_id = state.current_update_entity.tag_dict["CONTROLLER"]
+        if state.my_player_id == "0":
+            if tag == "CARDTYPE" \
+               and value not in ["HERO", "HERO_POWER", "PLAYER", "GAME"] \
+               and "CONTROLLER" in state.current_update_entity.tag_dict:
+                state.my_player_id = state.current_update_entity.query_tag("CONTROLLER")
                 # 双方PlayerID, 一个是1, 一个是2
                 state.oppo_player_id = str(3 - int(state.my_player_id))
                 debug_print(f"my_player_id: {state.my_player_id}")
@@ -367,7 +372,7 @@ def update_state(state, line_info_container):
         player_id = line_info_container.info_dict["player"]
         player_name = line_info_container.info_dict["name"]
 
-        # 我发现用这里的信息很不靠谱, 正常情况下有时两个player_name
+        # 我发现用这里的信息很不靠谱, 正常情况下的两个player_name
         # 应该对手的是"UNKNOWN HUMAN PLAYER", 你的是自己的用户名,
         # 但有时两个都是"UNKNOWN HUMAN PLAYER", 有时又都是已知.
         # 所以只拿来做校验
@@ -387,7 +392,7 @@ def update_state(state, line_info_container):
 if __name__ == "__main__":
     log_iter = log_iter_func("./Power.log")
     log_container = next(log_iter)
-    temp_state = GameState()
+    temp_state = LogState()
 
     for x in log_container.message_list:
         # print(x)

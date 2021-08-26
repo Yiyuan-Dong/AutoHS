@@ -119,8 +119,8 @@ AAEDAfWfAwSwlgTnlgS1oQSWowQNr5YEs5YE+qAEsaEEsqEEvqEE0KEE1aEEiKIEi6IEjqIExaME0qME
 - `FSM_action.py`: 包含了脚本在炉石运行中的不同状态（比如选英雄界面、对战时、对扎结束后）应该采取什么行为以及何时进入下一站状态的代码。
 - `lop_op.py`: 包含了与读取`Power.log`相关的代码，比如针对不同日志行的正则表达式。
 - `json_op.py`: 包含了从网络上下载炉石数据JSON文件，并将其初步处理的代码。直接运行可以生成`id-name.txt`，一个包含了炉石所有对象**id**与中文名对应关系的文件。  
-- `game_state.py`: 读取`log.py`提取的日志信息，并把他们转化成字典的列表的形式。每一个字典是一个 **Entity**，**Entity** 由不同的 **tag** 及其对应值构成。
-- `strategy.py`: 读取`game_state.py`提取的信息，并从中提取出手牌信息，战场信息，墓地信息等，再根据这些具体信息思考行动策略。
+- `log_state.py`: 读取`log.py`提取的日志信息，并把他们转化成字典的列表的形式。每一个字典是一个 **Entity**，**Entity** 由不同的 **tag** 及其对应值构成。
+- `strategy.py`: 读取`log_state.py`提取的信息，并从中提取出手牌信息，战场信息，墓地信息等，再根据这些具体信息思考行动策略。
 - `card/`: 用于存放针对某些特殊卡牌的具体逻辑。
 
 

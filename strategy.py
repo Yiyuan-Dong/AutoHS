@@ -4,13 +4,13 @@ import sys
 import random
 
 from card.basic_card import MinionNoPoint
-from game_state import *
+from log_state import *
 from log_op import *
 from strategy_entity import *
 
 
 class StrategyState:
-    def __init__(self, game_state=None):
+    def __init__(self, log_state=None):
         self.oppo_minions = []
         self.oppo_graveyard = []
         self.my_minions = []
@@ -26,49 +26,49 @@ class StrategyState:
         self.oppo_weapon = None
         self.oppo_hand_card_num = 0
 
-        self.my_total_mana = int(game_state.my_entity.query_tag("RESOURCES"))
-        self.my_used_mana = int(game_state.my_entity.query_tag("RESOURCES_USED"))
-        self.my_temp_mana = int(game_state.my_entity.query_tag("TEMP_RESOURCES"))
+        self.my_total_mana = int(log_state.my_entity.query_tag("RESOURCES"))
+        self.my_used_mana = int(log_state.my_entity.query_tag("RESOURCES_USED"))
+        self.my_temp_mana = int(log_state.my_entity.query_tag("TEMP_RESOURCES"))
 
-        for entity in game_state.entity_dict.values():
+        for entity in log_state.entity_dict.values():
             if entity.query_tag("ZONE") == "HAND":
-                if game_state.is_my_entity(entity):
-                    hand_card = entity.corresponding_entity
+                if log_state.is_my_entity(entity):
+                    hand_card = entity.generate_strategy_entity(log_state)
                     self.my_hand_cards.append(hand_card)
                 else:
                     self.oppo_hand_card_num += 1
 
             elif entity.zone == "PLAY":
                 if entity.cardtype == "MINION":
-                    minion = entity.corresponding_entity
-                    if game_state.is_my_entity(entity):
+                    minion = entity.generate_strategy_entity(log_state)
+                    if log_state.is_my_entity(entity):
                         self.my_minions.append(minion)
                     else:
                         self.oppo_minions.append(minion)
 
                 elif entity.cardtype == "HERO":
-                    hero = entity.corresponding_entity
-                    if game_state.is_my_entity(entity):
+                    hero = entity.generate_strategy_entity(log_state)
+                    if log_state.is_my_entity(entity):
                         self.my_hero = hero
                     else:
                         self.oppo_hero = hero
 
                 elif entity.cardtype == "HERO_POWER":
-                    hero_power = entity.corresponding_entity
-                    if game_state.is_my_entity(entity):
+                    hero_power = entity.generate_strategy_entity(log_state)
+                    if log_state.is_my_entity(entity):
                         self.my_hero_power = hero_power
                     else:
                         self.oppo_hero_power = hero_power
 
                 elif entity.cardtype == "WEAPON":
-                    weapon = entity.corresponding_entity
-                    if game_state.is_my_entity(entity):
+                    weapon = entity.generate_strategy_entity(log_state)
+                    if log_state.is_my_entity(entity):
                         self.my_weapon = weapon
                     else:
                         self.oppo_weapon = weapon
 
             elif entity.zone == "GRAVEYARD":
-                if game_state.is_my_entity(entity):
+                if log_state.is_my_entity(entity):
                     self.my_graveyard.append(entity)
                 else:
                     self.oppo_graveyard.append(entity)
@@ -445,7 +445,7 @@ if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", sys.exit)
 
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
-    state = GameState()
+    state = LogState()
 
     while True:
         log_container = next(log_iter)
