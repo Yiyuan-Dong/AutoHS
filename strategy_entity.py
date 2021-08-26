@@ -38,6 +38,16 @@ class StrategyEntity:
         else:
             return ID2CARD_DICT.get(self.card_id, None)
 
+    # uni_index是对场上可能要被鼠标指到的对象的统一编号.
+    # 包括敌我随从和敌我英雄, 具体编号为:
+    # 0-6: 我方随从
+    # 9: 我方英雄
+    # 10-16: 敌方随从
+    # 19: 敌方英雄　
+    @property
+    def uni_index(self):
+        return -1
+
 
 CRITICAL_MINION = {
     "VAN_NEW1_019": 1.5,  # 飞刀杂耍者
@@ -145,6 +155,13 @@ class StrategyMinion(StrategyEntity):
     @property
     def cardtype(self):
         return CARD_MINION
+
+    @property
+    def uni_index(self):
+        if self.is_mine:
+            return self.zone_pos
+        else:
+            return self.zone_pos + 10
 
     @property
     def health(self):
@@ -324,6 +341,13 @@ class StrategyHero(StrategyEntity):
     @property
     def cardtype(self):
         return CARD_HERO
+
+    @property
+    def uni_index(self):
+        if self.is_mine:
+            return 10
+        else:
+            return 20
 
     @property
     def health(self):

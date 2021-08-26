@@ -221,6 +221,19 @@ class StrategyState:
 
         return count
 
+    def fetch_uni_entity(self, uni_index):
+        if 0 <= uni_index < 7:
+            return self.my_minions[uni_index]
+        elif uni_index == 9:
+            return self.my_hero
+        elif 10 <= uni_index < 17:
+            return self.oppo_minions[uni_index]
+        elif uni_index == 19:
+            return self.oppo_hero
+        else:
+            error_print(f"Get invalid uni_index: {uni_index}")
+            sys.exit(-1)
+
     def fight_between(self, oppo_index, my_index):
         oppo_minion = self.oppo_minions[oppo_index]
         my_minion = self.my_minions[my_index]
