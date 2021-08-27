@@ -268,7 +268,14 @@ class StrategyMinion(StrategyEntity):
     def delta_h_after_damage(self, damage):
         temp_minion = copy.copy(self)
         temp_minion.get_damaged(damage)
-        return self.heuristic_val - temp_minion.heuristic_val
+        delta = self.heuristic_val - temp_minion.heuristic_val
+
+        if self.is_mine:
+            delta *= MY_DELTA_H_FACTOR
+        else:
+            delta *= OPPO_DELTA_H_FACTOR
+
+        return delta
 
     def delta_h_after_heal(self, heal):
         temp_minion = copy.copy(self)

@@ -302,10 +302,8 @@ class StrategyState:
                 oppo_index = oppo_minion.zone_pos - 1
 
                 tmp_delta_h = 0
-                tmp_delta_h -= MY_DELTA_H_FACTOR * \
-                               my_minion.delta_h_after_damage(oppo_minion.attack)
-                tmp_delta_h += OPPO_DELTA_H_FACTOR * \
-                               oppo_minion.delta_h_after_damage(my_minion.attack)
+                tmp_delta_h -= my_minion.delta_h_after_damage(oppo_minion.attack)
+                tmp_delta_h += oppo_minion.delta_h_after_damage(my_minion.attack)
 
                 debug_print(f"攻击决策：[{my_index}]({my_minion.name})->"
                             f"[{oppo_index}]({oppo_minion.name}) "
@@ -331,8 +329,7 @@ class StrategyState:
                 oppo_index = oppo_minion.zone_pos - 1
 
                 tmp_delta_h = 0
-                tmp_delta_h += OPPO_DELTA_H_FACTOR * \
-                               oppo_minion.delta_h_after_damage(self.my_hero.attack)
+                tmp_delta_h += oppo_minion.delta_h_after_damage(self.my_hero.attack)
                 tmp_delta_h -= self.my_hero.delta_h_after_damage(oppo_minion.attack)
                 if self.my_weapon is not None:
                     tmp_delta_h -= self.my_weapon.attack
