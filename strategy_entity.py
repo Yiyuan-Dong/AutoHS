@@ -159,11 +159,13 @@ class StrategyMinion(StrategyEntity):
 
     @property
     def can_attack_minion(self):
+        #  原本的逻辑好像有些奇怪，根据打脸的逻辑改了
         return not self.frozen \
                and not self.dormant \
                and self.attack > 0 \
                and not self.cant_attack \
-               and (self.exhausted == 0 or self.attackable_by_rush)
+               and self.exhausted == 0 \
+               and (not self.just_played or self.rush)
 
     @property
     def can_be_pointed_by_spell(self):
