@@ -164,9 +164,9 @@ class StrategyMinion(StrategyEntity):
     @property
     def uni_index(self):
         if self.is_mine:
-            return self.zone_pos
+            return self.zone_pos - 1
         else:
-            return self.zone_pos + 10
+            return self.zone_pos - 1 + 10
 
     @property
     def health(self):
@@ -357,9 +357,9 @@ class StrategyHero(StrategyEntity):
     @property
     def uni_index(self):
         if self.is_mine:
-            return 10
+            return 9
         else:
-            return 20
+            return 19
 
     @property
     def health(self):
