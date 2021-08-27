@@ -71,7 +71,7 @@ class StrategyMinion(StrategyEntity):
                  charge=0, rush=0,
                  attackable_by_rush=0, frozen=0,
                  dormant=0, untouchable=0, immune=0,
-                 cant_attack=0, exhausted=1, just_played=0):
+                 cant_attack=0, exhausted=1, num_turns_in_play=1):
         super().__init__(card_id, zone, zone_pos,
                          current_cost, overload, is_mine)
         self.attack = attack
@@ -90,6 +90,7 @@ class StrategyMinion(StrategyEntity):
         self.not_targeted_by_power = not_targeted_by_power
         self.charge = charge
         self.rush = rush
+        # 当一个随从具有毛刺绿边（就是突袭随从刚出来时的绿边）的时候就会有这个属性
         self.attackable_by_rush = attackable_by_rush
         self.frozen = frozen
         self.dormant = dormant
@@ -97,14 +98,18 @@ class StrategyMinion(StrategyEntity):
         # self.untouchable = untouchable
         self.immune = immune
         self.cant_attack = cant_attack
-        self.just_played = just_played
-
+        self.num_turns_in_play = num_turns_in_play
+        # exhausted == 1: 随从没有绿边, 不能动
+        # 普通随从一入场便具有 exhausted == 1,
+        # 但是突袭随从和冲锋随从一开始不具有这个标签,
+        # 所以还要另作判断(尤其是突袭随从一开始不能打脸)
         self.exhausted = exhausted
-        if self.exhausted == -1:
-            if self.charge or self.rush:
-                self.exhausted = 0
-            else:
-                self.exhausted = 1
+
+        # 对于突袭随从, 第一回合应不能打脸, 而能攻击随从由
+        # attackable_by_rush体现
+        if self.rush and not self.charge \
+                and self.num_turns_in_play < 2:
+            self.exhausted = 1
 
     def __str__(self):
         temp = f"[{self.zone_pos}] {self.name} " \
@@ -173,16 +178,16 @@ class StrategyMinion(StrategyEntity):
                and not self.dormant \
                and not self.frozen \
                and not self.cant_attack \
-               and self.exhausted == 0 \
-               and (not self.just_played or self.charge)
+               and self.exhausted == 0
 
     @property
     def can_attack_minion(self):
-        return not self.frozen \
+        return self.attack > 0 \
                and not self.dormant \
-               and self.attack > 0 \
+               and not self.frozen\
                and not self.cant_attack \
-               and (self.exhausted == 0 or self.attackable_by_rush)
+               and (self.exhausted == 0
+                    or self.attackable_by_rush)
 
     @property
     def can_be_pointed_by_spell(self):

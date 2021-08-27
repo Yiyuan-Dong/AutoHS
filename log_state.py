@@ -203,9 +203,9 @@ class CardEntity(Entity):
                 untouchable=int(self.query_tag("UNTOUCHABLE")),
                 immune=int(self.query_tag("IMMUNE")),
                 # -1代表标签缺失, 有两种情况会产生-1: 断线重连; 卡刚从手牌中被打出来
-                exhausted=int(self.query_tag("EXHAUSTED", "-1")),
+                exhausted=int(self.query_tag("EXHAUSTED")),
                 cant_attack=int(self.query_tag("CANT_ATTACK")),
-                just_played=int(self.query_tag("JUST_PLAYED")),
+                num_turns_in_play=int(self.query_tag("NUM_TURNS_IN_PLAY")),
             )
         elif self.cardtype == "SPELL":
             return StrategySpell(
