@@ -20,7 +20,7 @@ choose_hero_count = 0
 
 
 def init():
-    global log_state, log_iter
+    global log_state, log_iter, choose_hero_count
 
     # 有时候炉石退出时python握着Power.log的读锁, 因而炉石无法
     # 删除Power.log. 而当炉石重启时, 炉石会从头开始写Power.log,
@@ -43,6 +43,7 @@ def init():
 
     log_state = LogState()
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
+    choose_hero_count = 0
 
 
 def update_log_state():
@@ -107,6 +108,8 @@ def print_out():
 def ChoosingHeroAction():
     global choose_hero_count
 
+    print_out()
+
     # 有时脚本会卡在某个地方, 从而在FSM_Matching
     # 和FSM_CHOOSING_HERO之间反复横跳. 这时候要
     # 重启炉石
@@ -115,7 +118,6 @@ def ChoosingHeroAction():
     if choose_hero_count >= 20:
         return FSM_ERROR
 
-    print_out()
     time.sleep(2)
     click.match_opponent()
     time.sleep(1)
