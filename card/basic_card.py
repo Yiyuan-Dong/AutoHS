@@ -97,7 +97,7 @@ class MinionCard(Card):
     @classmethod
     def basic_delta_h(cls, state, hand_card_index):
         if state.my_minion_num >= 7:
-            return -1000
+            return -20000
         else:
             return 0
 
