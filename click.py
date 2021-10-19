@@ -9,18 +9,24 @@ import sys
 
 from constants.constants import *
 from print_info import *
-from get_screen import get_battlenet_hwnd
+from get_screen import *
+
+
+def rand_sleep(interval):
+    base_time = interval * 0.75
+    rand_time = interval * 0.5 * random.random()  # avg = 0.25 * interval
+    time.sleep(base_time + rand_time)
 
 
 def click_button(x, y, button):
     x += random.randint(-5, 5)
     y += random.randint(-5, 5)
     mouse = Controller()
-    time.sleep(0.1)
+    rand_sleep(0.1)
     mouse.position = (x, y)
-    time.sleep(0.1)
+    rand_sleep(0.1)
     mouse.press(button)
-    time.sleep(0.1)
+    rand_sleep(0.1)
     mouse.release(button)
 
 
@@ -33,36 +39,36 @@ def right_click(x, y):
 
 
 def choose_my_minion(mine_index, mine_num):
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     x = 960 - (mine_num - 1) * 70 + mine_index * 140
     y = 600
     left_click(x, y)
 
 
 def choose_my_hero():
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     left_click(960, 850)
 
 
 def choose_opponent_minion(oppo_index, oppo_num):
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     x = 960 - (oppo_num - 1) * 70 + oppo_index * 140
     y = 400
     left_click(x, y)
 
 
 def choose_oppo_hero():
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     left_click(960, 200)
 
 
 def cancel_click():
-    time.sleep(TINY_OPERATE_INTERVAL)
+    rand_sleep(TINY_OPERATE_INTERVAL)
     right_click(50, 400)
 
 
 def test_click():
-    time.sleep(TINY_OPERATE_INTERVAL)
+    rand_sleep(TINY_OPERATE_INTERVAL)
     left_click(50, 400)
 
 
@@ -82,7 +88,7 @@ HAND_CARD_X = [
 
 
 def choose_card(card_index, card_num):
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
 
     assert 0 <= card_index < card_num <= 10
     # x = START[card_num] + 65 + STEP[card_num] * card_index
@@ -102,17 +108,17 @@ def replace_starting_card(card_index, hand_card_num):
     assert hand_card_num in STARTING_CARD_X
     assert card_index < len(STARTING_CARD_X[hand_card_num])
 
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     left_click(STARTING_CARD_X[hand_card_num][card_index], 500)
 
 
 def click_middle():
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     left_click(960, 500)
 
 
 def click_setting():
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     left_click(1880, 1050)
 
 
@@ -123,7 +129,7 @@ def choose_and_use_spell(card_index, card_num):
 
 # 第[i]个随从左边那个空隙记为第[i]个gap
 def put_minion(gap_index, minion_num):
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
 
     if minion_num >= 7:
         warn_print(f"Try to put a minion but there has already been {minion_num} minions")
@@ -136,24 +142,24 @@ def put_minion(gap_index, minion_num):
 def match_opponent():
     # 一些奇怪的错误提示
     commit_error_report()
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     left_click(1400, 900)
 
 
 def enter_battle_mode():
     # 一些奇怪的错误提示
     commit_error_report()
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     left_click(950, 320)
 
 
 def commit_choose_card():
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     left_click(960, 850)
 
 
 def end_turn():
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     left_click(1550, 500)
 
 
@@ -167,18 +173,18 @@ def commit_error_report():
 def emoj(target=None):
     emoj_list = [(800, 880), (800, 780), (800, 680), (1150, 680), (1150, 780)]
     right_click(960, 830)
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
 
     if target is None:
         x, y = emoj_list[random.randint(1, 4)]
     else:
         x, y = emoj_list[target]
     left_click(x, y)
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
 
 
 def click_skill():
-    time.sleep(OPERATE_INTERVAL)
+    rand_sleep(OPERATE_INTERVAL)
     left_click(1150, 850)
 
 
@@ -223,25 +229,21 @@ def hero_beat_hero():
 
 
 def enter_HS():
-    hwnd = get_battlenet_hwnd()
+    rand_sleep(1)
 
-    if hwnd == 0:
+    if test_hs_available():
+        move_window_foreground(get_HS_hwnd(), "炉石传说")
+        return
+
+    battlenet_hwnd = get_battlenet_hwnd()
+
+    if battlenet_hwnd == 0:
         error_print("未找到应用战网")
         sys.exit()
 
-    # left_click(180, 910)
-    # 把战网客户端拉回前台以便点击
-    try:
-        win32gui.SetForegroundWindow(hwnd)
-    except Exception:
-        warn_print("Error while trying to move BattleNet foreground")
+    move_window_foreground(battlenet_hwnd, "战网")
 
-    win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
-    time.sleep(1)
+    rand_sleep(1)
 
-    left, top, right, bottom = win32gui.GetWindowRect(hwnd)
+    left, top, right, bottom = win32gui.GetWindowRect(battlenet_hwnd)
     left_click(left + 180, bottom - 110)
-
-
-if __name__ == "__main__":
-    emoj(0)

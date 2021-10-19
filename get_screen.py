@@ -5,9 +5,11 @@
 import win32gui
 import win32ui
 import win32con
+import win32com.client
 import win32api
 import win32process
 import numpy
+from print_info import *
 
 from constants.constants import *
 
@@ -36,6 +38,21 @@ def get_battlenet_hwnd():
 
 def test_hs_available():
     return get_HS_hwnd() != 0
+
+
+def move_window_foreground(hwnd, name=""):
+    try:
+        win32gui.BringWindowToTop(hwnd)
+        shell = win32com.client.Dispatch("WScript.Shell")
+        shell.SendKeys('%')
+        win32gui.SetForegroundWindow(hwnd)
+    except Exception as e:
+        if name != "":
+            warn_print(f"Open {name}: {e}")
+        else:
+            warn_print(e)
+
+    win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
 
 
 def max_diff(img, pixel_list):
@@ -99,13 +116,13 @@ def get_state():
 
     im_opencv = catch_screen()
 
-    if list(im_opencv[1070][1090]) == [23, 52, 105, 255]:
+    if list(im_opencv[1070][1090][:3]) == [23, 52, 105]:
         return FSM_MAIN_MENU
-    if list(im_opencv[1070][1090]) == [8, 18, 24, 255]:
+    if list(im_opencv[1070][1090][:3]) == [8, 18, 24]:
         return FSM_CHOOSING_HERO
-    if list(im_opencv[1070][1090]) == [17, 18, 19, 255]:
+    if list(im_opencv[1070][1090][:3]) == [17, 18, 19]:
         return FSM_MATCHING
-    if list(im_opencv[860][960]) == [71, 71, 71, 255]:
+    if list(im_opencv[860][960][:3]) == [71, 71, 71]:
         return FSM_CHOOSING_CARD
 
     return FSM_BATTLING
@@ -128,7 +145,3 @@ def terminate_HS():
     handle = win32api.OpenProcess(win32con.PROCESS_TERMINATE, 0, process_id)
     win32api.TerminateProcess(handle, 0)
     win32api.CloseHandle(handle)
-
-
-if __name__ == "__main__":
-    print(get_state())

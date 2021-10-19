@@ -332,13 +332,13 @@ def GoBackHSAction():
     # 有时候炉石进程会直接重写Power.log, 这时应该重新创建文件操作句柄
     init()
 
-    return FSM_MAIN_MENU
+    return FSM_WAIT_MAIN_MENU
 
 
 def MainMenuAction():
     print_out()
 
-    time.sleep(30)
+    time.sleep(3)
 
     while True:
         if quitting_flag:
@@ -356,6 +356,13 @@ def MainMenuAction():
                 return FSM_BATTLING
         if state == FSM_CHOOSING_HERO:
             return FSM_CHOOSING_HERO
+
+
+def WaitMainMenu():
+    print_out()
+    while get_screen.get_state() != FSM_MAIN_MENU:
+        time.sleep(5)
+    return FSM_MAIN_MENU
 
 
 def HandleErrorAction():
@@ -387,6 +394,7 @@ def FSM_dispatch(next_state):
         FSM_BATTLING: Battling,
         FSM_ERROR: HandleErrorAction,
         FSM_QUITTING_BATTLE: QuittingBattle,
+        FSM_WAIT_MAIN_MENU: WaitMainMenu,
     }
 
     if next_state not in dispatch_dict:
@@ -398,6 +406,10 @@ def FSM_dispatch(next_state):
 
 def AutoHS_automata():
     global FSM_state
+
+    if get_screen.test_hs_available():
+        hs_hwnd = get_screen.get_HS_hwnd()
+        get_screen.move_window_foreground(hs_hwnd)
 
     while 1:
         if quitting_flag:
