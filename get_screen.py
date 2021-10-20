@@ -116,7 +116,9 @@ def get_state():
 
     im_opencv = catch_screen()
 
-    if list(im_opencv[1070][1090][:3]) == [23, 52, 105]:
+    # 先y轴再z轴
+    if list(im_opencv[1070][1090][:3]) == [23, 52, 105] or \
+            list(im_opencv[305][705][:3]) == [21, 43, 95]:   # 万圣节主界面会变
         return FSM_MAIN_MENU
     if list(im_opencv[1070][1090][:3]) == [8, 18, 24]:
         return FSM_CHOOSING_HERO
