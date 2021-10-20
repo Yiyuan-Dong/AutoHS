@@ -344,18 +344,27 @@ def MainMenuAction():
         if quitting_flag:
             sys.exit(0)
 
-        click.enter_battle_mode()
+        # click.enter_battle_mode()
+        # time.sleep(5)
+        #
+        # state = get_screen.get_state()
+        #
+        # # 重新连接对战之类的
+        # if state == FSM_BATTLING:
+        #     ok = update_log_state()
+        #     if ok and log_state.available:
+        #         return FSM_BATTLING
+        # if state == FSM_CHOOSING_HERO:
+        #     return FSM_CHOOSING_HERO
+
+        # 现在要进佣兵模式了!
+        click.enter_mercenaries_mode()
+
+        curr_state = get_screen.get_state()
+        if curr_state != FSM_MAIN_MENU:
+            return curr_state
+
         time.sleep(5)
-
-        state = get_screen.get_state()
-
-        # 重新连接对战之类的
-        if state == FSM_BATTLING:
-            ok = update_log_state()
-            if ok and log_state.available:
-                return FSM_BATTLING
-        if state == FSM_CHOOSING_HERO:
-            return FSM_CHOOSING_HERO
 
 
 def WaitMainMenu():
@@ -363,6 +372,71 @@ def WaitMainMenu():
     while get_screen.get_state() != FSM_MAIN_MENU:
         time.sleep(5)
     return FSM_MAIN_MENU
+
+
+def MercCamp():
+    print_out()
+    loop_count = 0
+
+    while True:
+        if loop_count >= 10:
+            return FSM_ERROR
+
+        click.merc_travel()
+        curr_state = get_screen.get_state()
+
+        if curr_state == FSM_MERC_CHOOSE_MAP_1:
+            return FSM_MERC_CHOOSE_MAP_1
+
+        if curr_state in [FSM_MERC_CHOOSE_MAP_2,
+                          FSM_MERC_CHOOSE_MAP_3,
+                          FSM_MERC_CHOOSE_MAP_4]:
+            error_print("目前脚本只支持冬泉谷!")
+            return FSM_ERROR
+
+        if curr_state == FSM_MERC_ENTER_BATTLE:
+            return FSM_MERC_GIVE_UP
+
+        time.sleep(2)
+
+
+def ChooseMap():
+    print_out()
+    click.merc_choose_map()
+    return FSM_MERC_CHOOSE_COURSE
+
+
+def ChooseCourse():
+    print_out()
+    click.merc_choose_course()
+    return FSM_MERC_CHOOSE_TEAM
+
+
+def ChooseTeam():
+    print_out()
+    click.merc_choose_team()
+    return FSM_MERC_ENTER_BATTLE
+
+
+def EnterBattle():
+    print_out()
+    click.merc_enter_battle()
+    return FSM_MERC_WAIT_BATTLE
+
+
+def WaitBattle():
+    loop_count = 0
+    print_out()
+
+    while True:
+        if loop_count >= 10:
+            return FSM_ERROR
+
+        curr_state = get_screen.get_state()
+        if curr_state == FSM_MERC_BATTLING:
+            return FSM_MERC_BATTLING
+
+        time.sleep(3)
 
 
 def HandleErrorAction():

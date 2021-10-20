@@ -153,6 +153,13 @@ def enter_battle_mode():
     left_click(950, 320)
 
 
+def enter_mercenaries_mode():
+    # 一些奇怪的错误提示
+    commit_error_report()
+    rand_sleep(OPERATE_INTERVAL)
+    left_click(950, 470)
+
+
 def commit_choose_card():
     rand_sleep(OPERATE_INTERVAL)
     left_click(960, 850)
@@ -247,3 +254,40 @@ def enter_HS():
 
     left, top, right, bottom = win32gui.GetWindowRect(battlenet_hwnd)
     left_click(left + 180, bottom - 110)
+
+
+def merc_travel():
+    left_click(1000, 300)
+    rand_sleep(2)
+
+
+def merc_choose_map():
+    left_click(1300, 750)
+    rand_sleep(2)
+
+
+def merc_choose_course():
+    left_click(1500, 850)
+    rand_sleep(1)
+
+
+def merc_choose_team():
+    left_click(1400, 900)
+    rand_sleep(1)
+
+
+def merc_enter_battle():
+    left_click(1500, 850)
+    rand_sleep(1)
+
+
+def merc_choose_mid_treasure():
+    left_click(1150, 500)
+    rand_sleep(0.4)
+    left_click(1150, 850)
+
+
+def merc_give_up():
+    left_click(800, 1000)
+    rand_sleep(1)
+    left_click(1100, 800)

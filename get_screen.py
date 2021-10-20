@@ -118,8 +118,26 @@ def get_state():
 
     # 先y轴再z轴
     if list(im_opencv[1070][1090][:3]) == [23, 52, 105] or \
-            list(im_opencv[305][705][:3]) == [21, 43, 95]:   # 万圣节主界面会变
+            list(im_opencv[305][705][:3]) == [21, 43, 95]:  # 万圣节主界面会变
         return FSM_MAIN_MENU
+    if list(im_opencv[305][705][:3]) == [119, 122, 145]:  # 佣兵模式的营地
+        return FSM_MERC_CAMP
+    if list(im_opencv[305][705][:3]) == [242, 261, 181]:  # 选地图界面贫瘠之地
+        return FSM_MERC_CHOOSE_MAP_1
+    if list(im_opencv[305][705][:3]) == [44, 64, 39]:  # 选地图界面费伍德森林
+        return FSM_MERC_CHOOSE_MAP_2
+    if list(im_opencv[305][705][:3]) == [97, 46, 71]:  # 选地图界面冬泉谷
+        return FSM_MERC_CHOOSE_MAP_3
+    if list(im_opencv[305][705][:3]) == [44, 94, 205]:  # 选地图界面黑石山
+        return FSM_MERC_CHOOSE_MAP_4
+    if list(im_opencv[305][705][:3]) in [[47, 84, 117], [79, 128, 163]]:  # 选具体关卡
+        return FSM_MERC_CHOOSE_COURSE
+    if list(im_opencv[275][705][:3]) == [137, 191, 236]:  # 选择一支队伍
+        return FSM_MERC_CHOOSE_TEAM
+    if list(im_opencv[1005][705][:3]) == [159, 188, 217]:  # 进入具体关卡但还没打
+        return FSM_MERC_ENTER_BATTLE
+    if list(im_opencv[275][705][:3]) == [78, 147, 158]:  # 选择一支队伍
+        return FSM_MERC_BATTLING
     if list(im_opencv[1070][1090][:3]) == [8, 18, 24]:
         return FSM_CHOOSING_HERO
     if list(im_opencv[1070][1090][:3]) == [17, 18, 19]:

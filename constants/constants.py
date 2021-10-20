@@ -53,6 +53,17 @@ FSM_BATTLING = "Battling"
 FSM_ERROR = "ERROR"
 FSM_QUITTING_BATTLE = "Quitting Battle"
 FSM_WAIT_MAIN_MENU = "Wait main menu"
+FSM_MERC_CAMP = "Mercenaries Camp"
+FSM_MERC_CHOOSE_MAP_1 = "Mercenaries Choose Map Desert"
+FSM_MERC_CHOOSE_MAP_2 = "Mercenaries Choose Map Forest"
+FSM_MERC_CHOOSE_MAP_3 = "Mercenaries Choose Map Valley"
+FSM_MERC_CHOOSE_MAP_4 = "Mercenaries Choose Map Mountain"
+FSM_MERC_CHOOSE_COURSE = "Mercenaries Choose Course"
+FSM_MERC_CHOOSE_TEAM = "Mercenaries Choose Team"
+FSM_MERC_ENTER_BATTLE = "Mercenaries Enter Battle"
+FSM_MERC_GIVE_UP = "Mercenaries Give Up"
+FSM_MERC_WAIT_BATTLE = "Mercenaries Wait Battle"
+FSM_MERC_BATTLING = "Mercenanries Battling"
 
 LOG_CONTAINER_ERROR = 0
 LOG_CONTAINER_INFO = 1
