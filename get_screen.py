@@ -134,10 +134,14 @@ def get_state():
         return FSM_MERC_CHOOSE_COURSE
     if list(im_opencv[275][705][:3]) == [137, 191, 236]:  # 选择一支队伍
         return FSM_MERC_CHOOSE_TEAM
-    if list(im_opencv[1005][705][:3]) == [159, 188, 217]:  # 进入具体关卡但还没打
+    if list(im_opencv[1005][705][:3]) == [159, 188, 217] and \
+            list(im_opencv[810][1050][:3] == [255, 255, 122]):
+        # 进入具体关卡但还没打, (705, 1005)对应`查看队伍`, (810, 1050)对应`开始`按钮(要是亮的)
         return FSM_MERC_ENTER_BATTLE
-    if list(im_opencv[275][705][:3]) == [78, 147, 158]:  # 选择一支队伍
+    if list(im_opencv[275][705][:3]) == [78, 147, 158]:  # 进入战斗界面了
         return FSM_MERC_BATTLING
+    if list(im_opencv[650][950][:3] == [65, 106, 139]):
+        return FSM_MERC_CHOOSE_TREASURE
     if list(im_opencv[1070][1090][:3]) == [8, 18, 24]:
         return FSM_CHOOSING_HERO
     if list(im_opencv[1070][1090][:3]) == [17, 18, 19]:

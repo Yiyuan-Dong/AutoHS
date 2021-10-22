@@ -5,8 +5,12 @@ from print_info import print_info_init
 from FSM_action import init
 
 if __name__ == "__main__":
-    check_name()
+    # check_name()
     print_info_init()
     init()
     keyboard.add_hotkey("ctrl+q", system_exit)
-    AutoHS_automata()
+    args = {
+        "MERC_INDEX": [1, 2, 4],
+        "MERC_SKILL": [1, 1, 0]
+    }
+    AutoHS_automata(args)

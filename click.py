@@ -267,6 +267,7 @@ def merc_choose_map():
 
 
 def merc_choose_course():
+    # 现在只有第六关
     left_click(1500, 850)
     rand_sleep(1)
 
@@ -285,9 +286,63 @@ def merc_choose_mid_treasure():
     left_click(1150, 500)
     rand_sleep(0.4)
     left_click(1150, 850)
+    rand_sleep(1)
+
+
+MERC_HAND_CARD_X = {
+    4: [750, 900, 1050, 1200],
+    5: [750, 850, 950, 1080, 1200],
+    6: [700, 800, 900, 1000, 1100, 1200],
+}
+
+
+def merc_click_hand_card(index, total_card):
+    assert 6 >= total_card >= 4
+
+    left_click(MERC_HAND_CARD_X[total_card][index], 1000)
+    rand_sleep(0.4)
+    left_click(1400, 600)
+    rand_sleep(1.5)
+
+
+def merc_click_ready():
+    left_click(1580, 500)
+    rand_sleep(1)
+
+
+MERC_BATTLEGROUND_X = {
+    3: [780, 950, 1130]
+}
+
+
+def merc_click_battleground_hero(index, total_num):
+    assert total_num == 3
+
+    left_click(MERC_BATTLEGROUND_X[total_num][index], 720)
+    rand_sleep(0.5)
+
+
+MERC_SKILL_X = {
+    3: [750, 950, 1150]
+}
+
+
+def merc_click_skill(index, total_num):
+    assert total_num == 3
+    left_click(MERC_SKILL_X[total_num][index], 500)
+    rand_sleep(0.4)
+
+
+def merc_click_mid_oppo():
+    left_click(960, 300)
+    rand_sleep(0.4)
 
 
 def merc_give_up():
-    left_click(800, 1000)
+    left_click(860, 1005)
     rand_sleep(1)
     left_click(1100, 800)
+    rand_sleep(1)
+    left_click(800, 600)
+    rand_sleep(0.6)
+    click_middle()

@@ -105,7 +105,7 @@ def print_out():
     return
 
 
-def ChoosingHeroAction():
+def ChoosingHeroAction(args):
     global choose_hero_count
 
     print_out()
@@ -124,7 +124,7 @@ def ChoosingHeroAction():
     return FSM_MATCHING
 
 
-def MatchingAction():
+def MatchingAction(args):
     print_out()
     loop_count = 0
 
@@ -151,7 +151,7 @@ def MatchingAction():
             return FSM_ERROR
 
 
-def ChoosingCardAction():
+def ChoosingCardAction(args):
     global choose_hero_count
     choose_hero_count = 0
 
@@ -205,7 +205,7 @@ def ChoosingCardAction():
         time.sleep(STATE_CHECK_INTERVAL)
 
 
-def Battling():
+def Battling(args):
     global win_count
     global log_state
 
@@ -293,7 +293,7 @@ def Battling():
             time.sleep(STATE_CHECK_INTERVAL)
 
 
-def QuittingBattle():
+def QuittingBattle(args):
     print_out()
 
     time.sleep(5)
@@ -335,7 +335,7 @@ def GoBackHSAction():
     return FSM_WAIT_MAIN_MENU
 
 
-def MainMenuAction():
+def MainMenuAction(args):
     print_out()
 
     time.sleep(3)
@@ -367,7 +367,7 @@ def MainMenuAction():
         time.sleep(5)
 
 
-def WaitMainMenu():
+def WaitMainMenu(args):
     print_out()
     while get_screen.get_state() != FSM_MAIN_MENU:
         click.click_middle()
@@ -375,7 +375,7 @@ def WaitMainMenu():
     return FSM_MAIN_MENU
 
 
-def MercCamp():
+def MercCamp(args):
     print_out()
     loop_count = 0
 
@@ -401,46 +401,95 @@ def MercCamp():
         time.sleep(2)
 
 
-def ChooseMap():
+def MercChooseMap(args):
     print_out()
     click.merc_choose_map()
-    return FSM_MERC_CHOOSE_COURSE
+    return ""
 
 
-def ChooseCourse():
+def MercChooseCourse(args):
     print_out()
     click.merc_choose_course()
-    return FSM_MERC_CHOOSE_TEAM
+    return ""
 
 
-def ChooseTeam():
+def MercChooseTeam(args):
     print_out()
     click.merc_choose_team()
-    return FSM_MERC_ENTER_BATTLE
+    return ""
 
 
-def EnterBattle():
+def MercEnterBattle(args):
     print_out()
     click.merc_enter_battle()
-    return FSM_MERC_WAIT_BATTLE
+    return ""
 
 
-def WaitBattle():
+def MercWaitBattle(args):
     loop_count = 0
     print_out()
 
     while True:
-        if loop_count >= 10:
+        if loop_count >= 60:
             return FSM_ERROR
 
         curr_state = get_screen.get_state()
         if curr_state == FSM_MERC_BATTLING:
             return FSM_MERC_BATTLING
 
-        time.sleep(3)
+        time.sleep(0.5)
 
 
-def HandleErrorAction():
+def MercBattling(args):
+    print_out()
+
+    card_index = args["MERC_INDEX"]
+    for i, index in enumerate(card_index):
+        click.merc_click_hand_card(index - i, 6 - i)
+
+    click.merc_click_ready()
+
+    time.sleep(4)
+
+    skill_index = args["MERC_SKILL"]
+    for i, index in enumerate(skill_index):
+        click.merc_click_battleground_hero(i, 3)
+        click.merc_click_skill(index, 3)
+        click.merc_click_mid_oppo()
+
+    click.merc_click_ready()
+    return ""
+
+
+def MercChooseTreasure(args):
+    loop_count = 0
+    print_out()
+
+    while get_screen.get_state() != FSM_MERC_ENTER_BATTLE:
+        loop_count += 1
+        click.merc_choose_mid_treasure()
+
+        if loop_count >= 10:
+            return FSM_ERROR
+
+    return FSM_MERC_GIVE_UP
+
+
+def MercGiveUp(args):
+    loop_count = 0
+    print_out()
+
+    while get_screen.get_state() != FSM_MERC_CHOOSE_COURSE:
+        loop_count += 1
+        click.merc_give_up()
+
+        if loop_count >= 10:
+            return FSM_ERROR
+
+    return FSM_MERC_CHOOSE_COURSE
+
+
+def HandleErrorAction(args):
     print_out()
 
     if not get_screen.test_hs_available():
@@ -459,7 +508,7 @@ def HandleErrorAction():
         return FSM_LEAVE_HS
 
 
-def FSM_dispatch(next_state):
+def FSM_dispatch(next_state, args):
     dispatch_dict = {
         FSM_LEAVE_HS: GoBackHSAction,
         FSM_MAIN_MENU: MainMenuAction,
@@ -470,16 +519,25 @@ def FSM_dispatch(next_state):
         FSM_ERROR: HandleErrorAction,
         FSM_QUITTING_BATTLE: QuittingBattle,
         FSM_WAIT_MAIN_MENU: WaitMainMenu,
+        FSM_MERC_CAMP: MercCamp,
+        FSM_MERC_CHOOSE_MAP_1: MercChooseMap,
+        FSM_MERC_CHOOSE_COURSE: MercChooseCourse,
+        FSM_MERC_CHOOSE_TEAM: MercChooseTeam,
+        FSM_MERC_ENTER_BATTLE: MercEnterBattle,
+        FSM_MERC_WAIT_BATTLE: MercWaitBattle,
+        FSM_MERC_BATTLING: MercBattling,
+        FSM_MERC_CHOOSE_TREASURE: MercChooseTreasure,
+        FSM_MERC_GIVE_UP: MercGiveUp,
     }
 
     if next_state not in dispatch_dict:
         error_print("Unknown state!")
         sys.exit()
     else:
-        return dispatch_dict[next_state]()
+        return dispatch_dict[next_state](args)
 
 
-def AutoHS_automata():
+def AutoHS_automata(args):
     global FSM_state
 
     if get_screen.test_hs_available():
@@ -489,9 +547,9 @@ def AutoHS_automata():
     while 1:
         if quitting_flag:
             sys.exit(0)
-        if FSM_state == "":
+        if FSM_state == "" or FSM_state is None:
             FSM_state = get_screen.get_state()
-        FSM_state = FSM_dispatch(FSM_state)
+        FSM_state = FSM_dispatch(FSM_state, args)
 
 
 if __name__ == "__main__":

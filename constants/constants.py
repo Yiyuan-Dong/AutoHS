@@ -63,6 +63,7 @@ FSM_MERC_CHOOSE_TEAM = "Mercenaries Choose Team"
 FSM_MERC_ENTER_BATTLE = "Mercenaries Enter Battle"
 FSM_MERC_GIVE_UP = "Mercenaries Give Up"
 FSM_MERC_WAIT_BATTLE = "Mercenaries Wait Battle"
+FSM_MERC_CHOOSE_TREASURE = "Mercenaries Choose Treasure"
 FSM_MERC_BATTLING = "Mercenanries Battling"
 
 LOG_CONTAINER_ERROR = 0
