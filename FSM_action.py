@@ -370,6 +370,7 @@ def MainMenuAction():
 def WaitMainMenu():
     print_out()
     while get_screen.get_state() != FSM_MAIN_MENU:
+        click.click_middle()
         time.sleep(5)
     return FSM_MAIN_MENU
 
