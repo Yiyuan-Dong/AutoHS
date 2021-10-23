@@ -9,6 +9,8 @@ import win32com.client
 import win32api
 import win32process
 import numpy
+import pickle
+import cv2
 from print_info import *
 
 from constants.constants import *
@@ -132,11 +134,10 @@ def get_state():
         return FSM_MERC_CHOOSE_MAP_4
     if list(im_opencv[305][705][:3]) in [[47, 84, 117], [79, 128, 163]]:  # 选具体关卡
         return FSM_MERC_CHOOSE_COURSE
-    if list(im_opencv[275][705][:3]) == [137, 191, 236]:  # 选择一支队伍
+    if list(im_opencv[205][705][:3]) == [54, 97, 150]:  # 选择一支队伍
         return FSM_MERC_CHOOSE_TEAM
-    if list(im_opencv[1005][705][:3]) == [159, 188, 217] and \
-            list(im_opencv[810][1050][:3] == [255, 255, 122]):
-        # 进入具体关卡但还没打, (705, 1005)对应`查看队伍`, (810, 1050)对应`开始`按钮(要是亮的)
+    if list(im_opencv[1005][705][:3]) == [159, 188, 217]:
+        # 进入具体关卡但还没打, (705, 1005)对应`查看队伍`
         return FSM_MERC_ENTER_BATTLE
     if sum(abs(im_opencv[505][305][:3] - [86, 124, 111])) < 10:  # 进入战斗界面了, 这个点是状态栏白边
         return FSM_MERC_BATTLING
@@ -153,7 +154,7 @@ def get_state():
     # return FSM_BATTLING
 
 
-def next_battle():
+def distingish_next_battle():
     im_opencv = catch_screen()
 
     digit_point = list(im_opencv[305][1505][:3])
@@ -172,8 +173,10 @@ def next_battle():
         return BATTLE_DESTROY
     elif digit_point == [227, 65, 16]:
         return BATTLE_TELEPORT
+    elif digit_point == [0, 4, 34]:
+        return BATTLE_BOMB
     else:
-        return ""
+        return BATTLE_NORMAL
 
 
 # def image_hash(img):
@@ -193,3 +196,21 @@ def terminate_HS():
     handle = win32api.OpenProcess(win32con.PROCESS_TERMINATE, 0, process_id)
     win32api.TerminateProcess(handle, 0)
     win32api.CloseHandle(handle)
+
+
+def load_icon():
+    with open("numpy_secret_icon", "rb") as f:
+        return pickle.load(f)
+
+
+def find_icon():
+    img = catch_screen()
+    template = load_icon()
+    result = cv2.matchTemplate(img, template, cv2.TM_SQDIFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+    return min_loc
+
+
+def merc_can_battle():
+    img = catch_screen()
+    return list(img[810][1555][:3]) == [255, 255, 164]

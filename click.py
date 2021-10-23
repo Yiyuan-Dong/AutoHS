@@ -31,7 +31,9 @@ def click_button(x, y, button):
 
 
 def wheel_mouse(delta_y):
-    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, delta_y)
+    y = delta_y // abs(delta_y)
+    for i in range(delta_y):
+        win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, y)
 
 
 def fast_click_button(x, y, button):
@@ -380,3 +382,19 @@ def merc_give_up():
     for i in range(3):
         test_click()
         rand_sleep(0.2)
+
+def merc_click_stranger():
+    merc_enter_battle()
+    time.sleep(2)
+    left_click(960, 450)
+    time.sleep(0.5)
+    left_click(960, 750)
+    time.sleep(2)
+    for i in range(5):
+        test_click()
+
+def merc_click_no_battle():
+    merc_enter_battle()
+    time.sleep(1)
+    for i in range(5):
+        test_click()
