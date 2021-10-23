@@ -116,7 +116,7 @@ def get_state():
 
     im_opencv = catch_screen()
 
-    # 先y轴再z轴
+    # 先y轴再x轴
     if list(im_opencv[1070][1090][:3]) == [23, 52, 105] or \
             list(im_opencv[305][705][:3]) == [21, 43, 95]:  # 万圣节主界面会变
         return FSM_MAIN_MENU
@@ -138,9 +138,9 @@ def get_state():
             list(im_opencv[810][1050][:3] == [255, 255, 122]):
         # 进入具体关卡但还没打, (705, 1005)对应`查看队伍`, (810, 1050)对应`开始`按钮(要是亮的)
         return FSM_MERC_ENTER_BATTLE
-    if list(im_opencv[275][705][:3]) == [78, 147, 158]:  # 进入战斗界面了
+    if sum(abs(im_opencv[505][305][:3] - [86, 124, 111])) < 10:  # 进入战斗界面了, 这个点是状态栏白边
         return FSM_MERC_BATTLING
-    if list(im_opencv[650][950][:3] == [65, 106, 139]):
+    if list(im_opencv[855][1205][:3]) == [141, 141, 141]:
         return FSM_MERC_CHOOSE_TREASURE
     if list(im_opencv[1070][1090][:3]) == [8, 18, 24]:
         return FSM_CHOOSING_HERO
@@ -149,7 +149,31 @@ def get_state():
     if list(im_opencv[860][960][:3]) == [71, 71, 71]:
         return FSM_CHOOSING_CARD
 
-    return FSM_BATTLING
+    return FSM_UNKNOWN
+    # return FSM_BATTLING
+
+
+def next_battle():
+    im_opencv = catch_screen()
+
+    digit_point = list(im_opencv[305][1505][:3])
+
+    if digit_point == [126, 66, 63]:
+        return BATTLE_BLESS_BLUE
+    elif digit_point == [38, 151, 239]:
+        return BATTLE_BLESS_RED
+    elif digit_point == [181, 190, 198]:
+        return BATTLE_BLESS_GREEN
+    elif digit_point == [255, 187, 88]:
+        return BATTLE_DOCTOR
+    elif digit_point == [178, 119, 73]:
+        return BATTLE_STRANGER
+    elif digit_point == [136, 108, 44]:
+        return BATTLE_DESTROY
+    elif digit_point == [227, 65, 16]:
+        return BATTLE_TELEPORT
+    else:
+        return ""
 
 
 # def image_hash(img):

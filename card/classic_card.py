@@ -152,7 +152,7 @@ class EarthenRingFarseer(MinionPointMine):
             best_h += 4
         best_my_index = -1
 
-        for my_index, my_minion in enumerate(state.my_minions):
+        for my_index, my_minion in enumerate(state.my_hand_minions):
             delta_h = -0.5 + my_minion.delta_h_after_heal(3)
             if delta_h > best_h:
                 best_h = delta_h
@@ -170,7 +170,7 @@ class Abomination(MinionNoPoint):
         h_sum = 0
         for oppo_minion in state.oppo_minions:
             h_sum += oppo_minion.delta_h_after_damage(2)
-        for my_minion in state.my_minions:
+        for my_minion in state.my_hand_minions:
             h_sum -= my_minion.delta_h_after_damage(2)
         h_sum += state.oppo_hero.delta_h_after_damage(2)
         h_sum -= state.my_hero.delta_h_after_damage(2)
@@ -209,7 +209,7 @@ class BloodKnight(MinionNoPoint):
         for oppo_minion in state.oppo_minions:
             if oppo_minion.divine_shield:
                 h_sum += oppo_minion.attack + 6
-        for my_minion in state.my_minions:
+        for my_minion in state.my_hand_minions:
             if my_minion.divine_shield:
                 h_sum += -my_minion.attack + 6
 

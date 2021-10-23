@@ -1,4 +1,4 @@
-from strategy import *
+from merc_strategy import *
 
 if __name__ == "__main__":
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
@@ -14,8 +14,8 @@ if __name__ == "__main__":
     for x in log_container.message_list:
         update_state(state, x)
 
-    with open("game_state_snapshot.txt", "w", encoding="utf8") as f:
+    with open("merc_game_state_snapshot.txt", "w", encoding="utf8") as f:
         f.write(str(state))
 
-    # strategy_state = StrategyState(state)
-    # strategy_state.debug_print_out()
+    strategy_state = MercState(state)
+    print(strategy_state)

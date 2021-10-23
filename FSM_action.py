@@ -8,15 +8,21 @@ import click
 import get_screen
 from strategy import StrategyState
 from log_state import *
+from merc_strategy import MercState
 
 FSM_state = ""
+
 time_begin = 0.0
 game_count = 0
 win_count = 0
+exception_count = 0
+battle_count = 0
+battle_sum = 0
+choose_hero_count = 0
+
 quitting_flag = False
 log_state = LogState()
 log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
-choose_hero_count = 0
 
 
 def init():
@@ -68,10 +74,37 @@ def update_log_state():
     return True
 
 
-def system_exit():
+def polling(dest_state, poll_action, poll_interval, poll_limit):
+    loop_count = 0
+
+    if poll_action is not None:
+        poll_action()
+
+    while get_screen.get_state() != dest_state:
+        if quitting_flag:
+            sys.exit(0)
+
+        loop_count += 1
+        if loop_count >= poll_limit:
+            return FSM_ERROR
+
+        if poll_action is not None:
+            poll_action()
+        time.sleep(poll_interval)
+
+    return dest_state
+
+
+def system_exit(ok = True):
     global quitting_flag
 
-    sys_print(f"一共完成了{game_count}场对战, 赢了{win_count}场")
+    if not ok:
+        sys_print("非正常退出!")
+
+    # sys_print(f"一共完成了{game_count}场对战, 赢了{win_count}场")
+    sys_print(f"一共刷了{game_count}轮")
+    sys_print(f"一共刷了{battle_sum}场对战")
+    sys_print(f"异常退出了{exception_count}次")
     print_info_close()
 
     quitting_flag = True
@@ -108,8 +141,6 @@ def print_out():
 def ChoosingHeroAction(args):
     global choose_hero_count
 
-    print_out()
-
     # 有时脚本会卡在某个地方, 从而在FSM_Matching
     # 和FSM_CHOOSING_HERO之间反复横跳. 这时候要
     # 重启炉石
@@ -125,7 +156,6 @@ def ChoosingHeroAction(args):
 
 
 def MatchingAction(args):
-    print_out()
     loop_count = 0
 
     while True:
@@ -155,7 +185,6 @@ def ChoosingCardAction(args):
     global choose_hero_count
     choose_hero_count = 0
 
-    print_out()
     time.sleep(21)
     loop_count = 0
     has_print = 0
@@ -208,8 +237,6 @@ def ChoosingCardAction(args):
 def Battling(args):
     global win_count
     global log_state
-
-    print_out()
 
     not_mine_count = 0
     mine_count = 0
@@ -294,8 +321,6 @@ def Battling(args):
 
 
 def QuittingBattle(args):
-    print_out()
-
     time.sleep(5)
 
     loop_count = 0
@@ -317,10 +342,9 @@ def QuittingBattle(args):
         time.sleep(STATE_CHECK_INTERVAL)
 
 
-def GoBackHSAction():
+def GoBackHSAction(args):
     global FSM_state
 
-    print_out()
     time.sleep(3)
 
     while not get_screen.test_hs_available():
@@ -336,8 +360,6 @@ def GoBackHSAction():
 
 
 def MainMenuAction(args):
-    print_out()
-
     time.sleep(3)
 
     while True:
@@ -359,6 +381,8 @@ def MainMenuAction(args):
 
         # 现在要进佣兵模式了!
         click.enter_mercenaries_mode()
+        click.test_click()
+        time.sleep(0.2)
 
         curr_state = get_screen.get_state()
         if curr_state != FSM_MAIN_MENU:
@@ -367,16 +391,21 @@ def MainMenuAction(args):
         time.sleep(5)
 
 
+def merc_end_epoch():
+    global game_count, battle_count, battle_sum
+    info_print(f"第{game_count + 1}轮刷完了, 刷了{battle_count}场")
+    game_count += 1
+    battle_sum += battle_count
+    battle_count = 0
+
 def WaitMainMenu(args):
-    print_out()
-    while get_screen.get_state() != FSM_MAIN_MENU:
-        click.click_middle()
-        time.sleep(5)
-    return FSM_MAIN_MENU
+    return polling(FSM_MAIN_MENU,
+                   click.test_click(),
+                   0.5, 150)
 
 
 def MercCamp(args):
-    print_out()
+    global game_count
     loop_count = 0
 
     while True:
@@ -386,126 +415,207 @@ def MercCamp(args):
         click.merc_travel()
         curr_state = get_screen.get_state()
 
-        if curr_state == FSM_MERC_CHOOSE_MAP_1:
-            return FSM_MERC_CHOOSE_MAP_1
-
-        if curr_state in [FSM_MERC_CHOOSE_MAP_2,
+        if curr_state in [FSM_MERC_CHOOSE_MAP_1,
+                          FSM_MERC_CHOOSE_MAP_2,
                           FSM_MERC_CHOOSE_MAP_3,
                           FSM_MERC_CHOOSE_MAP_4]:
-            error_print("目前脚本只支持冬泉谷!")
-            return FSM_ERROR
+            return curr_state
 
         if curr_state == FSM_MERC_ENTER_BATTLE:
+            warn_print(f"第{game_count}轮即将放弃")
             return FSM_MERC_GIVE_UP
 
         time.sleep(2)
 
 
 def MercChooseMap(args):
-    print_out()
-    click.merc_choose_map()
-    return ""
+    return polling(FSM_MERC_CHOOSE_COURSE,
+                   click.merc_choose_map,
+                   0, 20)
 
 
 def MercChooseCourse(args):
-    print_out()
-    click.merc_choose_course()
-    return ""
+    return polling(FSM_MERC_CHOOSE_TEAM,
+                   click.merc_choose_course,
+                   0, 20)
 
 
 def MercChooseTeam(args):
-    print_out()
-    click.merc_choose_team()
-    return ""
+    return polling(FSM_MERC_ENTER_BATTLE,
+                   click.merc_choose_team,
+                   0, 20)
 
 
 def MercEnterBattle(args):
-    print_out()
-    click.merc_enter_battle()
-    return ""
+    global game_count, battle_count
+
+    if battle_count >= 6:
+        return FSM_MERC_GIVE_UP
+
+    if battle_count == 0:
+        info_print(f"第{game_count + 1}轮开始刷")
+        loop_count = 0
+
+        while get_screen.get_state() == FSM_MERC_ENTER_BATTLE:
+            click.merc_enter_battle()
+
+            if loop_count >= 20:
+                return FSM_ERROR
+    else:
+        time.sleep(2)
+        record_battle = ""
+        # 如果在上一轮选了复活, 那么在没点下一轮打哪关时右边显示的还是复活.
+        # 所以只有在右上角变化的时候更新 next_battle != last_battle
+        last_battle = get_screen.next_battle()
+        no_battle_x = -1
+
+        # 现在的写法会倾向于保留后点到的战斗, 而中间的点
+        # 一般选择更多, 所以让脚本更容易保留中间的点
+        possible_x = [
+            450, 510, 570, 630, 1050, 990, 930,
+            870, 690, 810, 750
+        ]
+
+        for x in possible_x:
+            click.fast_left_click(x, 500)
+            time.sleep(0.2)
+            next_battle = get_screen.next_battle()
+
+            if next_battle == BATTLE_STRANGER:
+                record_battle = BATTLE_STRANGER
+                no_battle_x = x
+                break
+            elif next_battle != "" and next_battle != last_battle:
+                debug_print(f"Find {next_battle}")
+                record_battle = next_battle
+                no_battle_x = x
+
+            last_battle = next_battle
+
+        if record_battle != "":
+            info_print(f"    第{battle_count + 1}场是特殊点{record_battle}")
+
+            for i in range(3):
+                click.left_click(no_battle_x, 500)
+                time.sleep(0.2)
+            click.merc_enter_battle()
+            time.sleep(1)
+            click.merc_choose_mid_treasure()
+            time.sleep(1)
+
+            battle_count += 1
+
+            if record_battle == BATTLE_TELEPORT or \
+                    record_battle == BATTLE_STRANGER:
+                return FSM_MERC_GIVE_UP
+            else:
+                return polling(FSM_MERC_ENTER_BATTLE,
+                               None, 0.5, 20)
+
+        click.merc_enter_battle()
+
+    info_print(f"    {battle_count + 1}场战斗即将进行")
+
+    return FSM_MERC_WAIT_BATTLE
 
 
 def MercWaitBattle(args):
-    loop_count = 0
-    print_out()
-
-    while True:
-        if loop_count >= 60:
-            return FSM_ERROR
-
-        curr_state = get_screen.get_state()
-        if curr_state == FSM_MERC_BATTLING:
-            return FSM_MERC_BATTLING
-
-        time.sleep(0.5)
+    return polling(FSM_MERC_BATTLING,
+                   None, 0.5, 60)
 
 
 def MercBattling(args):
-    print_out()
+    time.sleep(5)
 
-    card_index = args["MERC_INDEX"]
-    for i, index in enumerate(card_index):
-        click.merc_click_hand_card(index - i, 6 - i)
+    update_log_state()
+    merc_state = MercState(log_state)
 
+    card_name = args["MERC_NAME"]
+    minion_name_list = [entity.name for entity in merc_state.my_hand_minions]
+    for i, name in enumerate(card_name):
+        if name not in minion_name_list:
+            error_print(f"{name}未出现在随从列表中! 随从列表:{minion_name_list}")
+            system_exit(False)
+
+        index = minion_name_list.index(name)
+        click.merc_click_hand_card(index, 6 - i)
+        minion_name_list.pop(index)
+
+    time.sleep(1)
     click.merc_click_ready()
 
     time.sleep(4)
 
-    skill_index = args["MERC_SKILL"]
-    for i, index in enumerate(skill_index):
-        click.merc_click_battleground_hero(i, 3)
-        click.merc_click_skill(index, 3)
-        click.merc_click_mid_oppo()
+    update_log_state()
+    merc_state = MercState(log_state)
 
+    skill_index = args["MERC_SKILL"]
+    skill_target = args["MERC_TARGET"]
+    for i, index in enumerate(skill_index):
+        click.merc_click_battleground_mine(i, merc_state.my_minion_num)
+        click.merc_click_skill(index)
+        if skill_target[i] >= 0:
+            click.merc_click_battleground_oppo(skill_target[i],
+                                               merc_state.oppo_minion_num)
+
+    time.sleep(0.8)
+    click.cancel_click()
     click.merc_click_ready()
-    return ""
+
+    ok = update_log_state()
+    if not ok:
+        return FSM_ERROR
+
+    merc_state = MercState(log_state)
+
+    if merc_state.game_complete:
+        return polling(FSM_MERC_CHOOSE_TREASURE,
+                       click.test_click,
+                       0.2, 80)
+    else:
+        click.click_give_up()
+        merc_end_epoch()
+        polling(FSM_MERC_CHOOSE_COURSE,
+                click.test_click, 0.2, 80)
 
 
 def MercChooseTreasure(args):
-    loop_count = 0
-    print_out()
+    global battle_count
+    battle_count += 1
 
-    while get_screen.get_state() != FSM_MERC_ENTER_BATTLE:
-        loop_count += 1
-        click.merc_choose_mid_treasure()
-
-        if loop_count >= 10:
-            return FSM_ERROR
-
-    return FSM_MERC_GIVE_UP
+    return polling(FSM_MERC_ENTER_BATTLE,
+                   click.merc_choose_mid_treasure,
+                   1, 10)
 
 
 def MercGiveUp(args):
-    loop_count = 0
-    print_out()
+    merc_end_epoch()
+    time.sleep(1.5)
 
-    while get_screen.get_state() != FSM_MERC_CHOOSE_COURSE:
-        loop_count += 1
-        click.merc_give_up()
-
-        if loop_count >= 10:
-            return FSM_ERROR
-
-    return FSM_MERC_CHOOSE_COURSE
+    return polling(FSM_MERC_CHOOSE_COURSE,
+                   click.merc_give_up, 0.1, 15)
 
 
 def HandleErrorAction(args):
-    print_out()
+    global exception_count
+    exception_count += 1
 
     if not get_screen.test_hs_available():
         return FSM_LEAVE_HS
     else:
         click.commit_error_report()
-        click.click_setting()
-        time.sleep(0.5)
-        # 先尝试点认输
-        click.left_click(960, 380)
+        click.click_give_up()
         time.sleep(2)
 
         get_screen.terminate_HS()
         time.sleep(STATE_CHECK_INTERVAL)
 
         return FSM_LEAVE_HS
+
+
+def UnknownAction(args):
+    time.sleep(1)
+    return ""
 
 
 def FSM_dispatch(next_state, args):
@@ -521,6 +631,9 @@ def FSM_dispatch(next_state, args):
         FSM_WAIT_MAIN_MENU: WaitMainMenu,
         FSM_MERC_CAMP: MercCamp,
         FSM_MERC_CHOOSE_MAP_1: MercChooseMap,
+        FSM_MERC_CHOOSE_MAP_2: MercChooseMap,
+        FSM_MERC_CHOOSE_MAP_3: MercChooseMap,
+        FSM_MERC_CHOOSE_MAP_4: MercChooseMap,
         FSM_MERC_CHOOSE_COURSE: MercChooseCourse,
         FSM_MERC_CHOOSE_TEAM: MercChooseTeam,
         FSM_MERC_ENTER_BATTLE: MercEnterBattle,
@@ -528,11 +641,12 @@ def FSM_dispatch(next_state, args):
         FSM_MERC_BATTLING: MercBattling,
         FSM_MERC_CHOOSE_TREASURE: MercChooseTreasure,
         FSM_MERC_GIVE_UP: MercGiveUp,
+        FSM_UNKNOWN: UnknownAction,
     }
 
     if next_state not in dispatch_dict:
         error_print("Unknown state!")
-        sys.exit()
+        system_exit(False)
     else:
         return dispatch_dict[next_state](args)
 
@@ -549,10 +663,7 @@ def AutoHS_automata(args):
             sys.exit(0)
         if FSM_state == "" or FSM_state is None:
             FSM_state = get_screen.get_state()
+
+        print_out()
         FSM_state = FSM_dispatch(FSM_state, args)
 
-
-if __name__ == "__main__":
-    keyboard.add_hotkey("ctrl+q", system_exit)
-
-    init()

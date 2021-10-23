@@ -25,7 +25,7 @@ class LesserHeal(HeroPowerCard):
         best_index = -1
         best_delta_h = state.my_hero.delta_h_after_heal(2)
 
-        for my_index, my_minion in enumerate(state.my_minions):
+        for my_index, my_minion in enumerate(state.my_hand_minions):
             delta_h = my_minion.delta_h_after_heal(2)
             if delta_h > best_delta_h:
                 best_delta_h = delta_h

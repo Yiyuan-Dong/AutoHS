@@ -119,7 +119,7 @@ class MinionCard(Card):
     def combo_delta_h(cls, state, hand_card_index):
         h_sum = 0
 
-        for my_minion in state.my_minions:
+        for my_minion in state.my_hand_minions:
             # 有末日就别下怪了
             if my_minion.card_id == "VAN_NEW1_021":
                 h_sum += -1000

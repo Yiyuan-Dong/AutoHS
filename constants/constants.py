@@ -42,6 +42,7 @@ BASIC_SPELL_WAIT_TIME = 1.5
 BASIC_WEAPON_WAIT_TIME = 1
 
 # 我觉得这行注释之后的内容应该不需要修改……
+FSM_UNKNOWN = "Unknown"
 FSM_LEAVE_HS = "Leave Hearth Stone"
 FSM_MAIN_MENU = "Main Menu"
 FSM_CHOOSING_HERO = "Choosing Hero"
@@ -65,6 +66,16 @@ FSM_MERC_GIVE_UP = "Mercenaries Give Up"
 FSM_MERC_WAIT_BATTLE = "Mercenaries Wait Battle"
 FSM_MERC_CHOOSE_TREASURE = "Mercenaries Choose Treasure"
 FSM_MERC_BATTLING = "Mercenanries Battling"
+
+BATTLE_BLESS_GREEN = "Bless Green"
+BATTLE_BLESS_BLUE = "Bless Blue"
+BATTLE_BLESS_RED = "Bless Red"
+BATTLE_DOCTOR = "Doctor"
+BATTLE_BOMB = "Bomb"
+BATTLE_DESTROY = "Destroy"
+BATTLE_STRANGER = "Stranger"
+BATTLE_NORMAL = "Normal Battle"
+BATTLE_TELEPORT = "Teleport"
 
 LOG_CONTAINER_ERROR = 0
 LOG_CONTAINER_INFO = 1

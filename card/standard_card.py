@@ -83,7 +83,7 @@ class Apotheosis(SpellPointMine):
         best_delta_h = 0
         best_mine_index = -1
 
-        for my_index, my_minion in enumerate(state.my_minions):
+        for my_index, my_minion in enumerate(state.my_hand_minions):
             if not my_minion.can_be_pointed_by_spell:
                 continue
 
@@ -176,9 +176,9 @@ class Hysteria(SpellPointOppo):
 
                     # print("another index: ", another_index)
                     if another_index >= tmp_state.oppo_minion_num:
-                        another_minion = tmp_state.my_minions[another_index - tmp_state.oppo_minion_num]
+                        another_minion = tmp_state.my_hand_minions[another_index - tmp_state.oppo_minion_num]
                         if another_minion.get_damaged(chosen_minion.attack):
-                            tmp_state.my_minions.pop(another_index - tmp_state.oppo_minion_num)
+                            tmp_state.my_hand_minions.pop(another_index - tmp_state.oppo_minion_num)
                     else:
                         another_minion = tmp_state.oppo_minions[another_index]
                         if another_minion.get_damaged(chosen_minion.attack):
@@ -228,7 +228,7 @@ class AgainstAllOdds(SpellNoPoint):
                     for minion in state.oppo_minions
                     if minion.attack % 2 == 1]) - \
                sum([minion.heuristic_val
-                    for minion in state.my_minions
+                    for minion in state.my_hand_minions
                     if minion.attack % 2 == 1]),
 
 

@@ -35,7 +35,7 @@ class LogState:
     my_player_id: {self.my_player_id}
     oppo_player_id: {self.oppo_player_id}
     current_update_id: {self.current_update_id}
-    entity_keys: {[list(self.entity_dict.keys())]}
+    entity_keys: {list(self.entity_dict.keys())}
 
 """
         key_list = list(self.entity_dict.keys())
@@ -340,8 +340,8 @@ def update_state(state, line_info_container):
             entity_id = entity_string
 
         if entity_id not in state.entity_dict:
-            warn_print(f"Invalid entity_id: {entity_id}")
-            warn_print(f"Current line container: {line_info_container}")
+            # warn_print(f"Invalid entity_id: {entity_id}")
+            # warn_print(f"Current line container: {line_info_container}")
             return False
 
         tag = line_info_container.info_dict["tag"]

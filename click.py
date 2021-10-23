@@ -30,8 +30,28 @@ def click_button(x, y, button):
     mouse.release(button)
 
 
+def wheel_mouse(delta_y):
+    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, delta_y)
+
+
+def fast_click_button(x, y, button):
+    x += random.randint(-5, 5)
+    y += random.randint(-5, 5)
+    mouse = Controller()
+    rand_sleep(0.04)
+    mouse.position = (x, y)
+    rand_sleep(0.04)
+    mouse.press(button)
+    rand_sleep(0.04)
+    mouse.release(button)
+
+
 def left_click(x, y):
     click_button(x, y, Button.left)
+
+
+def fast_left_click(x, y):
+    fast_click_button(x, y, Button.left)
 
 
 def right_click(x, y):
@@ -120,6 +140,12 @@ def click_middle():
 def click_setting():
     rand_sleep(OPERATE_INTERVAL)
     left_click(1880, 1050)
+
+
+def click_give_up():
+    click_setting()
+    time.sleep(0.5)
+    left_click(960, 380)
 
 
 def choose_and_use_spell(card_index, card_num):
@@ -257,29 +283,34 @@ def enter_HS():
 
 
 def merc_travel():
+    test_click()
+    time.sleep(0.5)
     left_click(1000, 300)
     rand_sleep(2)
 
 
 def merc_choose_map():
     left_click(1300, 750)
-    rand_sleep(2)
+    rand_sleep(1)
 
 
 def merc_choose_course():
     # 现在只有第六关
+    left_click(1000, 700)
     left_click(1500, 850)
     rand_sleep(1)
 
 
 def merc_choose_team():
     left_click(1400, 900)
+    rand_sleep(0.4)
+    left_click(850, 620)
     rand_sleep(1)
 
 
 def merc_enter_battle():
     left_click(1500, 850)
-    rand_sleep(1)
+    rand_sleep(0.5)
 
 
 def merc_choose_mid_treasure():
@@ -300,9 +331,9 @@ def merc_click_hand_card(index, total_card):
     assert 6 >= total_card >= 4
 
     left_click(MERC_HAND_CARD_X[total_card][index], 1000)
-    rand_sleep(0.4)
+    rand_sleep(0.1)
     left_click(1400, 600)
-    rand_sleep(1.5)
+    rand_sleep(0.2)
 
 
 def merc_click_ready():
@@ -311,38 +342,41 @@ def merc_click_ready():
 
 
 MERC_BATTLEGROUND_X = {
-    3: [780, 950, 1130]
+    3: [780, 950, 1130],
+    4: [720, 880, 1040, 1200]
 }
 
 
-def merc_click_battleground_hero(index, total_num):
-    assert total_num == 3
+def merc_click_battleground_mine(index, total_num):
+    assert total_num in [3, 4]
 
     left_click(MERC_BATTLEGROUND_X[total_num][index], 720)
-    rand_sleep(0.5)
+    rand_sleep(0.2)
 
 
-MERC_SKILL_X = {
-    3: [750, 950, 1150]
-}
+def merc_click_battleground_oppo(index, total_num):
+    assert total_num in [3, 4]
+
+    left_click(MERC_BATTLEGROUND_X[total_num][index], 300)
+    rand_sleep(0.2)
 
 
-def merc_click_skill(index, total_num):
-    assert total_num == 3
-    left_click(MERC_SKILL_X[total_num][index], 500)
-    rand_sleep(0.4)
+MERC_SKILL_X = [750, 950, 1150]
 
 
-def merc_click_mid_oppo():
-    left_click(960, 300)
-    rand_sleep(0.4)
+def merc_click_skill(index):
+    assert index <= 3
+    left_click(MERC_SKILL_X[index], 500)
+    rand_sleep(0.2)
 
 
 def merc_give_up():
     left_click(860, 1005)
-    rand_sleep(1)
+    rand_sleep(0.5)
     left_click(1100, 800)
-    rand_sleep(1)
+    rand_sleep(0.5)
     left_click(800, 600)
-    rand_sleep(0.6)
-    click_middle()
+    rand_sleep(0.5)
+    for i in range(3):
+        test_click()
+        rand_sleep(0.2)
