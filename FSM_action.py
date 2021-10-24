@@ -406,7 +406,7 @@ def merc_end_epoch():
 
 def WaitMainMenu(args):
     return polling(FSM_MAIN_MENU,
-                   click.test_click(),
+                   click.test_click,
                    0.5, 150)
 
 
