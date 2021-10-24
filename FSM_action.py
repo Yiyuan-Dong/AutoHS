@@ -18,7 +18,7 @@ win_count = 0
 exception_count = 0
 battle_count = 0
 battle_sum = 0
-stranger_count = 0
+event_count = dict()
 choose_hero_count = 0
 
 secret_direction = 0
@@ -107,8 +107,9 @@ def system_exit(ok=True):
     # info_print(f"一共完成了{game_count}场对战, 赢了{win_count}场")
     info_print(f"一共刷了{game_count}轮")
     info_print(f"一共刷了{battle_sum}场对战")
-    info_print(f"一共刷了{stranger_count}次陌生人")
     info_print(f"异常退出了{exception_count}次")
+    for k, v in event_count.items():
+        info_print(f"    {k}:{v}")
     print_info_close()
 
     quitting_flag = True
@@ -413,6 +414,8 @@ def MercCamp(args):
     global game_count
     loop_count = 0
 
+    time.sleep(1)
+
     while True:
         if loop_count >= 10:
             return FSM_ERROR
@@ -423,7 +426,10 @@ def MercCamp(args):
         if curr_state in [FSM_MERC_CHOOSE_MAP_1,
                           FSM_MERC_CHOOSE_MAP_2,
                           FSM_MERC_CHOOSE_MAP_3,
-                          FSM_MERC_CHOOSE_MAP_4]:
+                          FSM_MERC_CHOOSE_MAP_4,
+                          # 如果已经选完了技能但在放战斗动画的时候退出炉石
+                          # 再进来就是选宝藏
+                          FSM_MERC_CHOOSE_TREASURE]:
             return curr_state
 
         if curr_state == FSM_MERC_ENTER_BATTLE:
@@ -452,9 +458,9 @@ def MercChooseTeam(args):
 
 
 def MercEnterBattle(args):
-    global game_count, battle_count, secret_direction, stranger_count
+    global game_count, battle_count, secret_direction, event_count
 
-    if battle_count >= 4:
+    if battle_count >= 6:
         return FSM_MERC_GIVE_UP
 
     time.sleep(2)
@@ -466,7 +472,7 @@ def MercEnterBattle(args):
         time.sleep(0.5)
         loc = get_screen.find_icon()
         debug_print(f"预测坐标:{loc}")
-        if loc[1] < 600:
+        if loc[1] < 350:
             info_print("神秘选项太远了, 重开!")
             return FSM_MERC_GIVE_UP
         # click.wheel_mouse(-9)
@@ -511,13 +517,17 @@ def MercEnterBattle(args):
 
         if next_battle != BATTLE_NORMAL:
             info_print(f"    第{battle_count + 1}场战斗是宝藏{next_battle}")
+            event_count[next_battle] = event_count.get(next_battle, 0) + 1
             if next_battle == BATTLE_STRANGER:
-                stranger_count += 1
                 click.merc_click_stranger()
             else:
                 click.merc_click_no_battle()
             battle_count += 1
             return FSM_MERC_ENTER_BATTLE
+
+    if battle_count >= 4:
+        info_print("不打了!")
+        return FSM_MERC_GIVE_UP
 
     info_print(f"    第{battle_count + 1}场战斗即将进行")
     click.merc_enter_battle()
@@ -551,6 +561,11 @@ def MercBattling(args):
 
     card_name = args["MERC_NAME"]
     minion_name_list = [entity.name for entity in merc_state.my_hand_minions]
+
+    if len(minion_name_list) < 6:
+        warn_print("似乎有减员...")
+        return FSM_ERROR
+
     for i, name in enumerate(card_name):
         if name not in minion_name_list:
             error_print(f"{name}未出现在随从列表中! 随从列表:{minion_name_list}")
@@ -571,7 +586,9 @@ def MercBattling(args):
     skill_index = args["MERC_SKILL"]
     skill_target = args["MERC_TARGET"]
     for i, index in enumerate(skill_index):
-        click.merc_click_battleground_mine(i, merc_state.my_minion_num)
+        # 如果有冰墙, 需要平移
+        click.merc_click_battleground_mine(i + merc_state.my_minion_num - 3,
+                                           merc_state.my_minion_num)
         click.merc_click_skill(index)
         if skill_target[i] >= 0:
             click.merc_click_battleground_oppo(skill_target[i],
@@ -630,8 +647,17 @@ def HandleErrorAction(args):
 
 
 def UnknownAction(args):
-    time.sleep(1)
-    return ""
+    loop_count = 0
+
+    while True:
+        curr_state = get_screen.get_state()
+        if curr_state != FSM_UNKNOWN:
+            return curr_state
+
+        time.sleep(1)
+        loop_count += 1
+        if loop_count >= 30:
+            return FSM_ERROR
 
 
 def FSM_dispatch(next_state, args):

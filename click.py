@@ -369,7 +369,8 @@ MERC_SKILL_X = [750, 950, 1150]
 def merc_click_skill(index):
     assert index <= 3
     left_click(MERC_SKILL_X[index], 500)
-    rand_sleep(0.2)
+    left_click(MERC_SKILL_X[index], 500)
+    rand_sleep(0.1)
 
 
 def merc_give_up():

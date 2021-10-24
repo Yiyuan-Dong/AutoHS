@@ -157,23 +157,26 @@ def get_state():
 def distingish_next_battle():
     im_opencv = catch_screen()
 
-    digit_point = list(im_opencv[305][1505][:3])
+    digit_point = im_opencv[305][1505][:3]
 
-    if digit_point == [126, 66, 63]:
+    def similar(point2):
+        return sum(abs(digit_point - point2)) < 15
+
+    if similar([126, 66, 63]):
         return BATTLE_BLESS_BLUE
-    elif digit_point == [38, 151, 239]:
+    elif similar([38, 151, 239]):
         return BATTLE_BLESS_RED
-    elif digit_point == [181, 190, 198]:
+    elif similar([181, 190, 198]):
         return BATTLE_BLESS_GREEN
-    elif digit_point == [255, 187, 88]:
+    elif similar([255, 187, 88]):
         return BATTLE_DOCTOR
-    elif digit_point == [178, 119, 73]:
+    elif similar([178, 119, 73]):
         return BATTLE_STRANGER
-    elif digit_point == [136, 108, 44]:
+    elif similar([136, 108, 44]):
         return BATTLE_DESTROY
-    elif digit_point == [227, 65, 16]:
+    elif similar([227, 65, 16]):
         return BATTLE_TELEPORT
-    elif digit_point == [0, 4, 34]:
+    elif similar([0, 4, 34]):
         return BATTLE_BOMB
     else:
         return BATTLE_NORMAL
