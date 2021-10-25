@@ -141,7 +141,8 @@ def get_state():
         return FSM_MERC_ENTER_BATTLE
     if sum(abs(im_opencv[505][305][:3] - [86, 124, 111])) < 10:  # 进入战斗界面了, 这个点是状态栏白边
         return FSM_MERC_BATTLING
-    if list(im_opencv[855][1205][:3]) == [141, 141, 141]:
+    if list(im_opencv[855][1205][:3]) == [141, 141, 141] or \
+            list(im_opencv[855][1205][:3]) == [255, 194, 127]:  # `获取`按钮是不亮的或亮的
         return FSM_MERC_CHOOSE_TREASURE
     if list(im_opencv[1070][1090][:3]) == [8, 18, 24]:
         return FSM_CHOOSING_HERO

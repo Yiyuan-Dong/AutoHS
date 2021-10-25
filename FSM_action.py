@@ -350,13 +350,13 @@ def QuittingBattle(args):
 def GoBackHSAction(args):
     global FSM_state
 
-    time.sleep(3)
+    time.sleep(1)
 
     while not get_screen.test_hs_available():
         if quitting_flag:
             sys.exit(0)
         click.enter_HS()
-        time.sleep(10)
+        time.sleep(3)
 
     # 有时候炉石进程会直接重写Power.log, 这时应该重新创建文件操作句柄
     init()
@@ -421,22 +421,31 @@ def MercCamp(args):
             return FSM_ERROR
 
         click.merc_travel()
+        time.sleep(1)
         curr_state = get_screen.get_state()
 
         if curr_state in [FSM_MERC_CHOOSE_MAP_1,
                           FSM_MERC_CHOOSE_MAP_2,
                           FSM_MERC_CHOOSE_MAP_3,
-                          FSM_MERC_CHOOSE_MAP_4,
-                          # 如果已经选完了技能但在放战斗动画的时候退出炉石
-                          # 再进来就是选宝藏
-                          FSM_MERC_CHOOSE_TREASURE]:
+                          FSM_MERC_CHOOSE_MAP_4]:
             return curr_state
+
+        # 如果已经选完了技能但在放战斗动画的时候退出炉石, 再进来就是选宝藏
+        if curr_state == FSM_MERC_CHOOSE_TREASURE:
+            curr_state = polling(FSM_MERC_ENTER_BATTLE,
+                                 click.merc_choose_mid_treasure,
+                                 0.5, 10)
+
+            if curr_state == FSM_MERC_ENTER_BATTLE:
+                return FSM_MERC_GIVE_UP
+            else:
+                return FSM_ERROR
 
         if curr_state == FSM_MERC_ENTER_BATTLE:
             warn_print(f"第{game_count}轮即将放弃")
             return FSM_MERC_GIVE_UP
 
-        time.sleep(2)
+        time.sleep(1)
 
 
 def MercChooseMap(args):
@@ -490,6 +499,7 @@ def MercEnterBattle(args):
 
         while get_screen.get_state() == FSM_MERC_ENTER_BATTLE:
             click.merc_enter_battle()
+            loop_count += 1
 
             if loop_count >= 20:
                 return FSM_ERROR
@@ -508,7 +518,8 @@ def MercEnterBattle(args):
             next_battle = get_screen.distingish_next_battle()
             debug_print(f"next_battle: {next_battle}")
 
-            if next_battle == BATTLE_STRANGER \
+            if next_battle in [BATTLE_STRANGER, BATTLE_BOMB,
+                               BATTLE_DESTROY, BATTLE_TELEPORT] \
                     and get_screen.merc_can_battle():
                 break
             if next_battle != BATTLE_NORMAL and battle_count <= 2 \
@@ -655,6 +666,8 @@ def UnknownAction(args):
             return curr_state
 
         time.sleep(1)
+
+        click.test_click()
         loop_count += 1
         if loop_count >= 30:
             return FSM_ERROR

@@ -13,7 +13,7 @@ PRINT_ALL_AREA_LIST = []
 # AREA_LIST = [((1495, 465), (1620, 522))]
 # AREA_LIST = [((840, 610), (940, 710))]
 AREA_LIST = []
-POINT_LIST = [(705, 305), (1505, 305)]
+POINT_LIST = [(705, 305), (1505, 305), (1205, 855)]
 
 
 def get_sum(x):
