@@ -501,6 +501,9 @@ def MercEnterBattle(args):
             click.merc_enter_battle()
             loop_count += 1
 
+            if quitting_flag:
+                sys.exit(0)
+
             if loop_count >= 20:
                 return FSM_ERROR
 
@@ -558,6 +561,9 @@ def MercWaitBattle(args):
                           FSM_MERC_ENTER_BATTLE]:
             return curr_state
 
+        if quitting_flag:
+            sys.exit(0)
+
         time.sleep(0.5)
         loop_count += 1
         if loop_count >= 60:
@@ -570,14 +576,14 @@ def MercBattling(args):
     update_log_state()
     merc_state = MercState(log_state)
 
-    card_name = args["MERC_NAME"]
+    my_minion_name_list = args["MERC_NAME"]
     minion_name_list = [entity.name for entity in merc_state.my_hand_minions]
 
     if len(minion_name_list) < 6:
         warn_print("似乎有减员...")
         return FSM_ERROR
 
-    for i, name in enumerate(card_name):
+    for i, name in enumerate(my_minion_name_list):
         if name not in minion_name_list:
             error_print(f"{name}未出现在随从列表中! 随从列表:{minion_name_list}")
             system_exit(False)
@@ -593,16 +599,18 @@ def MercBattling(args):
 
     update_log_state()
     merc_state = MercState(log_state)
+    minion_name_list = [entity.name for entity in merc_state.my_battle_minions]
 
     skill_index = args["MERC_SKILL"]
     skill_target = args["MERC_TARGET"]
     for i, index in enumerate(skill_index):
         # 如果有冰墙, 需要平移
-        click.merc_click_battleground_mine(i + merc_state.my_minion_num - 3,
+        name = my_minion_name_list[i]
+        click.merc_click_battleground_mine(minion_name_list.index(name),
                                            merc_state.my_minion_num)
         click.merc_click_skill(index)
         if skill_target[i] >= 0:
-            click.merc_click_battleground_oppo(skill_target[i],
+            click.merc_click_battleground_oppo(min(skill_target[i], merc_state.oppo_minion_num - 1),
                                                merc_state.oppo_minion_num)
 
     time.sleep(0.8)
@@ -666,6 +674,8 @@ def UnknownAction(args):
             return curr_state
 
         time.sleep(1)
+        if quitting_flag:
+            sys.exit(0)
 
         click.test_click()
         loop_count += 1

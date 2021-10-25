@@ -62,7 +62,7 @@ def warn_print(warn_str):
     if WARN_PRINT:
         print(warn_str)
     if WARN_FILE_WRITE and warn_file_handle:
-        warn_file_handle.write(warn_str+ "\n")
+        warn_file_handle.write(warn_str + "\n")
 
 
 def debug_print(debug_str=""):

@@ -7,7 +7,7 @@ HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
 YOUR_NAME = "ChangeThis#54321"
 
 # 关于控制台信息打印的设置
-DEBUG_PRINT = True
+DEBUG_PRINT = False
 WARN_PRINT = True
 SYS_PRINT = True
 INFO_PRINT = True
