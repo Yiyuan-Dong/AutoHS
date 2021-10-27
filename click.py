@@ -148,7 +148,7 @@ def click_give_up():
     click_setting()
     time.sleep(0.5)
     left_click(960, 380)
-
+    test_click()
 
 def choose_and_use_spell(card_index, card_num):
     choose_card(card_index, card_num)

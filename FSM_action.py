@@ -571,6 +571,14 @@ def MercWaitBattle(args):
 
 
 def MercBattling(args):
+
+    def error_in_battle():
+        click.click_give_up()
+        click.click_give_up()
+        merc_end_epoch()
+        return polling(FSM_MERC_CHOOSE_COURSE,
+                    click.test_click, 0.2, 80)
+
     time.sleep(5)
 
     update_log_state()
@@ -580,13 +588,13 @@ def MercBattling(args):
     minion_name_list = [entity.name for entity in merc_state.my_hand_minions]
 
     if len(minion_name_list) < 6:
-        warn_print("似乎有减员...")
-        return FSM_ERROR
+        error_print("似乎有减员...")
+        return error_in_battle()
 
     for i, name in enumerate(my_minion_name_list):
         if name not in minion_name_list:
             error_print(f"{name}未出现在随从列表中! 随从列表:{minion_name_list}")
-            system_exit(False)
+            return error_in_battle()
 
         index = minion_name_list.index(name)
         click.merc_click_hand_card(index, 6 - i)
@@ -606,6 +614,9 @@ def MercBattling(args):
     for i, index in enumerate(skill_index):
         # 如果有冰墙, 需要平移
         name = my_minion_name_list[i]
+        if name not in minion_name_list:
+            error_print(f"{name}未出现在场上随从中! 随从列表:{minion_name_list}")
+            return error_in_battle()
         click.merc_click_battleground_mine(minion_name_list.index(name),
                                            merc_state.my_minion_num)
         click.merc_click_skill(index)
@@ -616,6 +627,7 @@ def MercBattling(args):
     time.sleep(0.8)
     click.cancel_click()
     click.merc_click_ready()
+    time.sleep(2)
 
     ok = update_log_state()
     if not ok:
@@ -628,10 +640,7 @@ def MercBattling(args):
                        click.test_click,
                        0.2, 80)
     else:
-        click.click_give_up()
-        merc_end_epoch()
-        polling(FSM_MERC_CHOOSE_COURSE,
-                click.test_click, 0.2, 80)
+        return error_in_battle()
 
 
 def MercChooseTreasure(args):
