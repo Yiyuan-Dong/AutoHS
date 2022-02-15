@@ -81,7 +81,9 @@ def catch_screen(name=None):
     width = 1960
     height = 1080
     # 返回句柄窗口的设备环境，覆盖整个窗口，包括非客户区，标题栏，菜单，边框 DC device context
-    hwndDC = win32gui.GetWindowDC(hwnd)
+    hwin = win32gui.GetDesktopWindow()
+    hwndDC = win32gui.GetWindowDC(hwin)
+    # hwndDC = win32gui.GetWindowDC(hwnd)
     # 创建设备描述表
     mfcDC = win32ui.CreateDCFromHandle(hwndDC)
     # 创建内存设备描述表
@@ -117,7 +119,7 @@ def get_state():
     im_opencv = catch_screen()
 
     # 先y轴再z轴
-    if list(im_opencv[1070][1090][:3]) == [23, 52, 105] or \
+    if list(im_opencv[1070][1090][:3]) == [20, 51, 104] or \
             list(im_opencv[305][705][:3]) == [21, 43, 95]:   # 万圣节主界面会变
         return FSM_MAIN_MENU
     if list(im_opencv[1070][1090][:3]) == [8, 18, 24]:

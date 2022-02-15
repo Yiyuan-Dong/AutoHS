@@ -53,7 +53,7 @@ def show_area(img, top_left, bottom_right, print_out=False):
                     count += 1
         print(count)
 
-    ratio = min(round(1600 / (x2 - x1)), round(1000 / (y2 - y1)))
+    ratio = min(round(800 / (x2 - x1)), round(500 / (y2 - y1)))
     resized_x_length = (x2 - x1) * int(ratio)
     resized_y_length = int(resized_x_length * ((y2 - y1) / (x2 - x1)))
     tmp_img = cv2.resize(tmp_img, (resized_x_length, resized_y_length))
