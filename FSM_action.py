@@ -411,6 +411,7 @@ def AutoHS_automata():
     if get_screen.test_hs_available():
         hs_hwnd = get_screen.get_HS_hwnd()
         get_screen.move_window_foreground(hs_hwnd)
+        time.sleep(0.5)
 
     while 1:
         if quitting_flag:
