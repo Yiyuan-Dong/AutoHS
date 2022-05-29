@@ -111,6 +111,19 @@ def catch_screen(name=None):
     return im_opencv
 
 
+def pixel_very_similar(im_opencv, y, x, expected_val):
+    img_val = im_opencv[y][x][:3]
+
+    diff = abs(img_val[0] - expected_val[0]) + \
+           abs(img_val[1] - expected_val[1]) + \
+           abs(img_val[2] - expected_val[2])
+
+    if diff <= 3:
+        return True
+
+    return False
+
+
 def get_state():
     hwnd = get_HS_hwnd()
     if hwnd == 0:
@@ -118,18 +131,28 @@ def get_state():
 
     im_opencv = catch_screen()
 
-    # 先y轴再z轴
-    if list(im_opencv[1070][1090][:3]) == [20, 51, 104] or \
-            list(im_opencv[305][705][:3]) == [21, 43, 95]:   # 万圣节主界面会变
+    if pixel_very_similar(im_opencv, 1070, 1090, [20, 51, 103]) or \
+            pixel_very_similar(im_opencv, 305, 705, [21, 43, 95]):  # 万圣节主界面会变
         return FSM_MAIN_MENU
-    if list(im_opencv[1070][1090][:3]) == [8, 18, 24]:
+    elif pixel_very_similar(im_opencv, 1070, 1090, [8, 18, 24]):
         return FSM_CHOOSING_HERO
-    if list(im_opencv[1070][1090][:3]) == [17, 18, 19]:
+    elif pixel_very_similar(im_opencv, 1070, 1090, [17, 18, 19]):
         return FSM_MATCHING
-    if list(im_opencv[860][960][:3]) == [71, 71, 71]:
+    elif pixel_very_similar(im_opencv, 860, 960, [71, 71, 71]):
         return FSM_CHOOSING_CARD
+    else:
+        return FSM_BATTLING
 
-    return FSM_BATTLING
+    # if list(im_opencv[1070][1090][:3]) == [20, 51, 104] or \
+    #         list(im_opencv[305][705][:3]) == [21, 43, 95]:  # 万圣节主界面会变
+    #     return FSM_MAIN_MENU
+    # if list(im_opencv[1070][1090][:3]) == [8, 18, 24]:
+    #     return FSM_CHOOSING_HERO
+    # if list(im_opencv[1070][1090][:3]) == [17, 18, 19]:
+    #     return FSM_MATCHING
+    # if list(im_opencv[860][960][:3]) == [71, 71, 71]:
+    #     return FSM_CHOOSING_CARD
+    # return FSM_BATTLING
 
 
 # def image_hash(img):
