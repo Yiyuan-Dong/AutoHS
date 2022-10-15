@@ -6,7 +6,7 @@ import time
 
 # import click
 # import get_screen
-# from strategy import StrategyState
+from strategy import StrategyState
 from log_state import *
 
 FSM_state = ""
@@ -171,6 +171,9 @@ def ChoosingCardAction():
             return FSM_QUITTING_BATTLE
 
         strategy_state = StrategyState(log_state)
+        strategy_state.debug_print_out()
+        time.sleep(3)
+        return FSM_BATTLING
         hand_card_num = strategy_state.my_hand_card_num
 
         # 等待被替换的卡牌 ZONE=HAND
@@ -230,7 +233,10 @@ def Battling():
             else:
                 info_print("你输了")
             return FSM_QUITTING_BATTLE
-
+        strategy_state = StrategyState(log_state)
+        strategy_state.debug_print_out()
+        time.sleep(3)
+        return FSM_BATTLING
         # 在对方回合等就行了
         if not log_state.is_my_turn:
             last_controller_is_me = False
@@ -408,16 +414,17 @@ def FSM_dispatch(next_state):
 def AutoHS_automata():
     global FSM_state
 
-    if get_screen.test_hs_available():
-        hs_hwnd = get_screen.get_HS_hwnd()
-        get_screen.move_window_foreground(hs_hwnd)
-        time.sleep(0.5)
+    # if get_screen.test_hs_available():
+    #     hs_hwnd = get_screen.get_HS_hwnd()
+    #     get_screen.move_window_foreground(hs_hwnd)
+    #     time.sleep(0.5)
+    FSM_state = FSM_CHOOSING_CARD
 
     while 1:
         if quitting_flag:
             sys.exit(0)
-        if FSM_state == "":
-            FSM_state = get_screen.get_state()
+        # if FSM_state == "":
+        #     FSM_state = get_screen.get_state()
         FSM_state = FSM_dispatch(FSM_state)
 
 
