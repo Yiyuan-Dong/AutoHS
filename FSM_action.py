@@ -2,11 +2,11 @@ import random
 import sys
 import time
 
-import keyboard
+# import keyboard
 
-import click
-import get_screen
-from strategy import StrategyState
+# import click
+# import get_screen
+# from strategy import StrategyState
 from log_state import *
 
 FSM_state = ""
@@ -421,7 +421,7 @@ def AutoHS_automata():
         FSM_state = FSM_dispatch(FSM_state)
 
 
-if __name__ == "__main__":
-    keyboard.add_hotkey("ctrl+q", system_exit)
+# if __name__ == "__main__":
+#     keyboard.add_hotkey("ctrl+q", system_exit)
 
-    init()
+#     init()

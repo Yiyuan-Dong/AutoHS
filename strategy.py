@@ -1,5 +1,5 @@
-import click
-import keyboard
+# import click
+# import keyboard
 import sys
 import random
 
