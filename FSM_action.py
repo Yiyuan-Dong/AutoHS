@@ -165,6 +165,9 @@ def ChoosingCardAction():
 
         if not ok:
             return FSM_ERROR
+        strategy_state = StrategyState(log_state)
+        strategy_state.debug_print_out()
+        time.sleep(3)
         if log_state.game_num_turns_in_play > 0:
             return FSM_BATTLING
         if log_state.is_end:
@@ -305,6 +308,7 @@ def QuittingBattle():
     time.sleep(5)
 
     loop_count = 0
+    return FSM_CHOOSING_CARD
     while True:
         if quitting_flag:
             sys.exit(0)
