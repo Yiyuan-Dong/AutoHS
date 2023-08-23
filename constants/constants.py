@@ -1,6 +1,6 @@
 # 你的Power.log的路径, 应该在你的炉石安装目录下的`Logs/`文件夹中, 这里放的是我的路径
 # ** 一定要修改成自己电脑上的路径 **
-HEARTHSTONE_POWER_LOG_PATH = "/Users/zhulihua/autoHs/AutoHS/Power.log"
+HEARTHSTONE_POWER_LOG_PATH = "C:\Program Files (x86)\Apps\Hearthstone\Logs\Hearthstone_2023_08_23_20_31_56\Power.log"
 
 # 你的炉石用户名, 注意英文标点符号'#', 把后面的数字也带上
 # 可以输入中文
@@ -80,3 +80,187 @@ CARD_ENCHANTMENT = "ENCHANTMENT"
 SPELL_NO_POINT = 0
 SPELL_POINT_OPPO = 1
 SPELL_POINT_MINE = 2
+
+
+CLICK_MAIN_START_GAME = "start game"
+CLICK_MAIN_START_OPTION = "start option"
+CLICK_MAIN_QUIT_GAME = "quit game"
+CLICK_MAIN_START_MISSION = "start mission"
+CLICK_MAIN_START_REWARD = "start reward"
+CLICK_MAIN_NEXT_REWARD = "next reward"
+CLICK_MAIN_PREV_REWARD = "prev reward"
+
+
+CLICK_CHOSE_HERO_OPEN_GAME = "open game"
+CLICK_CHOSE_HERO_CANCEL_GAME = "cancel game"
+CLICK_CHOSE_HERO_1_CLICK = "chose hero 1"
+CLICK_CHOSE_HERO_2_CLICK = "chose hero 2"
+CLICK_CHOSE_HERO_3_CLICK = "chose hero 3"
+CLICK_CHOSE_HERO_4_CLICK = "chose hero 4"
+CLICK_CHOSE_HERO_5_CLICK = "chose hero 5"
+CLICK_CHOSE_HERO_6_CLICK = "chose hero 6"
+CLICK_CHOSE_HERO_7_CLICK = "chose hero 7"
+CLICK_CHOSE_HERO_8_CLICK = "chose hero 8"
+CLICK_CHOSE_HERO_9_CLICK = "chose hero 9"
+
+CLICK_CHOSE_CARD_LATER_1 = "later chose card 1"
+CLICK_CHOSE_CARD_LATER_2 = "later chose card 2"
+CLICK_CHOSE_CARD_LATER_3 = "later chose card 3"
+CLICK_CHOSE_CARD_LATER_4 = "later chose card 4"
+CLICK_CHOSE_CARD_LATER_CONFIRM = "later chose card confirm"
+
+
+CLICK_BATTLE_HERO_POWER_CLICK = "use hero power"
+CLICK_BATTLE_END_TURN_CLICK = "end turn"
+CLICK_BATTLE_OPTION_CLICK = "battle option"
+CLICK_BATTLE_SURRENDER_CLICK = "battle surrender"
+CLICK_BATTLE_QUITGAME_CLICK = "battle quit game"
+
+CLICK_CHOSE_HAND_x_PRE = "chose hand "
+CLICK_CHOSE_HAND_x_MID = "/"
+
+CLICK_CHOSE_HAND_1_1 = "chose hand 1/1"
+
+CLICK_CHOSE_HAND_1_2 = "chose hand 1/2"
+CLICK_CHOSE_HAND_2_2 = "chose hand 2/2"
+
+CLICK_CHOSE_HAND_1_3 = "chose hand 1/3"
+CLICK_CHOSE_HAND_2_3 = "chose hand 2/3"
+CLICK_CHOSE_HAND_3_3 = "chose hand 3/3"
+
+CLICK_CHOSE_HAND_1_4 = "chose hand 1/4"
+CLICK_CHOSE_HAND_2_4 = "chose hand 2/4"
+CLICK_CHOSE_HAND_3_4 = "chose hand 3/4"
+CLICK_CHOSE_HAND_4_4 = "chose hand 4/4"
+
+CLICK_CHOSE_HAND_1_5 = "chose hand 1/5"
+CLICK_CHOSE_HAND_2_5 = "chose hand 2/5"
+CLICK_CHOSE_HAND_3_5 = "chose hand 3/5"
+CLICK_CHOSE_HAND_4_5 = "chose hand 4/5"
+CLICK_CHOSE_HAND_5_5 = "chose hand 5/5"
+
+CLICK_CHOSE_HAND_1_6 = "chose hand 1/6"
+CLICK_CHOSE_HAND_2_6 = "chose hand 2/6"
+CLICK_CHOSE_HAND_3_6 = "chose hand 3/6"
+CLICK_CHOSE_HAND_4_6 = "chose hand 4/6"
+CLICK_CHOSE_HAND_5_6 = "chose hand 5/6"
+CLICK_CHOSE_HAND_6_6 = "chose hand 6/6"
+
+CLICK_CHOSE_HAND_1_7 = "chose hand 1/7"
+CLICK_CHOSE_HAND_2_7 = "chose hand 2/7"
+CLICK_CHOSE_HAND_3_7 = "chose hand 3/7"
+CLICK_CHOSE_HAND_4_7 = "chose hand 4/7"
+CLICK_CHOSE_HAND_5_7 = "chose hand 5/7"
+CLICK_CHOSE_HAND_6_7 = "chose hand 6/7"
+CLICK_CHOSE_HAND_7_7 = "chose hand 7/7"
+
+CLICK_CHOSE_HAND_1_8 = "chose hand 1/8"
+CLICK_CHOSE_HAND_2_8 = "chose hand 2/8"
+CLICK_CHOSE_HAND_3_8 = "chose hand 3/8"
+CLICK_CHOSE_HAND_4_8 = "chose hand 4/8"
+CLICK_CHOSE_HAND_5_8 = "chose hand 5/8"
+CLICK_CHOSE_HAND_6_8 = "chose hand 6/8"
+CLICK_CHOSE_HAND_7_8 = "chose hand 7/8"
+CLICK_CHOSE_HAND_8_8 = "chose hand 8/8"
+
+CLICK_CHOSE_HAND_1_9 = "chose hand 1/9"
+CLICK_CHOSE_HAND_2_9 = "chose hand 2/9"
+CLICK_CHOSE_HAND_3_9 = "chose hand 3/9"
+CLICK_CHOSE_HAND_4_9 = "chose hand 4/9"
+CLICK_CHOSE_HAND_5_9 = "chose hand 5/9"
+CLICK_CHOSE_HAND_6_9 = "chose hand 6/9"
+CLICK_CHOSE_HAND_7_9 = "chose hand 7/9"
+CLICK_CHOSE_HAND_8_9 = "chose hand 8/9"
+CLICK_CHOSE_HAND_9_9 = "chose hand 9/9"
+
+CLICK_CHOSE_HAND_1_10 = "chose hand 1/10"
+CLICK_CHOSE_HAND_2_10 = "chose hand 2/10"
+CLICK_CHOSE_HAND_3_10 = "chose hand 3/10"
+CLICK_CHOSE_HAND_4_10 = "chose hand 4/10"
+CLICK_CHOSE_HAND_5_10 = "chose hand 5/10"
+CLICK_CHOSE_HAND_6_10 = "chose hand 6/10"
+CLICK_CHOSE_HAND_7_10 = "chose hand 7/10"
+CLICK_CHOSE_HAND_8_10 = "chose hand 8/10"
+CLICK_CHOSE_HAND_9_10 = "chose hand 9/10"
+CLICK_CHOSE_HAND_10_10 = "chose hand 10/10"
+
+
+CLICK_CHOSE_OPPO_x_PRE = "chose oppo "
+CLICK_CHOSE_OPPO_x_MID = "/"
+CLICK_CHOSE_OPPO_BATLE_0_0 = "chose oppo 0/0"
+
+CLICK_CHOSE_OPPO_BATLE_1_1 = "chose oppo 1/1"
+
+CLICK_CHOSE_OPPO_BATLE_1_2 = "chose oppo 1/2"
+CLICK_CHOSE_OPPO_BATLE_2_2 = "chose oppo 2/2"
+
+CLICK_CHOSE_OPPO_BATLE_1_3 = "chose oppo 1/3"
+CLICK_CHOSE_OPPO_BATLE_2_3 = "chose oppo 2/3"
+CLICK_CHOSE_OPPO_BATLE_3_3 = "chose oppo 3/3"
+
+CLICK_CHOSE_OPPO_BATLE_1_4 = "chose oppo 1/4"
+CLICK_CHOSE_OPPO_BATLE_2_4 = "chose oppo 2/4"
+CLICK_CHOSE_OPPO_BATLE_3_4 = "chose oppo 3/4"
+CLICK_CHOSE_OPPO_BATLE_4_4 = "chose oppo 4/4"
+
+CLICK_CHOSE_OPPO_BATLE_1_5 = "chose oppo 1/5"
+CLICK_CHOSE_OPPO_BATLE_2_5 = "chose oppo 2/5"
+CLICK_CHOSE_OPPO_BATLE_3_5 = "chose oppo 3/5"
+CLICK_CHOSE_OPPO_BATLE_4_5 = "chose oppo 4/5"
+CLICK_CHOSE_OPPO_BATLE_5_5 = "chose oppo 5/5"
+
+CLICK_CHOSE_OPPO_BATLE_1_6 = "chose oppo 1/6"
+CLICK_CHOSE_OPPO_BATLE_2_6 = "chose oppo 2/6"
+CLICK_CHOSE_OPPO_BATLE_3_6 = "chose oppo 3/6"
+CLICK_CHOSE_OPPO_BATLE_4_6 = "chose oppo 4/6"
+CLICK_CHOSE_OPPO_BATLE_5_6 = "chose oppo 5/6"
+CLICK_CHOSE_OPPO_BATLE_6_6 = "chose oppo 6/6"
+
+CLICK_CHOSE_OPPO_BATLE_1_7 = "chose oppo 1/7"
+CLICK_CHOSE_OPPO_BATLE_2_7 = "chose oppo 2/7"
+CLICK_CHOSE_OPPO_BATLE_3_7 = "chose oppo 3/7"
+CLICK_CHOSE_OPPO_BATLE_4_7 = "chose oppo 4/7"
+CLICK_CHOSE_OPPO_BATLE_5_7 = "chose oppo 5/7"
+CLICK_CHOSE_OPPO_BATLE_6_7 = "chose oppo 6/7"
+CLICK_CHOSE_OPPO_BATLE_7_7 = "chose oppo 7/7"
+
+
+
+CLICK_CHOSE_OWN_x_PRE = "chose own "
+CLICK_CHOSE_OWN_x_MID = "/"
+CLICK_CHOSE_OWN_BATLE_0_0 = "chose own 0/0"
+
+CLICK_CHOSE_OWN_BATLE_1_1 = "chose own 1/1"
+
+CLICK_CHOSE_OWN_BATLE_1_2 = "chose own 1/2"
+CLICK_CHOSE_OWN_BATLE_2_2 = "chose own 2/2"
+
+CLICK_CHOSE_OWN_BATLE_1_3 = "chose own 1/3"
+CLICK_CHOSE_OWN_BATLE_2_3 = "chose own 2/3"
+CLICK_CHOSE_OWN_BATLE_3_3 = "chose own 3/3"
+
+CLICK_CHOSE_OWN_BATLE_1_4 = "chose own 1/4"
+CLICK_CHOSE_OWN_BATLE_2_4 = "chose own 2/4"
+CLICK_CHOSE_OWN_BATLE_3_4 = "chose own 3/4"
+CLICK_CHOSE_OWN_BATLE_4_4 = "chose own 4/4"
+
+CLICK_CHOSE_OWN_BATLE_1_5 = "chose own 1/5"
+CLICK_CHOSE_OWN_BATLE_2_5 = "chose own 2/5"
+CLICK_CHOSE_OWN_BATLE_3_5 = "chose own 3/5"
+CLICK_CHOSE_OWN_BATLE_4_5 = "chose own 4/5"
+CLICK_CHOSE_OWN_BATLE_5_5 = "chose own 5/5"
+
+CLICK_CHOSE_OWN_BATLE_1_6 = "chose own 1/6"
+CLICK_CHOSE_OWN_BATLE_2_6 = "chose own 2/6"
+CLICK_CHOSE_OWN_BATLE_3_6 = "chose own 3/6"
+CLICK_CHOSE_OWN_BATLE_4_6 = "chose own 4/6"
+CLICK_CHOSE_OWN_BATLE_5_6 = "chose own 5/6"
+CLICK_CHOSE_OWN_BATLE_6_6 = "chose own 6/6"
+
+CLICK_CHOSE_OWN_BATLE_1_7 = "chose own 1/7"
+CLICK_CHOSE_OWN_BATLE_2_7 = "chose own 2/7"
+CLICK_CHOSE_OWN_BATLE_3_7 = "chose own 3/7"
+CLICK_CHOSE_OWN_BATLE_4_7 = "chose own 4/7"
+CLICK_CHOSE_OWN_BATLE_5_7 = "chose own 5/7"
+CLICK_CHOSE_OWN_BATLE_6_7 = "chose own 6/7"
+CLICK_CHOSE_OWN_BATLE_7_7 = "chose own 7/7"

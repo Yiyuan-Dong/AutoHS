@@ -2,7 +2,7 @@
 主体代码引自 Demon_Hunter 的CSDN博客, 博客URL:https://blog.csdn.net/zhuisui_woxin/article/details/84345036
 """
 import sys
-
+sys.path.append(r"..")
 import cv2
 import time
 import math
