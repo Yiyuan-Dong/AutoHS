@@ -113,7 +113,6 @@ def catch_screen(name=None):
 
 def pixel_very_similar(im_opencv, y, x, expected_val):
     img_val = im_opencv[y][x][:3]
-
     diff = abs(img_val[0] - expected_val[0]) + \
            abs(img_val[1] - expected_val[1]) + \
            abs(img_val[2] - expected_val[2])
@@ -138,7 +137,7 @@ def get_state():
         return FSM_CHOOSING_HERO
     elif pixel_very_similar(im_opencv, 1070, 1090, [17, 18, 19]):
         return FSM_MATCHING
-    elif pixel_very_similar(im_opencv, 860, 960, [71, 71, 71]):
+    elif pixel_very_similar(im_opencv, 850, 1020, [255, 195, 124]):
         return FSM_CHOOSING_CARD
     else:
         return FSM_BATTLING

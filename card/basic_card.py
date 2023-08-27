@@ -1,7 +1,7 @@
 import random
 import time
 from abc import ABC, abstractmethod
-# import click
+import click
 from constants.constants import *
 from print_info import *
 

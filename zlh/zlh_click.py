@@ -17,6 +17,7 @@ def test_right_click(x, y):
 
 MAIN_MENU_XY = {
     CLICK_MAIN_START_GAME : (950, 320),
+    CLICK_MAIN_START_SINGLE_GAME : (950, 570),
     CLICK_MAIN_START_OPTION : (1880, 1060),
     CLICK_MAIN_QUIT_GAME : (950, 450),
     CLICK_MAIN_START_MISSION : (500, 950),
@@ -28,6 +29,11 @@ MAIN_MENU_XY = {
 def test_main_start_game_click():
     enter_HS()
     x, y = MAIN_MENU_XY[CLICK_MAIN_START_GAME]
+    left_click(x, y)
+
+def test_main_start_single_game_click():
+    enter_HS()
+    x, y = MAIN_MENU_XY[CLICK_MAIN_START_SINGLE_GAME]
     left_click(x, y)
 
 def test_main_start_option_click():
@@ -59,6 +65,74 @@ def test_main_start_reward_click_next_reward_click():
 def test_main_start_reward_click_prev_reward_click():
     enter_HS()
     x, y = MAIN_MENU_XY[CLICK_MAIN_PREV_REWARD]
+    left_click(x, y)
+
+SINGLE_MAIN_MENU_XY = {
+     CLICK_ANOTHER_MODE : (1350, 450),
+     CLICK_PRITICE_MODE : (1350, 150),
+     CLICK_PRITICE_MODE_NEXT : (1350, 210),
+     CLICK_PRITICE_MODE_NEXT_START_GAME : (1450, 900),
+}
+
+def test_single_main_start_game_click():
+    enter_HS()
+    x, y = SINGLE_MAIN_MENU_XY[CLICK_ANOTHER_MODE]
+    left_click(x, y)
+    time.sleep(1)
+    x, y = SINGLE_MAIN_MENU_XY[CLICK_PRITICE_MODE]
+    left_click(x, y)
+    time.sleep(1)
+    x, y = SINGLE_MAIN_MENU_XY[CLICK_PRITICE_MODE_NEXT]
+    left_click(x, y)
+    time.sleep(1)
+    x, y = SINGLE_MAIN_MENU_XY[CLICK_PRITICE_MODE_NEXT_START_GAME]
+    left_click(x, y)
+
+SINGLE_CHOSE_HERO_MENU_XY = {
+     SINGLE_GAME_CHOSE_HERO_1 : (500, 260),
+     SINGLE_GAME_CHOSE_HERO_2 : (700, 260),
+     SINGLE_GAME_CHOSE_HERO_3 : (1000, 260),
+     SINGLE_GAME_CHOSE_HERO_4 : (500, 500),
+     SINGLE_GAME_CHOSE_HERO_5 : (700, 500),
+     SINGLE_GAME_CHOSE_HERO_6 : (1000, 500),
+     SINGLE_GAME_CHOSE_HERO_7 : (500, 720),
+     SINGLE_GAME_CHOSE_HERO_8 : (700, 720),
+     SINGLE_GAME_CHOSE_HERO_9 : (1000, 720),
+
+     SINGLE_GAME_CHOSE_HERO_OPPO_1 : (1400, 120),
+     SINGLE_GAME_CHOSE_HERO_OPPO_2 : (1400, 200),
+     SINGLE_GAME_CHOSE_HERO_OPPO_3 : (1400, 260),
+     SINGLE_GAME_CHOSE_HERO_OPPO_4 : (1400, 320),
+     SINGLE_GAME_CHOSE_HERO_OPPO_5 : (1400, 400),
+     SINGLE_GAME_CHOSE_HERO_OPPO_6 : (1400, 450),
+     SINGLE_GAME_CHOSE_HERO_OPPO_7 : (1400, 520),
+     SINGLE_GAME_CHOSE_HERO_OPPO_8 : (1400, 590),
+     SINGLE_GAME_CHOSE_HERO_OPPO_9 : (1400, 650),
+     SINGLE_GAME_CHOSE_HERO_OPPO_10 : (1400, 710),
+     SINGLE_GAME_START_GAME : (1400, 850),
+}
+
+def test_single_chose_hero_oppo_x_click(index):
+    enter_HS()
+    key = SINGLE_GAME_CHOSE_HERO_OPPO_PRE + str(index)
+    x, y = SINGLE_CHOSE_HERO_MENU_XY[key]
+    left_click(x, y)
+
+def test_single_chose_hero_x_click(index):
+    enter_HS()
+    key = SINGLE_GAME_CHOSE_HERO_PRE + str(index)
+    x, y = SINGLE_CHOSE_HERO_MENU_XY[key]
+    left_click(x, y)
+
+
+def test_single_game_start_click():
+    enter_HS()
+    x, y = SINGLE_CHOSE_HERO_MENU_XY[SINGLE_GAME_START_GAME]
+    left_click(x, y)
+
+def test_single_game_start_choose_oppo_click():
+    enter_HS()
+    x, y = SINGLE_CHOSE_HERO_MENU_XY[SINGLE_GAME_START_GAME]
     left_click(x, y)
 
 
@@ -363,7 +437,7 @@ def test_CHOSE_OWN_x_x_click(index, size):
     left_click(x, y)
 
 if __name__ == "__main__":
-    test_battle_quit_game_click()
+    test_single_chose_hero_x_click(9)
     # test_CHOSE_OPPO_x_x_click(5, 5)
     # time.sleep(1)
     # test_CHOSE_OWN_x_x_click(7, 7)

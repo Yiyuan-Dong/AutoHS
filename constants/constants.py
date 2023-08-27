@@ -1,6 +1,6 @@
 # 你的Power.log的路径, 应该在你的炉石安装目录下的`Logs/`文件夹中, 这里放的是我的路径
 # ** 一定要修改成自己电脑上的路径 **
-HEARTHSTONE_POWER_LOG_PATH = "C:\Program Files (x86)\Apps\Hearthstone\Logs\Hearthstone_2023_08_23_20_31_56\Power.log"
+HEARTHSTONE_POWER_LOG_PATH = "C:\Program Files (x86)\Apps\Hearthstone\Logs\Hearthstone_2023_08_27_23_26_48\Power.log"
 
 # 你的炉石用户名, 注意英文标点符号'#', 把后面的数字也带上
 # 可以输入中文
@@ -83,6 +83,7 @@ SPELL_POINT_MINE = 2
 
 
 CLICK_MAIN_START_GAME = "start game"
+CLICK_MAIN_START_SINGLE_GAME = "start single game"
 CLICK_MAIN_START_OPTION = "start option"
 CLICK_MAIN_QUIT_GAME = "quit game"
 CLICK_MAIN_START_MISSION = "start mission"
@@ -90,6 +91,34 @@ CLICK_MAIN_START_REWARD = "start reward"
 CLICK_MAIN_NEXT_REWARD = "next reward"
 CLICK_MAIN_PREV_REWARD = "prev reward"
 
+CLICK_ANOTHER_MODE = "click another mode"
+CLICK_PRITICE_MODE = "click pritice mode"
+CLICK_PRITICE_MODE_NEXT = "click pritice mode next"
+CLICK_PRITICE_MODE_NEXT_START_GAME = "lick pritice mode next start game"
+
+SINGLE_GAME_CHOSE_HERO_PRE = "choose single game hero "
+SINGLE_GAME_CHOSE_HERO_1 = "choose single game hero 1"
+SINGLE_GAME_CHOSE_HERO_2 = "choose single game hero 2"
+SINGLE_GAME_CHOSE_HERO_3 = "choose single game hero 3"
+SINGLE_GAME_CHOSE_HERO_4 = "choose single game hero 4"
+SINGLE_GAME_CHOSE_HERO_5 = "choose single game hero 5"
+SINGLE_GAME_CHOSE_HERO_6 = "choose single game hero 6"
+SINGLE_GAME_CHOSE_HERO_7 = "choose single game hero 7"
+SINGLE_GAME_CHOSE_HERO_8 = "choose single game hero 8"
+SINGLE_GAME_CHOSE_HERO_9 = "choose single game hero 9"
+
+SINGLE_GAME_CHOSE_HERO_OPPO_PRE = "choose single game hero oppo "
+SINGLE_GAME_CHOSE_HERO_OPPO_1 = "choose single game hero oppo 1"
+SINGLE_GAME_CHOSE_HERO_OPPO_2 = "choose single game hero oppo 2"
+SINGLE_GAME_CHOSE_HERO_OPPO_3 = "choose single game hero oppo 3"
+SINGLE_GAME_CHOSE_HERO_OPPO_4 = "choose single game hero oppo 4"
+SINGLE_GAME_CHOSE_HERO_OPPO_5 = "choose single game hero oppo 5"
+SINGLE_GAME_CHOSE_HERO_OPPO_6 = "choose single game hero oppo 6"
+SINGLE_GAME_CHOSE_HERO_OPPO_7 = "choose single game hero oppo 7"
+SINGLE_GAME_CHOSE_HERO_OPPO_8 = "choose single game hero oppo 8"
+SINGLE_GAME_CHOSE_HERO_OPPO_9 = "choose single game hero oppo 9"
+SINGLE_GAME_CHOSE_HERO_OPPO_10 = "choose single game hero oppo 10"
+SINGLE_GAME_START_GAME = "start single game"
 
 CLICK_CHOSE_HERO_OPEN_GAME = "open game"
 CLICK_CHOSE_HERO_CANCEL_GAME = "cancel game"

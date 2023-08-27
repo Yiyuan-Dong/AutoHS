@@ -2,13 +2,14 @@ import random
 import sys
 import time
 
-# import keyboard
+import keyboard
 
-# import click
-# import get_screen
+import click
+import get_screen
 from strategy import StrategyState
 from log_state import *
-
+import threading
+import strategy
 FSM_state = ""
 time_begin = 0.0
 game_count = 0
@@ -17,6 +18,15 @@ quitting_flag = False
 log_state = LogState()
 log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
 choose_hero_count = 0
+
+
+# 用于接收输入的线程函数
+def input_thread_func():
+    
+    while True:
+        # 获取用户输入
+        strategy.user_input = input("请输入数字: ")
+        print("user_input is :", strategy.user_input)
 
 
 def init():
@@ -44,11 +54,13 @@ def init():
     log_state = LogState()
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
     choose_hero_count = 0
-
+    input_thread = threading.Thread(target=input_thread_func)
+    input_thread.start()
 
 def update_log_state():
     log_container = next(log_iter)
     if log_container.log_type == LOG_CONTAINER_ERROR:
+        print("err in log_container.log_type")
         return False
 
     for log_line_container in log_container.message_list:
@@ -63,7 +75,8 @@ def update_log_state():
     # 注意如果Power.log没有更新, 这个函数依然会返回. 应该考虑到game_state只是被初始化
     # 过而没有进一步更新的可能
     if log_state.game_entity_id == 0:
-        return False
+        print("err in log_state.game_entity_id")
+        # return False
 
     return True
 
@@ -107,7 +120,7 @@ def print_out():
 
 def ChoosingHeroAction():
     global choose_hero_count
-
+    print("==========================in ChoosingHeroAction==========================")
     print_out()
 
     # 有时脚本会卡在某个地方, 从而在FSM_Matching
@@ -127,7 +140,7 @@ def ChoosingHeroAction():
 def MatchingAction():
     print_out()
     loop_count = 0
-
+    print("==========================in MatchingAction==========================")
     while True:
         if quitting_flag:
             sys.exit(0)
@@ -154,7 +167,7 @@ def MatchingAction():
 def ChoosingCardAction():
     global choose_hero_count
     choose_hero_count = 0
-
+    print("===========================in ChoosingCardAction===========================")
     print_out()
     time.sleep(21)
     loop_count = 0
@@ -177,6 +190,7 @@ def ChoosingCardAction():
         strategy_state.debug_print_out()
         time.sleep(3)
         return FSM_BATTLING
+
         hand_card_num = strategy_state.my_hand_card_num
 
         # 等待被替换的卡牌 ZONE=HAND
@@ -216,7 +230,7 @@ def Battling():
     global log_state
 
     print_out()
-
+    print("===========================in Battling===========================")
     not_mine_count = 0
     mine_count = 0
     last_controller_is_me = False
@@ -227,6 +241,7 @@ def Battling():
 
         ok = update_log_state()
         if not ok:
+            print("===========================update_log_state err in Battling===========================")
             return FSM_ERROR
 
         if log_state.is_end:
@@ -237,9 +252,18 @@ def Battling():
                 info_print("你输了")
             return FSM_QUITTING_BATTLE
         strategy_state = StrategyState(log_state)
-        strategy_state.debug_print_out()
-        time.sleep(3)
-        return FSM_BATTLING
+        input_info = strategy_state.debug_print_out()
+        time.sleep(5)
+        if strategy.input_info is not "":
+            print("action from user_input: ", input_info)
+            for get_index, put_index, point_index in input_info:
+                if get_index <= strategy_state.my_hand_card_num:
+                    print(1)
+                    # strategy_state.use_best_entity(get_index, [1, put_index, point_index])
+                    click.choose_card(get_index, strategy_state.my_hand_card_num)
+                    click.put_minion(put_index, strategy_state.my_minion_num)
+                    # TODO mk func choose card to put && point
+        # return FSM_BATTLING
         # 在对方回合等就行了
         if not log_state.is_my_turn:
             last_controller_is_me = False
@@ -304,7 +328,7 @@ def Battling():
 
 def QuittingBattle():
     print_out()
-
+    print("==========================in QuittingBattle==========================")
     time.sleep(5)
 
     loop_count = 0
@@ -329,7 +353,7 @@ def QuittingBattle():
 
 def GoBackHSAction():
     global FSM_state
-
+    print("==========================in GoBackHSAction==========================")
     print_out()
     time.sleep(3)
 
@@ -346,6 +370,7 @@ def GoBackHSAction():
 
 
 def MainMenuAction():
+    print("==========================in MainMenuAction==========================")
     print_out()
 
     time.sleep(3)
@@ -369,6 +394,7 @@ def MainMenuAction():
 
 
 def WaitMainMenu():
+    print("==========================in WaitMainMenu==========================")
     print_out()
     while get_screen.get_state() != FSM_MAIN_MENU:
         click.click_middle()
@@ -377,6 +403,7 @@ def WaitMainMenu():
 
 
 def HandleErrorAction():
+    print("==========================in HandleErrorAction==========================")
     print_out()
 
     if not get_screen.test_hs_available():
@@ -418,17 +445,17 @@ def FSM_dispatch(next_state):
 def AutoHS_automata():
     global FSM_state
 
-    # if get_screen.test_hs_available():
-    #     hs_hwnd = get_screen.get_HS_hwnd()
-    #     get_screen.move_window_foreground(hs_hwnd)
-    #     time.sleep(0.5)
-    FSM_state = FSM_CHOOSING_CARD
+    if get_screen.test_hs_available():
+        hs_hwnd = get_screen.get_HS_hwnd()
+        get_screen.move_window_foreground(hs_hwnd)
+        time.sleep(0.5)
+    # FSM_state = FSM_CHOOSING_CARD
 
     while 1:
         if quitting_flag:
             sys.exit(0)
-        # if FSM_state == "":
-        #     FSM_state = get_screen.get_state()
+        if FSM_state == "":
+            FSM_state = get_screen.get_state()
         FSM_state = FSM_dispatch(FSM_state)
 
 

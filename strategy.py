@@ -1,5 +1,5 @@
-# import click
-# import keyboard
+import click
+import keyboard
 import sys
 import random
 
@@ -8,7 +8,7 @@ from log_state import *
 from log_op import *
 from strategy_entity import *
 
-
+user_input = ""
 class StrategyState:
     def __init__(self, log_state=None):
         self.oppo_minions = []
@@ -114,6 +114,7 @@ class StrategyState:
         debug_print(f"总卡费启发值: {self.my_heuristic_value}")
 
     def debug_print_out(self):
+        global user_input
         if not DEBUG_PRINT:
             return
 
@@ -131,6 +132,95 @@ class StrategyState:
                         f"cost:{hand_card.current_cost}")
         debug_print(f"我的墓地:")
         debug_print("    " + ", ".join([entity.name for entity in self.my_graveyard]))
+
+
+        infolist = []
+        total_mana = self.my_total_mana
+        self.my_hero.health 
+        hero_info = [0, 0, total_mana, 1, 2, 4, self.my_hero.attack, self.my_hero.health, 0]
+        if self.my_hero.attack > 0:
+            hero_info.append(1)
+            hero_info.append(1)
+        else:
+            hero_info.append(0)
+            hero_info.append(0)
+        hero_info.append(self.my_hero.attack)
+        hero_info.append(0)
+        power_info = [2, 0, total_mana, 1, 1, 1, 2, 0, 0, 0, 1, 2, 0]
+        infolist.append(hero_info)
+        infolist.append(power_info)
+        
+        for hand_card in self.my_hand_cards:
+            card_type = -1
+            atk = 0
+            put = 0
+            ptmin = 0
+            pthero = 0
+            damage = 0
+            protect = 0
+            health = 0
+            if isinstance(hand_card, StrategyMinion):
+                card_type = 2
+                atk = hand_card.attack
+                health = hand_card.health
+                put = 1
+                if hand_card.name == "冰川裂片":
+                    ptmin = 1
+                    pthero = 1
+                elif hand_card.name == "吸血蚊":
+                    damage = 3
+                    protect = 3
+            elif isinstance(hand_card, StrategySpell):
+                card_type = 1
+                if hand_card.name == "秘法射擊":
+                    atk = 2
+                    damage = atk
+                    ptmin = 1
+                elif hand_card.name == "爆炸陷阱":
+                    atk = 2
+                    damage = atk
+                elif hand_card.name == "快速射擊":
+                    ptmin = 1
+                    pthero
+                    atk = 3
+                    damage = atk
+            elif isinstance(hand_card, StrategyWeapon):
+                card_type = 3
+                atk = hand_card.attack
+                health = hand_card.durability
+            else:
+                card_type = -1
+            temp = [hand_card.current_cost, 1, total_mana, 1, 1, card_type, atk, health, put, ptmin, pthero, damage, protect]
+            
+            infolist.append(temp)
+        
+        oppo_hero = [0, 0, total_mana, 2, 2, 4, self.oppo_hero.attack, self.oppo_hero.health, 0, 0, 0, 0, 0]
+        infolist.append(oppo_hero)
+
+        for my_minion in self.my_minions:
+            atk = my_minion.attack
+            health = my_minion.health
+            protect = 0
+            damage = 0
+            if my_minion.taunt:
+                protect = health
+            temp = [0, 0, total_mana, 1, 2, 2, atk, health, 0, 0, 0, atk, protect]
+            infolist.append(temp)
+            return temp
+
+        
+
+        print("user_input now is: ", user_input)
+        if user_input is not "":
+            user_input = user_input.strip()
+            user_input_list = user_input.split()
+            temp = []
+            for inp in user_input_list:
+                temp.append(int(inp))
+            infolist.append(temp)
+
+        debug_print(infolist)
+        return debug_print
 
     @property
     def my_last_mana(self):
