@@ -9,6 +9,7 @@ from log_op import *
 from strategy_entity import *
 
 user_input = ""
+
 class StrategyState:
     def __init__(self, log_state=None):
         self.oppo_minions = []
@@ -206,21 +207,21 @@ class StrategyState:
                 protect = health
             temp = [0, 0, total_mana, 1, 2, 2, atk, health, 0, 0, 0, atk, protect]
             infolist.append(temp)
-            return temp
 
         
 
         print("user_input now is: ", user_input)
-        if user_input is not "":
+        res = []
+        if user_input != "":
             user_input = user_input.strip()
             user_input_list = user_input.split()
-            temp = []
             for inp in user_input_list:
-                temp.append(int(inp))
-            infolist.append(temp)
+                res.append(int(inp))
+            infolist.append(res)
+            user_input = ""
 
-        debug_print(infolist)
-        return debug_print
+        # debug_print(infolist)
+        return infolist
 
     @property
     def my_last_mana(self):

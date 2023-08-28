@@ -91,3 +91,5 @@ def info_print(info_str):
         print(info_str)
     if INFO_FILE_WRITE and info_file_handle:
         info_file_handle.write(info_str + "\n")
+
+

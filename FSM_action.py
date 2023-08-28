@@ -1,7 +1,7 @@
 import random
 import sys
 import time
-
+import zlh
 import keyboard
 
 import click
@@ -18,11 +18,38 @@ quitting_flag = False
 log_state = LogState()
 log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
 choose_hero_count = 0
+data_x = []
+data_y = []
 
+
+def dump_data_x(data_x):
+    with open('data_x.txt', 'w') as file:
+        for item in data_x:
+            file.write(json.dumps(item) + '\n')
+
+def dump_data_y(data_y):
+    with open('data_y.txt', 'w') as file:
+        for item in data_y:
+            file.write(json.dumps(item) + '\n')
+
+def read_data_x():
+    with open('data_x.txt', 'r') as file:
+        for line in file:
+            item = json.loads(line)
+            data_x.append(item)
+    return data_x
+
+
+def read_data_y():
+    with open('data_y.txt', 'r') as file:
+        for line in file:
+            item = json.loads(line)
+            data_y.append(item)
+    return data_y
 
 # 用于接收输入的线程函数
 def input_thread_func():
-    
+    keyboard.add_hotkey("ctrl+q", system_exit)
     while True:
         # 获取用户输入
         strategy.user_input = input("请输入数字: ")
@@ -253,17 +280,45 @@ def Battling():
             return FSM_QUITTING_BATTLE
         strategy_state = StrategyState(log_state)
         input_info = strategy_state.debug_print_out()
-        time.sleep(5)
-        if strategy.input_info is not "":
-            print("action from user_input: ", input_info)
-            for get_index, put_index, point_index in input_info:
-                if get_index <= strategy_state.my_hand_card_num:
-                    print(1)
-                    # strategy_state.use_best_entity(get_index, [1, put_index, point_index])
-                    click.choose_card(get_index, strategy_state.my_hand_card_num)
-                    click.put_minion(put_index, strategy_state.my_minion_num)
-                    # TODO mk func choose card to put && point
+        print("input_info is :", input_info)
+        time.sleep(1)
         # return FSM_BATTLING
+        # if len(input_info) == 3:
+        if len(input_info) >= 2 and len(input_info[-1]) == 3:
+            print("action from user_input: ", input_info)
+            get_index = input_info[-1][0]
+            put_index = input_info[-1][1]
+            point_index = input_info[-1][2]
+            if get_index <= (strategy_state.my_hand_card_num) and get_index >= 1:
+                print(1)
+                # strategy_state.use_best_entity(get_index, [1, put_index, point_index])
+                click.choose_card(get_index - 1, strategy_state.my_hand_card_num)
+                if isinstance(strategy_state.my_hand_cards[get_index -1], StrategyMinion) and put_index >= 1 and put_index <= 7:
+                    click.put_minion(put_index - 1, strategy_state.my_minion_num)
+                if point_index == 0 and isinstance(strategy_state.my_hand_cards[get_index -1], StrategySpell):
+                    click.choose_my_minion(0, 1);
+            elif get_index == 0:
+                # zlh.test_battle_hero_power_click()
+                hero_power = strategy_state.my_detail_hero_power
+                hero_power.use_with_arg(strategy_state, -1, [])
+            else:
+                click.choose_my_minion(get_index - strategy_state.my_hand_card_num - 1, strategy_state.my_minion_num)
+            
+            if point_index >= 1 and point_index <= 7:
+                    click.choose_opponent_minion(point_index - 1, strategy_state.oppo_minion_num)
+            elif point_index == 8:
+            
+                click.choose_oppo_hero()
+            # TODO mk func choose card to put && point
+            data_x.append(input_info[:-1])
+            data_y.append(input_info[-1])
+            dump_data_x(data_x)
+            dump_data_y(data_y)
+            # with open('data_x.txt', 'w') as file:
+            #     json.dump(data_x, file)
+            # with open('data_y.txt', 'w') as file:
+            #     json.dump(data_y, file)
+        return FSM_BATTLING
         # 在对方回合等就行了
         if not log_state.is_my_turn:
             last_controller_is_me = False
@@ -450,7 +505,8 @@ def AutoHS_automata():
         get_screen.move_window_foreground(hs_hwnd)
         time.sleep(0.5)
     # FSM_state = FSM_CHOOSING_CARD
-
+    read_data_x()
+    read_data_y()
     while 1:
         if quitting_flag:
             sys.exit(0)
