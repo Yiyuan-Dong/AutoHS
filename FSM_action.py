@@ -289,6 +289,13 @@ def Battling():
             get_index = input_info[-1][0]
             put_index = input_info[-1][1]
             point_index = input_info[-1][2]
+            if get_index == -1:
+                click.end_turn()
+                data_x.append(input_info[:-1])
+                data_y.append(input_info[-1])
+                dump_data_x(data_x)
+                dump_data_y(data_y)
+                return FSM_BATTLING
             if get_index <= (strategy_state.my_hand_card_num) and get_index >= 1:
                 print(1)
                 # strategy_state.use_best_entity(get_index, [1, put_index, point_index])

@@ -136,8 +136,8 @@ class StrategyState:
 
 
         infolist = []
-        total_mana = self.my_total_mana
-        self.my_hero.health 
+        total_mana = self.my_last_mana
+        self.my_hero.health
         hero_info = [0, 0, total_mana, 1, 2, 4, self.my_hero.attack, self.my_hero.health, 0]
         if self.my_hero.attack > 0:
             hero_info.append(1)
@@ -150,7 +150,7 @@ class StrategyState:
         power_info = [2, 0, total_mana, 1, 1, 1, 2, 0, 0, 0, 1, 2, 0]
         infolist.append(hero_info)
         infolist.append(power_info)
-        
+       
         for hand_card in self.my_hand_cards:
             card_type = -1
             atk = 0
@@ -192,11 +192,9 @@ class StrategyState:
             else:
                 card_type = -1
             temp = [hand_card.current_cost, 1, total_mana, 1, 1, card_type, atk, health, put, ptmin, pthero, damage, protect]
-            
+           
             infolist.append(temp)
-        
-        oppo_hero = [0, 0, total_mana, 2, 2, 4, self.oppo_hero.attack, self.oppo_hero.health, 0, 0, 0, 0, 0]
-        infolist.append(oppo_hero)
+       
 
         for my_minion in self.my_minions:
             atk = my_minion.attack
@@ -208,8 +206,42 @@ class StrategyState:
             temp = [0, 0, total_mana, 1, 2, 2, atk, health, 0, 0, 0, atk, protect]
             infolist.append(temp)
 
-        
+       
+        oppo_hero = [0, 0, total_mana, 2, 2, 4, self.oppo_hero.attack, self.oppo_hero.health, 0, 0, 0, 0, 0]
+        infolist.append(oppo_hero)
+        oppo_power_name = self.oppo_hero_power.name
+        oppo_hero_cost = 2
+        oppo_hero_atk = 0
+        oppo_hero_health = 0
+        oppo_hero_ptmin = 0
+        oppo_hero_pthero = 0
+        oppo_hero_damage = 0
+        oppo_hero_protect = 0
+        if oppo_power_name == "次级治疗术":
+            oppo_hero_ptmin = 1
+            oppo_hero_pthero = 1
+            oppo_hero_protect = 2
+        elif oppo_power_name == "图腾召唤":
+            oppo_hero_atk = 1
+            oppo_hero_health = 1
+            oppo_hero_protect = 1
+        elif oppo_power_name == "稳固射击":
+            oppo_hero_atk = 2
+            oppo_hero_pthero = 1
+            oppo_hero_damage = 2
 
+        oppo_hero_power = [oppo_hero_cost, 0, total_mana, 2, 1, 1, oppo_hero_atk, oppo_hero_health, 0, oppo_hero_ptmin, oppo_hero_pthero, oppo_hero_damage, oppo_hero_protect]
+        infolist.append(oppo_hero_power)
+
+        for opo_minion in self.oppo_minions:
+            atk = opo_minion.attack
+            health = opo_minion.health
+            protect = 0
+            damage = 0
+            if opo_minion.taunt:
+                protect = health
+            temp = [0, 0, total_mana, 2, 2, 2, atk, health, 0, 0, 0, atk, protect]
+            infolist.append(temp)
         print("user_input now is: ", user_input)
         res = []
         if user_input != "":
@@ -222,7 +254,6 @@ class StrategyState:
 
         # debug_print(infolist)
         return infolist
-
     @property
     def my_last_mana(self):
         return self.my_total_mana - self.my_used_mana + self.my_temp_mana
