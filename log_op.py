@@ -3,6 +3,7 @@ import re
 import time
 import copy
 from constants.constants import *
+import print_info
 
 # "D 04:23:18.0000001 GameState.DebugPrintPower() -     GameEntity EntityID=1"
 GAME_STATE_PATTERN = re.compile(r"D [\d]{2}:[\d]{2}:[\d]{2}.[\d]{7} GameState.DebugPrint(Game|Power)\(\) - (.+)")
@@ -176,6 +177,10 @@ def parse_line(line_str):
 
     return None
 
+def init_log_file(path=HEARTHSTONE_POWER_LOG_PATH):
+    if not os.path.exists(path):
+        with open(path, 'w') as file:
+            file.write('') 
 
 def log_iter_func(path=HEARTHSTONE_POWER_LOG_PATH):
     while True:

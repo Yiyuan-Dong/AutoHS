@@ -3,8 +3,27 @@ import time
 
 MOUSE_SLEEP_INTERVAL = 3  # 3 seconds
 
+import ctypes
+
+class RECT(ctypes.Structure):
+    _fields_ = [("left", ctypes.c_long),
+                ("top", ctypes.c_long),
+                ("right", ctypes.c_long),
+                ("bottom", ctypes.c_long)]
+
+def get_screen_size():
+    rect = RECT()
+    ctypes.windll.user32.GetWindowRect(ctypes.windll.user32.GetDesktopWindow(), ctypes.byref(rect))
+    width = rect.right - rect.left
+    height = rect.bottom - rect.top
+    return width, height
+
+width, height = get_screen_size()
+print("Width: %s, Height: %s" % (width, height))
+
 def main():
     mouse = Controller()
+    w,h = get_screen_size()
     # Read pointer position
     print("The current pointer position is {0}".format(mouse.position))
     print("Now please stare at your mouse, not the terminal :)")
@@ -12,7 +31,7 @@ def main():
 
     time.sleep(MOUSE_SLEEP_INTERVAL)
     # Set pointer position
-    mouse.position = (1400, 900)
+    mouse.position = (w/2, h/2)
     print("Now we have moved it to {0}".format(mouse.position))
     print("A move based on absolute position")
     print("Then the mouse will move to the right\n")

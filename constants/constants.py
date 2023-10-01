@@ -1,10 +1,16 @@
+import os
+from constants.utils import get_latest_file_name, get_username
 # 你的Power.log的路径, 应该在你的炉石安装目录下的`Logs/`文件夹中, 这里放的是我的路径
 # ** 一定要修改成自己电脑上的路径 **
-HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
+HEARTHSTONE_POWER_LOG_HOME_PATH = r"C:\Program Files (x86)\Hearthstone\Logs"
+
+HEARTHSTONE_POWER_LOG_PATH = HEARTHSTONE_POWER_LOG_HOME_PATH + "\\" + \
+    get_latest_file_name(
+        HEARTHSTONE_POWER_LOG_HOME_PATH) + "\Power.log"
 
 # 你的炉石用户名, 注意英文标点符号'#', 把后面的数字也带上
 # 可以输入中文
-YOUR_NAME = "ChangeThis#54321"
+YOUR_NAME = get_username()
 
 # 关于控制台信息打印的设置
 DEBUG_PRINT = True

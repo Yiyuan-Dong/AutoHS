@@ -20,6 +20,7 @@ choose_hero_count = 0
 
 
 def init():
+    init_log_file()
     global log_state, log_iter, choose_hero_count
 
     # 有时候炉石退出时python握着Power.log的读锁, 因而炉石无法
@@ -138,6 +139,7 @@ def MatchingAction():
 
         ok = update_log_state()
         if ok:
+            info_print("matching success")
             if not log_state.is_end:
                 return FSM_CHOOSING_CARD
 

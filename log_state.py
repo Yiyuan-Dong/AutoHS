@@ -390,7 +390,7 @@ def update_state(state, line_info_container):
 
 
 if __name__ == "__main__":
-    log_iter = log_iter_func("./Power.log")
+    log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
     log_container = next(log_iter)
     temp_state = LogState()
 

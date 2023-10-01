@@ -6,6 +6,7 @@ import time
 from pynput.mouse import Button, Controller
 import random
 import sys
+import pyautogui
 
 from constants.constants import *
 from print_info import *
@@ -31,10 +32,12 @@ def click_button(x, y, button):
 
 
 def left_click(x, y):
+    move_to(x, y)
     click_button(x, y, Button.left)
 
 
 def right_click(x, y):
+    move_to(x, y)
     click_button(x, y, Button.right)
 
 
@@ -43,6 +46,10 @@ def choose_my_minion(mine_index, mine_num):
     x = 960 - (mine_num - 1) * 70 + mine_index * 140
     y = 600
     left_click(x, y)
+
+
+def move_to(x, y):
+    pyautogui.moveTo(x, y, duration=0.1)
 
 
 def choose_my_hero():
@@ -132,7 +139,8 @@ def put_minion(gap_index, minion_num):
     rand_sleep(OPERATE_INTERVAL)
 
     if minion_num >= 7:
-        warn_print(f"Try to put a minion but there has already been {minion_num} minions")
+        warn_print(
+            f"Try to put a minion but there has already been {minion_num} minions")
 
     x = 960 - (minion_num - 1) * 70 + 140 * gap_index - 70
     y = 600
