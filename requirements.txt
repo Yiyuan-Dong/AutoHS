@@ -3,7 +3,7 @@ opencv-python
 imagehash
 pynput
 pillow
-sklearn
+scikit-learn
 numpy
 pywin32
 requests
