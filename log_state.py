@@ -5,6 +5,8 @@ from json_op import *
 from strategy_entity import *
 from print_info import *
 import constants.constants
+import strategy
+# from strategy import StrategyState
 
 MY_NAME = constants.constants.YOUR_NAME
 
@@ -394,7 +396,9 @@ if __name__ == "__main__":
     log_container = next(log_iter)
     temp_state = LogState()
 
+
     for x in log_container.message_list:
         # print(x)
         update_state(temp_state, x)
-    print(temp_state)
+    strategy_state = strategy.StrategyState(temp_state)
+    strategy_state.debug_print_out()

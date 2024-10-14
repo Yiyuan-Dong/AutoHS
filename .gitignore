@@ -6,5 +6,4 @@ backup.md
 test*
 *.json
 *.log
-*.txt
 !requirements.txt

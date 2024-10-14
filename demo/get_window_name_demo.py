@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     print(f"HWND : NAME")
     for h, t in hwnd_title.items():
-        if t is not "":
+        if t != "":
             print(h, ":", t)
 
     hwnd = win32gui.FindWindow(None, NAME)

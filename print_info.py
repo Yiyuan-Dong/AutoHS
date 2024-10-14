@@ -72,6 +72,7 @@ def debug_print(debug_str=""):
         print(debug_str)
     if DEBUG_FILE_WRITE and debug_file_handle:
         debug_file_handle.write(debug_str + "\n")
+        debug_file_handle.flush()
 
 
 def sys_print(sys_str):
@@ -90,3 +91,5 @@ def info_print(info_str):
         print(info_str)
     if INFO_FILE_WRITE and info_file_handle:
         info_file_handle.write(info_str + "\n")
+
+
