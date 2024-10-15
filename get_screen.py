@@ -65,41 +65,26 @@ def max_diff(img, pixel_list):
 
     return ans
 
+# This function used to take the snapshot of a specific process,
+# but I found it does not work well now. So now it just take the
+# snapshot of the frontend window.
+def take_snapshot():
+    width = WIDTH
+    height = HEIGHT
 
-def catch_screen(name=None):
-    # 第一个参数是类名，第二个参数是窗口名字
-    # hwnd -> Handle to a Window !
-    # 如果找不到对应名字的窗口，返回0
-    if name is not None:
-        hwnd = win32gui.FindWindow(None, name)
-    else:
-        hwnd = get_HS_hwnd()
-
-    if hwnd == 0:
-        return
-
-    width = 1960
-    height = 1080
-    # 返回句柄窗口的设备环境，覆盖整个窗口，包括非客户区，标题栏，菜单，边框 DC device context
-    hwin = win32gui.GetDesktopWindow()
-    hwndDC = win32gui.GetWindowDC(hwin)
-    # hwndDC = win32gui.GetWindowDC(hwnd)
-    # 创建设备描述表
+    # Get the snapshot of the desktop
+    hwnd = win32gui.GetDesktopWindow()
+    hwndDC = win32gui.GetWindowDC(hwnd)
     mfcDC = win32ui.CreateDCFromHandle(hwndDC)
-    # 创建内存设备描述表
     saveDC = mfcDC.CreateCompatibleDC()
-    # 创建位图对象准备保存图片
     saveBitMap = win32ui.CreateBitmap()
-    # 为bitmap开辟存储空间
     saveBitMap.CreateCompatibleBitmap(mfcDC, width, height)
-    # 将截图保存到saveBitMap中
     saveDC.SelectObject(saveBitMap)
-    # 保存bitmap到内存设备描述表
     saveDC.BitBlt((0, 0), (width, height), mfcDC, (0, 0), win32con.SRCCOPY)
 
     signedIntsArray = saveBitMap.GetBitmapBits(True)
 
-    # 内存释放
+    # Release the resources
     win32gui.DeleteObject(saveBitMap.GetHandle())
     saveDC.DeleteDC()
     mfcDC.DeleteDC()
@@ -107,6 +92,9 @@ def catch_screen(name=None):
 
     im_opencv = numpy.frombuffer(signedIntsArray, dtype='uint8')
     im_opencv.shape = (height, width, 4)
+
+    # Create a writable copy of the array
+    im_opencv = im_opencv.copy()
 
     return im_opencv
 
@@ -123,13 +111,12 @@ def pixel_very_similar(im_opencv, y, x, expected_val):
 
     return False
 
-
 def get_state():
     hwnd = get_HS_hwnd()
     if hwnd == 0:
         return FSM_LEAVE_HS
 
-    im_opencv = catch_screen()
+    im_opencv = take_snapshot()
 
     if pixel_very_similar(im_opencv, 1070, 1090, [20, 51, 103]) or \
             pixel_very_similar(im_opencv, 305, 705, [21, 43, 95]):  # 万圣节主界面会变
@@ -142,27 +129,6 @@ def get_state():
         return FSM_CHOOSING_CARD
     else:
         return FSM_BATTLING
-
-    # if list(im_opencv[1070][1090][:3]) == [20, 51, 104] or \
-    #         list(im_opencv[305][705][:3]) == [21, 43, 95]:  # 万圣节主界面会变
-    #     return FSM_MAIN_MENU
-    # if list(im_opencv[1070][1090][:3]) == [8, 18, 24]:
-    #     return FSM_CHOOSING_HERO
-    # if list(im_opencv[1070][1090][:3]) == [17, 18, 19]:
-    #     return FSM_MATCHING
-    # if list(im_opencv[860][960][:3]) == [71, 71, 71]:
-    #     return FSM_CHOOSING_CARD
-    # return FSM_BATTLING
-
-
-# def image_hash(img):
-#     img = Image.fromarray(img)
-#     return imagehash.phash(img)
-#
-#
-# def hash_diff(str1, str2):
-#     return bin(int(str1, 16) ^ int(str2, 16))[2:].count("1")
-
 
 def terminate_HS():
     hwnd = get_HS_hwnd()

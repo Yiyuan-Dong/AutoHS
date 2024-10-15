@@ -1,3 +1,15 @@
+import tkinter as tk
+
+def get_screen_resolution():
+    root = tk.Tk()
+    root.withdraw()  # 隐藏主窗口
+    width = root.winfo_screenwidth()
+    height = root.winfo_screenheight()
+    return width, height
+
+# Initialize width and height when the module is imported
+WIDTH, HEIGHT = get_screen_resolution()
+
 # 你的Power.log的路径, 应该在你的炉石安装目录下的`Logs/`文件夹中, 这里放的是我的路径
 # ** 一定要修改成自己电脑上的路径 **
 HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
@@ -80,3 +92,6 @@ CARD_ENCHANTMENT = "ENCHANTMENT"
 SPELL_NO_POINT = 0
 SPELL_POINT_OPPO = 1
 SPELL_POINT_MINE = 2
+
+if __name__ == "__main__":
+    print(f"Screen resolution: {WIDTH}x{HEIGHT}")

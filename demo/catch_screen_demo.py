@@ -2,13 +2,16 @@
 主体代码引自 Demon_Hunter 的CSDN博客, 博客URL:https://blog.csdn.net/zhuisui_woxin/article/details/84345036
 """
 import sys
-
 import cv2
 import time
 import math
+import os
+
+# Add the parent directory to sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import get_screen
-
+from constants.constants import *
 
 PRINT_ALL_AREA_LIST = []
 # AREA_LIST = [((1495, 465), (1620, 522))]
@@ -75,12 +78,20 @@ def show_area(img, top_left, bottom_right, print_out=False):
 
 
 if __name__ == "__main__":
-    im_opencv = get_screen.catch_screen()
+    if get_screen.test_hs_available():
+        get_screen.move_window_foreground(get_screen.get_HS_hwnd(), "炉石传说")
+    else:
+        print("未找到炉石传说")
+        exit()
+
+    time.sleep(1)
+
+    im_opencv = get_screen.take_snapshot()
     if im_opencv is None:
-        print("未找到应用")
+        print("截图失败")
         sys.exit(-1)
 
-    add_line(im_opencv, 1920, 1080)
+    add_line(im_opencv, WIDTH, HEIGHT)
     add_point(im_opencv, POINT_LIST)
 
     cv2.imshow("total", im_opencv)  # 显示
