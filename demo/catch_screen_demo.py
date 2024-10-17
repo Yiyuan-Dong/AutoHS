@@ -94,9 +94,9 @@ if __name__ == "__main__":
     add_line(im_opencv, WIDTH, HEIGHT)
     add_point(im_opencv, POINT_LIST)
 
-    cv2.imshow("total", im_opencv)  # 显示
+    cv2.imshow("Full Screen", im_opencv)  # 显示
     cv2.waitKey(0)
-    cv2.destroyWindow("total")
+    cv2.destroyWindow("Full Screen")
     time.sleep(0.2)
 
     for area in AREA_LIST:
