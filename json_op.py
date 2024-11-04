@@ -23,10 +23,18 @@ def read_json(re_download=False):
 
     if not os.path.exists(json_path):
         sys_print("未找到cards.json,试图通过网络下载文件")
-        download_json(json_path)
+        try:
+            download_json(json_path)
+            sys_print("下载完成")
+        except Exception as e:
+            sys_print(f"下载失败: {e}")
     elif re_download:
         sys_print("疑似有新版本炉石数据，正在重新下载最新文件")
-        download_json(json_path)
+        try:
+            download_json(json_path)
+            sys_print("下载完成")
+        except Exception as e:
+            sys_print(f"下载失败: {e}")
     else:
         sys_print("cards.json已存在")
 
