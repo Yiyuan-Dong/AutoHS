@@ -3,7 +3,7 @@ import sys
 from log_op import *
 from json_op import *
 from strategy_entity import *
-from print_info import *
+from autohs_logger import *
 import constants.constants
 
 MY_NAME = constants.constants.YOUR_NAME
@@ -270,7 +270,7 @@ class CardEntity(Entity):
 
 def update_state(state, line_info_container):
     if line_info_container.line_type == LOG_LINE_CREATE_GAME:
-        sys_print("Read in new game and flush state")
+        logger.info("Read in new game and flush state")
         state.flush()
 
     if line_info_container.line_type == LOG_LINE_GAME_ENTITY:
@@ -340,8 +340,8 @@ def update_state(state, line_info_container):
             entity_id = entity_string
 
         if entity_id not in state.entity_dict:
-            warn_print(f"Invalid entity_id: {entity_id}")
-            warn_print(f"Current line container: {line_info_container}")
+            logger.warn(f"Invalid entity_id: {entity_id}")
+            logger.warn(f"Current line container: {line_info_container}")
             return False
 
         tag = line_info_container.info_dict["tag"]
@@ -364,7 +364,7 @@ def update_state(state, line_info_container):
                 state.my_player_id = state.current_update_entity.query_tag("CONTROLLER")
                 # 双方PlayerID, 一个是1, 一个是2
                 state.oppo_player_id = str(3 - int(state.my_player_id))
-                debug_print(f"my_player_id: {state.my_player_id}")
+                logger.debug(f"my_player_id: {state.my_player_id}")
 
         state.current_update_entity.set_tag(tag, value)
 
@@ -382,7 +382,7 @@ def update_state(state, line_info_container):
         # 场上的怪而非我自己的手牌, 进而误判 my_player_id
         if player_id == state.oppo_player_id and \
                 MY_NAME in player_name:
-            warn_print("my_player_id may be wrong")
+            logger.warn("my_player_id may be wrong")
             state.my_player_id, state.oppo_player_id = \
                 state.oppo_player_id, state.my_player_id
 

@@ -8,7 +8,7 @@ import random
 import sys
 
 from constants.constants import *
-from print_info import *
+from autohs_logger import *
 from get_screen import *
 
 
@@ -132,7 +132,7 @@ def put_minion(gap_index, minion_num):
     rand_sleep(OPERATE_INTERVAL)
 
     if minion_num >= 7:
-        warn_print(f"Try to put a minion but there has already been {minion_num} minions")
+        logger.warn(f"Try to put a minion but there has already been {minion_num} minions")
 
     x = 960 - (minion_num - 1) * 70 + 140 * gap_index - 70
     y = 600
@@ -238,7 +238,7 @@ def enter_HS():
     battlenet_hwnd = get_battlenet_hwnd()
 
     if battlenet_hwnd == 0:
-        error_print("未找到应用战网")
+        logger.error("未找到应用战网")
         sys.exit()
 
     move_window_foreground(battlenet_hwnd, "战网")

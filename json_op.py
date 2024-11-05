@@ -3,8 +3,7 @@ import sys
 import requests
 import json
 import os
-from print_info import *
-
+from autohs_logger import *
 
 # 来源于互联网的炉石JSON数据下载API, 更多信息可以访问 https://hearthstonejson.com/
 def download_json(json_path):
@@ -22,21 +21,21 @@ def read_json(re_download=False):
     json_path = dir_path + "/cards.json"
 
     if not os.path.exists(json_path):
-        sys_print("未找到cards.json,试图通过网络下载文件")
+        logger.info("未找到cards.json,试图通过网络下载文件")
         try:
             download_json(json_path)
-            sys_print("下载完成")
+            logger.info("下载完成")
         except Exception as e:
-            sys_print(f"下载失败: {e}")
+            logger.info(f"下载失败: {e}")
     elif re_download:
-        sys_print("疑似有新版本炉石数据，正在重新下载最新文件")
+        logger.info("疑似有新版本炉石数据，正在重新下载最新文件")
         try:
             download_json(json_path)
-            sys_print("下载完成")
+            logger.info("下载完成")
         except Exception as e:
-            sys_print(f"下载失败: {e}")
+            logger.info(f"下载失败: {e}")
     else:
-        sys_print("cards.json已存在")
+        logger.info("cards.json已存在")
 
     with open(json_path, "r", encoding="utf8") as f:
         json_string = f.read()
@@ -59,7 +58,7 @@ def query_json_dict(key):
     else:
         JSON_DICT = read_json(True)
         if key not in JSON_DICT:
-            error_print("出现未识别卡牌，程序无法继续")
+            logger.error("出现未识别卡牌，程序无法继续")
             sys.exit(-1)
         return JSON_DICT[key]["name"]
 

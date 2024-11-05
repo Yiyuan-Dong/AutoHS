@@ -76,6 +76,17 @@ def show_area(img, top_left, bottom_right, print_out=False):
     cv2.waitKey(0)
     cv2.destroyWindow("area")
 
+def simplify_image(image):
+    # 将图像转换为灰度图像
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # 使用高斯模糊来平滑图像
+    blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
+    # 使用Canny边缘检测来提取图像的轮廓
+    edges = cv2.Canny(blurred_image, 50, 150)
+    # 将边缘图像转换回BGR格式
+    edges_colored = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
+
+    return edges_colored
 
 if __name__ == "__main__":
     if get_screen.test_hs_available():
@@ -91,13 +102,29 @@ if __name__ == "__main__":
         print("截图失败")
         sys.exit(-1)
 
+    print(f"图片尺寸: {im_opencv.shape}")
+
+    print("Width: {}", WIDTH)
     add_line(im_opencv, WIDTH, HEIGHT)
     add_point(im_opencv, POINT_LIST)
 
+    # 简化图像
+    simplified_image = simplify_image(im_opencv)
+
+    # 显示简化后的图像
     cv2.imshow("Full Screen", im_opencv)  # 显示
     cv2.waitKey(0)
-    cv2.destroyWindow("Full Screen")
-    time.sleep(0.2)
+    try:
+        cv2.destroyWindow("Full Screen")
+    except cv2.error as e:
+        print(f"Error destroying window: {e}")
+
+    cv2.imshow("Simplified Image", simplified_image)
+    cv2.waitKey(0)
+    try:
+        cv2.destroyWindow("Simplified Image")
+    except cv2.error as e:
+        print(f"Error destroying window: {e}")
 
     for area in AREA_LIST:
         if len(area) < 2 or len(area) > 3:

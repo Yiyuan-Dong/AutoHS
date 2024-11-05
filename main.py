@@ -1,15 +1,14 @@
+import tkinter as tk
+import os
+import keyboard
 from FSM_action import system_exit, AutoHS_automata
 from log_state import check_name
-from print_info import print_info_init
 from FSM_action import init
-import tkinter as tk
+from autohs_logger import logger_init
 from tkinter import messagebox
 from constants.constants import *
 from config import *
 from get_screen import test_hs_available, test_battlenet_available
-import os
-import keyboard
-
 
 ABNORMAL_WIDTH_HEIGHT_LIST = [(1707, 960), (2048, 1152), (1306, 720), (1536, 864)]
 
@@ -76,7 +75,6 @@ def start_function():
     autohs_config.is_running = True
 
     check_name()
-    print_info_init()
     init()
     AutoHS_automata()
 
@@ -94,10 +92,10 @@ def mock_start_function():
     root.destroy()
 
 def close_gui():
-    if autohs_config.is_running:
-        system_exit()
     root.quit()
     root.destroy()
+    if autohs_config.is_running:
+        system_exit()
 
 def check_before_start():
     if autohs_config.is_running:
@@ -147,6 +145,8 @@ def add_label_and_entry(root, label_text, entry_text, bind_func):
 
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", close_gui)
+
+    logger_init()
 
     autohs_config = AutoHSConfig()
     autohs_config.load_config()

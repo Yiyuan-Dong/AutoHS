@@ -78,59 +78,53 @@ class StrategyState:
         self.my_hand_cards.sort(key=lambda temp: temp.zone_pos)
 
     def debug_print_battlefield(self):
-        if not DEBUG_PRINT:
-            return
-
-        debug_print("对手英雄:")
-        debug_print("    " + str(self.oppo_hero))
-        debug_print(f"技能:")
-        debug_print("    " + self.oppo_hero_power.name)
+        logger.debug("对手英雄:")
+        logger.debug("    " + str(self.oppo_hero))
+        logger.debug(f"技能:")
+        logger.debug("    " + self.oppo_hero_power.name)
         if self.oppo_weapon:
-            debug_print("头上有把武器:")
-            debug_print("    " + str(self.oppo_weapon))
+            logger.debug("头上有把武器:")
+            logger.debug("    " + str(self.oppo_weapon))
         if self.oppo_minion_num > 0:
-            debug_print(f"对手有{self.oppo_minion_num}个随从:")
+            logger.debug(f"对手有{self.oppo_minion_num}个随从:")
             for minion in self.oppo_minions:
-                debug_print("    " + str(minion))
+                logger.debug("    " + str(minion))
         else:
-            debug_print(f"对手没有随从")
-        debug_print(f"总卡费启发值: {self.oppo_heuristic_value}")
+            logger.debug(f"对手没有随从")
+        logger.debug(f"总卡费启发值: {self.oppo_heuristic_value}")
 
-        debug_print()
+        logger.debug("--------------------")
 
-        debug_print("我的英雄:")
-        debug_print("    " + str(self.my_hero))
-        debug_print(f"技能:")
-        debug_print("    " + self.my_hero_power.name)
+        logger.debug("我的英雄:")
+        logger.debug("    " + str(self.my_hero))
+        logger.debug(f"技能:")
+        logger.debug("    " + self.my_hero_power.name)
         if self.my_weapon:
-            debug_print("头上有把武器:")
-            debug_print("    " + str(self.my_weapon))
+            logger.debug("头上有把武器:")
+            logger.debug("    " + str(self.my_weapon))
         if self.my_minion_num > 0:
-            debug_print(f"我有{self.my_minion_num}个随从:")
+            logger.debug(f"我有{self.my_minion_num}个随从:")
             for minion in self.my_minions:
-                debug_print("    " + str(minion))
+                logger.debug("    " + str(minion))
         else:
-            debug_print("我没有随从")
-        debug_print(f"总卡费启发值: {self.my_heuristic_value}")
+            logger.debug("我没有随从")
+        logger.debug(f"总卡费启发值: {self.my_heuristic_value}")
 
     def debug_print_out(self):
-        if not DEBUG_PRINT:
-            return
-
-        debug_print(f"对手墓地:")
-        debug_print("    " + ", ".join([entity.name for entity in self.oppo_graveyard]))
-        debug_print(f"对手有{self.oppo_hand_card_num}张手牌")
+        logger.debug(f"对手墓地:")
+        logger.debug("    " + ", ".join([entity.name for entity in self.oppo_graveyard]))
+        logger.debug(f"对手有{self.oppo_hand_card_num}张手牌")
 
         self.debug_print_battlefield()
-        debug_print()
+        logger.debug("--------------------")
 
-        debug_print(f"水晶: {self.my_last_mana}/{self.my_total_mana}")
-        debug_print(f"我有{self.my_hand_card_num}张手牌:")
+        logger.debug(f"水晶: {self.my_last_mana}/{self.my_total_mana}")
+        logger.debug(f"我有{self.my_hand_card_num}张手牌:")
         for hand_card in self.my_hand_cards:
-            debug_print(f"    [{hand_card.zone_pos}] {hand_card.name} "
+            logger.debug(f"    [{hand_card.zone_pos}] {hand_card.name} "
                         f"cost:{hand_card.current_cost}")
-        debug_print(f"我的墓地:")
-        debug_print("    " + ", ".join([entity.name for entity in self.my_graveyard]))
+        logger.debug(f"我的墓地:")
+        logger.debug("    " + ", ".join([entity.name for entity in self.my_graveyard]))
 
     @property
     def my_last_mana(self):
@@ -231,7 +225,7 @@ class StrategyState:
         elif uni_index == 19:
             return self.oppo_hero
         else:
-            error_print(f"Get invalid uni_index: {uni_index}")
+            logger.error(f"Get invalid uni_index: {uni_index}")
             sys.exit(-1)
 
     def fight_between(self, oppo_index, my_index):
@@ -281,14 +275,14 @@ class StrategyState:
                     and my_minion.can_beat_face \
                     and self.oppo_hero.can_be_pointed_by_minion:
                 if beat_face_win:
-                    debug_print(f"攻击决策: [{my_index}]({my_minion.name})->"
+                    logger.debug(f"攻击决策: [{my_index}]({my_minion.name})->"
                                 f"[-1]({self.oppo_hero.name}) "
                                 f"斩杀了")
                     return my_index, -1
 
                 tmp_delta_h = self.oppo_hero.delta_h_after_damage(my_minion.attack)
 
-                debug_print(f"攻击决策: [{my_index}]({my_minion.name})->"
+                logger.debug(f"攻击决策: [{my_index}]({my_minion.name})->"
                             f"[-1]({self.oppo_hero.name}) "
                             f"delta_h_val:{tmp_delta_h}")
 
@@ -305,7 +299,7 @@ class StrategyState:
                 tmp_delta_h -= my_minion.delta_h_after_damage(oppo_minion.attack)
                 tmp_delta_h += oppo_minion.delta_h_after_damage(my_minion.attack)
 
-                debug_print(f"攻击决策：[{my_index}]({my_minion.name})->"
+                logger.debug(f"攻击决策：[{my_index}]({my_minion.name})->"
                             f"[{oppo_index}]({oppo_minion.name}) "
                             f"delta_h_val: {tmp_delta_h}")
 
@@ -320,7 +314,7 @@ class StrategyState:
         if self.my_hero.can_attack:
             if not has_taunt and self.oppo_hero.can_be_pointed_by_minion:
                 if beat_face_win:
-                    debug_print(f"攻击决策: [-1]({self.my_hero.name})->"
+                    logger.debug(f"攻击决策: [-1]({self.my_hero.name})->"
                                 f"[-1]({self.oppo_hero.name}) "
                                 f"斩杀了")
                     return -1, -1
@@ -334,7 +328,7 @@ class StrategyState:
                 if self.my_weapon is not None:
                     tmp_delta_h -= self.my_weapon.attack
 
-                debug_print(f"攻击决策: [-1]({self.my_hero.name})->"
+                logger.debug(f"攻击决策: [-1]({self.my_hero.name})->"
                             f"[{oppo_index}]({oppo_minion.name}) "
                             f"delta_h_val: {tmp_delta_h}")
 
@@ -343,7 +337,7 @@ class StrategyState:
                     max_my_index = -1
                     max_oppo_index = oppo_index
 
-        debug_print(f"最终决策: max_my_index: {max_my_index}, "
+        logger.debug(f"最终决策: max_my_index: {max_my_index}, "
                     f"max_oppo_index: {max_oppo_index}")
 
         return max_my_index, max_oppo_index
@@ -373,7 +367,7 @@ class StrategyState:
         return tmp
 
     def best_h_index_arg(self):
-        debug_print()
+        logger.debug("---开始决策---")
         best_delta_h = 0
         best_index = -2
         best_args = []
@@ -384,20 +378,20 @@ class StrategyState:
             args = []
 
             if hand_card.current_cost > self.my_last_mana:
-                debug_print(f"卡牌-[{hand_card_index}]({hand_card.name}) 跳过")
+                logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name}) 跳过")
                 continue
 
             detail_card = hand_card.detail_card
             if detail_card is None:
                 if hand_card.cardtype == CARD_MINION and not hand_card.battlecry:
                     delta_h, *args = MinionNoPoint.best_h_and_arg(self, hand_card_index)
-                    debug_print(f"卡牌-[{hand_card_index}]({hand_card.name}) "
+                    logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name}) "
                                 f"delta_h: {delta_h}, *args: {[]} (默认行为) ")
                 else:
-                    debug_print(f"卡牌[{hand_card_index}]({hand_card.name})无法评判")
+                    logger.debug(f"卡牌[{hand_card_index}]({hand_card.name})无法评判")
             else:
                 delta_h, *args = detail_card.best_h_and_arg(self, hand_card_index)
-                debug_print(f"卡牌-[{hand_card_index}]({hand_card.name}) "
+                logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name}) "
                             f"delta_h: {delta_h}, *args: {args} (手写行为)")
 
             if delta_h > best_delta_h:
@@ -413,7 +407,7 @@ class StrategyState:
 
             delta_h, *args = hero_power.best_h_and_arg(self, -1)
 
-            debug_print(f"技能-[ ]({self.my_hero_power.name}) "
+            logger.debug(f"技能-[ ]({self.my_hero_power.name}) "
                         f"delta_h: {delta_h} "
                         f"*args: {args}")
 
@@ -421,16 +415,16 @@ class StrategyState:
                 best_index = -1
                 best_args = args
         else:
-            debug_print(f"技能-[ ]({self.my_hero_power.name}) 跳过")
+            logger.debug(f"技能-[ ]({self.my_hero_power.name}) 跳过")
 
-        debug_print(f"决策结果: best_delta_h:{best_delta_h}, "
+        logger.debug(f"决策结果: best_delta_h:{best_delta_h}, "
                     f"best_index:{best_index}, best_args:{best_args}")
-        debug_print()
+        logger.debug("---结束决策---")
         return best_index, best_args
 
     def use_best_entity(self, index, args):
         if index == -1:
-            debug_print("将使用技能")
+            logger.debug("将使用技能")
             hero_power = self.my_detail_hero_power
             hero_power.use_with_arg(self, -1, *args)
         else:
@@ -440,7 +434,7 @@ class StrategyState:
     def use_card(self, index, *args):
         hand_card = self.my_hand_cards[index]
         detail_card = hand_card.detail_card
-        debug_print(f"将使用卡牌[{index}] {hand_card.name}")
+        logger.debug(f"将使用卡牌[{index}] {hand_card.name}")
 
         if detail_card is None:
             MinionNoPoint.use_with_arg(self, index, *args)
@@ -469,7 +463,7 @@ if __name__ == "__main__":
                 f.write(str(state))
 
             mine_index, oppo_index = strategy_state.get_best_attack_target()
-            debug_print(f"我的决策是: mine_index: {mine_index}, oppo_index: {oppo_index}")
+            logger.debug(f"我的决策是: mine_index: {mine_index}, oppo_index: {oppo_index}")
 
             if mine_index != -1:
                 if oppo_index == -1:

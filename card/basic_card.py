@@ -3,7 +3,7 @@ import time
 from abc import ABC, abstractmethod
 import click
 from constants.constants import *
-from print_info import *
+from autohs_logger import *
 
 
 class Card(ABC):
@@ -61,7 +61,7 @@ class SpellPointOppo(SpellCard):
     def use_with_arg(cls, state, card_index, *args):
         if len(args) == 0:
             hand_card = state.my_hand_cards[card_index]
-            warn_print(f"Receive 0 args in using SpellPointOppo card {hand_card.name}")
+            logger.warn(f"Receive 0 args in using SpellPointOppo card {hand_card.name}")
             return
 
         oppo_index = args[0]
@@ -79,7 +79,7 @@ class SpellPointMine(SpellCard):
     def use_with_arg(cls, state, card_index, *args):
         if len(args) == 0:
             hand_card = state.my_hand_cards[card_index]
-            warn_print(f"Receive 0 args in using SpellPointMine card {hand_card.name}")
+            logger.warn(f"Receive 0 args in using SpellPointMine card {hand_card.name}")
             return
 
         mine_index = args[0]

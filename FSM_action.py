@@ -8,6 +8,7 @@ import click
 import get_screen
 from strategy import StrategyState
 from log_state import *
+from loguru import logger
 
 FSM_state = ""
 time_begin = 0.0
@@ -35,11 +36,11 @@ def init():
             file_handle = open(HEARTHSTONE_POWER_LOG_PATH, "w")
             file_handle.seek(0)
             file_handle.truncate()
-            info_print("Success to truncate Power.log")
+            logger.info("Success to truncate Power.log")
         except OSError:
-            warn_print("Fail to truncate Power.log, maybe someone is using it")
+            logger.warn("Fail to truncate Power.log, maybe someone is using it")
     else:
-        info_print("Power.log does not exist")
+        logger.info("Power.log does not exist")
 
     log_state = LogState()
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
@@ -71,8 +72,7 @@ def update_log_state():
 def system_exit():
     global quitting_flag
 
-    sys_print(f"一共完成了{game_count}场对战, 赢了{win_count}场")
-    print_info_close()
+    logger.info(f"一共完成了{game_count}场对战, 赢了{win_count}场")
 
     quitting_flag = True
 
@@ -84,21 +84,21 @@ def print_out():
     global time_begin
     global game_count
 
-    sys_print("Enter State " + str(FSM_state))
+    logger.info("Enter State " + str(FSM_state))
 
     if FSM_state == FSM_LEAVE_HS:
-        warn_print("HearthStone not found! Try to go back to HS")
+        logger.warn("HearthStone not found! Try to go back to HS")
 
     if FSM_state == FSM_CHOOSING_CARD:
         game_count += 1
-        sys_print("The " + str(game_count) + " game begins")
+        logger.info("The " + str(game_count) + " game begins")
         time_begin = time.time()
 
     if FSM_state == FSM_QUITTING_BATTLE:
-        sys_print("The " + str(game_count) + " game ends")
+        logger.info("The " + str(game_count) + " game ends")
         time_now = time.time()
         if time_begin > 0:
-            info_print("The last game last for : {} mins {} secs"
+            logger.info("The last game last for : {} mins {} secs"
                        .format(int((time_now - time_begin) // 60),
                                int(time_now - time_begin) % 60))
 
@@ -147,7 +147,7 @@ def MatchingAction():
 
         loop_count += 1
         if loop_count >= 60:
-            warn_print("Time out in Matching Opponent")
+            logger.warn("Time out in Matching Opponent")
             return FSM_ERROR
 
 
@@ -188,7 +188,7 @@ def ChoosingCardAction():
                     detail_card.keep_in_hand(strategy_state, my_hand_index)
 
             if not has_print:
-                debug_print(f"手牌-[{my_hand_index}]({my_hand_card.name})"
+                logger.debug(f"手牌-[{my_hand_index}]({my_hand_card.name})"
                             f"是否保留: {should_keep_in_hand}")
 
             if not should_keep_in_hand:
@@ -200,7 +200,7 @@ def ChoosingCardAction():
 
         loop_count += 1
         if loop_count >= 60:
-            warn_print("Time out in Choosing Opponent")
+            logger.warn("Time out in Choosing Opponent")
             return FSM_ERROR
         time.sleep(STATE_CHECK_INTERVAL)
 
@@ -226,9 +226,9 @@ def Battling():
         if log_state.is_end:
             if log_state.my_entity.query_tag("PLAYSTATE") == "WON":
                 win_count += 1
-                info_print("你赢得了这场对战")
+                logger.info("你赢得了这场对战")
             else:
-                info_print("你输了")
+                logger.info("你输了")
             return FSM_QUITTING_BATTLE
 
         # 在对方回合等就行了
@@ -238,7 +238,7 @@ def Battling():
 
             not_mine_count += 1
             if not_mine_count >= 400:
-                warn_print("Time out in Opponent's turn")
+                logger.warn("Time out in Opponent's turn")
                 return FSM_ERROR
 
             continue
@@ -270,7 +270,7 @@ def Battling():
             click.cancel_click()
             time.sleep(STATE_CHECK_INTERVAL)
 
-        debug_print("-" * 60)
+        logger.debug("-" * 60)
         strategy_state = StrategyState(log_state)
         strategy_state.debug_print_out()
 
@@ -399,7 +399,7 @@ def FSM_dispatch(next_state):
     }
 
     if next_state not in dispatch_dict:
-        error_print("Unknown state!")
+        logger.error("Unknown state!")
         sys.exit()
     else:
         return dispatch_dict[next_state]()

@@ -9,7 +9,7 @@ import win32com.client
 import win32api
 import win32process
 import numpy
-from print_info import *
+from autohs_logger import *
 
 from constants.constants import *
 
@@ -50,9 +50,9 @@ def move_window_foreground(hwnd, name=""):
         win32gui.SetForegroundWindow(hwnd)
     except Exception as e:
         if name != "":
-            warn_print(f"Open {name}: {e}")
+            logger.warn(f"Open {name}: {e}")
         else:
-            warn_print(e)
+            logger.warn(e)
 
     win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
 
