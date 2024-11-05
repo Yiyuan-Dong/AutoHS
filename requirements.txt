@@ -8,3 +8,4 @@ numpy
 pywin32
 requests
 tk
+loguru
