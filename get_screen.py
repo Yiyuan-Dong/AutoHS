@@ -39,6 +39,8 @@ def get_battlenet_hwnd():
 def test_hs_available():
     return get_HS_hwnd() != 0
 
+def test_battlenet_available():
+    return get_battlenet_hwnd() != 0
 
 def move_window_foreground(hwnd, name=""):
     try:

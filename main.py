@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import messagebox
 from constants.constants import *
 from config import *
+from get_screen import test_hs_available, test_battlenet_available
 import os
 import keyboard
 
@@ -92,7 +93,7 @@ def mock_start_function():
     # 销毁主窗口
     root.destroy()
 
-def close_window():
+def close_gui():
     if autohs_config.is_running:
         system_exit()
     root.quit()
@@ -118,6 +119,10 @@ def check_before_start():
         messagebox.showinfo("Warning", "请先设置玩家名")
         return False
 
+    if not test_hs_available() and not test_battlenet_available():
+        messagebox.showinfo("Warning", "未找到炉石传说或战网，请至少打开一个")
+        return False
+
     if autohs_config.max_win_count == 0 and autohs_config.max_play_time == 0:
         messagebox.showinfo("Warning", "警告：程序将无限制运行，可能导致账号被封。")
 
@@ -141,7 +146,7 @@ def add_label_and_entry(root, label_text, entry_text, bind_func):
     return entry
 
 if __name__ == "__main__":
-    keyboard.add_hotkey("ctrl+q", close_window)
+    keyboard.add_hotkey("ctrl+q", close_gui)
 
     autohs_config = AutoHSConfig()
     autohs_config.load_config()
@@ -153,7 +158,7 @@ if __name__ == "__main__":
     root = tk.Tk()
     root.title("AutoHS GUI")
     root.geometry("540x360")
-    root.protocol("WM_DELETE_WINDOW", close_window)
+    root.protocol("WM_DELETE_WINDOW", close_gui)
 
     entry_width = add_label_and_entry(root, "游戏水平像素数：", autohs_config.width, update_width)
     entry_height = add_label_and_entry(root, "游戏垂直像素数：", autohs_config.height, update_height)
@@ -165,14 +170,14 @@ if __name__ == "__main__":
     start_button = tk.Button(root, text="开始", command=lambda: (update_all(), check_before_start()), width=20, height=1)
     start_button.grid(row=0, column=2, padx=10, pady=10, sticky="e")
 
-    exit_button = tk.Button(root, text="退出", command=root.quit, width=20, height=1)
+    exit_button = tk.Button(root, text="退出", command=close_gui, width=20, height=1)
     exit_button.grid(row=1, column=2, padx=10, pady=10, sticky="e")
 
     save_button = tk.Button(root, text="保存配置", command=lambda: (update_all(), autohs_config.save_config()), width=20, height=1)
     save_button.grid(row=2, column=2, padx=10, pady=10, sticky="e")
 
     if (WIDTH, HEIGHT) in ABNORMAL_WIDTH_HEIGHT_LIST:
-        warning_label = tk.Label(root, text="警告：屏幕缩放比例不为100%，\n可能导致程序异常", fg="red")
+        warning_label = tk.Label(root, text="警告：屏幕缩放比例疑似不为100%，\n可能导致程序异常", fg="red")
         warning_label.grid(row=3, column=2, padx=10, pady=5, sticky="w")
 
     root.mainloop()
