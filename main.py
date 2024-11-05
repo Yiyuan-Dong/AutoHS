@@ -10,6 +10,8 @@ import os
 import keyboard
 
 
+ABNORMAL_WIDTH_HEIGHT_LIST = [(1707, 960), (2048, 1152), (1306, 720), (1536, 864)]
+
 def is_integer(s):
     try:
         num = int(s)
@@ -61,6 +63,14 @@ def update_install_path(event):
 def update_player_name(event):
     autohs_config.player_name = entry_player_name.get()
 
+def update_all():
+    update_width(None)
+    update_height(None)
+    update_max_play_time(None)
+    update_max_win_count(None)
+    update_install_path(None)
+    update_player_name(None)
+
 def start_function():
     autohs_config.is_running = True
 
@@ -77,7 +87,7 @@ def mock_start_function():
     root.withdraw()  # 隐藏主窗口
 
     # 弹出提示框
-    messagebox.showinfo("Mock Function", "Mock function called. No actual functionality executed. Entry: {}".format(entry.get()))
+    messagebox.showinfo("Mock Function", "Mock function called. No actual functionality executed")
 
     # 销毁主窗口
     root.destroy()
@@ -104,6 +114,10 @@ def check_before_start():
         messagebox.showinfo("Warning", "请先设置屏幕分辨率")
         return False
 
+    if (autohs_config.player_name == ""):
+        messagebox.showinfo("Warning", "请先设置玩家名")
+        return False
+
     if autohs_config.max_win_count == 0 and autohs_config.max_play_time == 0:
         messagebox.showinfo("Warning", "警告：程序将无限制运行，可能导致账号被封。")
 
@@ -121,6 +135,7 @@ def add_label_and_entry(root, label_text, entry_text, bind_func):
     entry = tk.Entry(root, width=20)
     entry.grid(row=add_label_and_entry.row, column=1, padx=10, pady=5, sticky="w")
     entry.insert(0, entry_text)
+    entry.bind("<Leave>", bind_func)
     entry.bind("<Return>", bind_func)
 
     return entry
@@ -129,6 +144,7 @@ if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", close_window)
 
     autohs_config = AutoHSConfig()
+    autohs_config.load_config()
     if autohs_config.width == 0:
         autohs_config.width = WIDTH
     if autohs_config.height == 0:
@@ -136,7 +152,7 @@ if __name__ == "__main__":
 
     root = tk.Tk()
     root.title("AutoHS GUI")
-    root.geometry("500x300")
+    root.geometry("540x360")
     root.protocol("WM_DELETE_WINDOW", close_window)
 
     entry_width = add_label_and_entry(root, "游戏水平像素数：", autohs_config.width, update_width)
@@ -146,16 +162,17 @@ if __name__ == "__main__":
     entry_path = add_label_and_entry(root, "炉石安装路径：\n(例：D:\\Hearthstone)", autohs_config.hearthstone_install_path, update_install_path)
     entry_player_name = add_label_and_entry(root, "玩家名：", autohs_config.player_name, update_player_name)
 
-    start_button = tk.Button(root, text="开始", command=check_before_start, width=20, height=1)
+    start_button = tk.Button(root, text="开始", command=lambda: (update_all(), check_before_start()), width=20, height=1)
     start_button.grid(row=0, column=2, padx=10, pady=10, sticky="e")
 
     exit_button = tk.Button(root, text="退出", command=root.quit, width=20, height=1)
     exit_button.grid(row=1, column=2, padx=10, pady=10, sticky="e")
 
-    load_button = tk.Button(root, text="加载配置", command=autohs_config.load_config, width=20, height=1)
-    load_button.grid(row=2, column=2, padx=10, pady=10, sticky="e")
+    save_button = tk.Button(root, text="保存配置", command=lambda: (update_all(), autohs_config.save_config()), width=20, height=1)
+    save_button.grid(row=2, column=2, padx=10, pady=10, sticky="e")
 
-    save_button = tk.Button(root, text="保存配置", command=autohs_config.save_config, width=20, height=1)
-    save_button.grid(row=3, column=2, padx=10, pady=10, sticky="e")
+    if (WIDTH, HEIGHT) in ABNORMAL_WIDTH_HEIGHT_LIST:
+        warning_label = tk.Label(root, text="警告：屏幕缩放比例不为100%，\n可能导致程序异常", fg="red")
+        warning_label.grid(row=3, column=2, padx=10, pady=5, sticky="w")
 
     root.mainloop()
