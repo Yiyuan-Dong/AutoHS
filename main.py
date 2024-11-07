@@ -180,4 +180,7 @@ if __name__ == "__main__":
         warning_label = tk.Label(root, text="警告：屏幕缩放比例疑似不为100%，\n可能导致程序异常", fg="red")
         warning_label.grid(row=3, column=2, padx=10, pady=5, sticky="w")
 
+    hint_label = tk.Label(root, text="按Ctrl+Q可退出程序", fg="gray")
+    hint_label.grid(row=4, column=2, padx=10, pady=5, sticky="w")
+
     root.mainloop()
