@@ -9,6 +9,7 @@ from tkinter import messagebox
 from constants.constants import *
 from config import *
 from get_screen import test_hs_available, test_battlenet_available
+from json_op import JSON_LAST_MODIFIED_TIME
 
 ABNORMAL_WIDTH_HEIGHT_LIST = [(1707, 960), (2048, 1152), (1306, 720), (1536, 864)]
 
@@ -134,9 +135,9 @@ def add_label_and_entry(root, label_text, entry_text, bind_func):
         add_label_and_entry.row += 1
 
     label = tk.Label(root, text=label_text)
-    label.grid(row=add_label_and_entry.row, column=0, padx=10, pady=5, sticky="w")
+    label.grid(row=add_label_and_entry.row, column=0, padx=10, pady=5, sticky="ew")
     entry = tk.Entry(root, width=20)
-    entry.grid(row=add_label_and_entry.row, column=1, padx=10, pady=5, sticky="w")
+    entry.grid(row=add_label_and_entry.row, column=1, padx=10, pady=5, sticky="ew")
     entry.insert(0, entry_text)
     entry.bind("<Leave>", bind_func)
     entry.bind("<Return>", bind_func)
@@ -157,7 +158,7 @@ if __name__ == "__main__":
 
     root = tk.Tk()
     root.title("AutoHS GUI")
-    root.geometry("540x360")
+    root.geometry("500x340")
     root.protocol("WM_DELETE_WINDOW", close_gui)
 
     entry_width = add_label_and_entry(root, "游戏水平像素数：", autohs_config.width, update_width)
@@ -168,19 +169,22 @@ if __name__ == "__main__":
     entry_player_name = add_label_and_entry(root, "玩家名：", autohs_config.player_name, update_player_name)
 
     start_button = tk.Button(root, text="开始", command=lambda: (update_all(), check_before_start()), width=20, height=1)
-    start_button.grid(row=0, column=2, padx=10, pady=10, sticky="e")
+    start_button.grid(row=0, column=2, padx=10, pady=10, sticky="ew")
 
     exit_button = tk.Button(root, text="退出", command=close_gui, width=20, height=1)
-    exit_button.grid(row=1, column=2, padx=10, pady=10, sticky="e")
+    exit_button.grid(row=1, column=2, padx=10, pady=10, sticky="ew")
 
     save_button = tk.Button(root, text="保存配置", command=lambda: (update_all(), autohs_config.save_config()), width=20, height=1)
-    save_button.grid(row=2, column=2, padx=10, pady=10, sticky="e")
+    save_button.grid(row=2, column=2, padx=10, pady=10, sticky="ew")
 
     if (WIDTH, HEIGHT) in ABNORMAL_WIDTH_HEIGHT_LIST:
         warning_label = tk.Label(root, text="警告：屏幕缩放比例疑似不为100%，\n可能导致程序异常", fg="red")
-        warning_label.grid(row=3, column=2, padx=10, pady=5, sticky="w")
+        warning_label.grid(row=3, column=2, padx=10, pady=5, sticky="ew")
 
     hint_label = tk.Label(root, text="按Ctrl+Q可退出程序", fg="gray")
-    hint_label.grid(row=4, column=2, padx=10, pady=5, sticky="w")
+    hint_label.grid(row=4, column=2, padx=10, pady=5, sticky="ew")
+
+    modified_time_label = tk.Label(root, text=f"cards.json最后更新时间：\n{JSON_LAST_MODIFIED_TIME}", fg="gray")
+    modified_time_label.grid(row=5, column=2, padx=10, pady=5, sticky="ew")
 
     root.mainloop()
