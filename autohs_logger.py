@@ -5,6 +5,14 @@ import loguru
 _logger_initialized = False
 logger = loguru.logger
 
+def custom_format(record):
+    time = record["time"].strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+    level = record["level"].name
+    name_function_line = record["name"] + ":" + record["function"] + ":" + str(record["line"])
+    message = record["message"]
+    # Ensure the third column (function name) has a fixed length of 20 characters
+    return f"<green>{time}</green> | <level>{level:<5}</level> | <cyan>{name_function_line:<40}</cyan> - <level>{message}</level>\n"
+
 def logger_init(level="INFO"):
     global _logger_initialized
     if _logger_initialized and logger.level == level:
@@ -21,8 +29,8 @@ def logger_init(level="INFO"):
 
     # 配置日志记录器
     logger.remove()  # 移除之前已经配置的日志记录器
-    logger.add(os.path.join(log_folder, "file_{time}.log"), rotation="1 MB", retention=20, level=level)
-    logger.add(sys.stdout, level=level)  # 在命令行中显示INFO级别及以上的日志
+    logger.add(os.path.join(log_folder, "file_{time}.log"), rotation="1 MB", retention=20, level=level, format=custom_format)
+    logger.add(sys.stdout, level=level, format=custom_format)
 
     _logger_initialized = True
 
