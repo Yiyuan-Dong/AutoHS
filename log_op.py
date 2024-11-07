@@ -3,6 +3,8 @@ import re
 import time
 import copy
 from constants.constants import *
+from autohs_logger import *
+import sys
 
 # "D 04:23:18.0000001 GameState.DebugPrintPower() -     GameEntity EntityID=1"
 GAME_STATE_PATTERN = re.compile(r"D [\d]{2}:[\d]{2}:[\d]{2}.[\d]{7} GameState.DebugPrint(Game|Power)\(\) - (.+)")
@@ -176,16 +178,26 @@ def parse_line(line_str):
 
     return None
 
-
-def log_iter_func(path=HEARTHSTONE_POWER_LOG_PATH):
+def log_iter_func(path):
     while True:
         if not os.path.exists(path):
+            logger.error(f"未找到Power.log, 路径为: {path}")
             yield LogInfoContainer(LOG_CONTAINER_ERROR)
             continue
 
+        if os.path.isdir(path):
+            # 获取字典序最高的子文件夹路径
+            subdirs = [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
+            if subdirs:
+                highest_subdir = max(subdirs)
+                path = os.path.join(path, highest_subdir)
+                path = path + "/Power.log"
+
+        logger.info(f"开始读取Power.log, 路径为: {path}")
+
+        #TODO: Will Hearthstone open another log file after the current one reaches a certain size?
         with open(path, "r", encoding="utf8") as f:
             while True:
-
                 empty_line_count = 0
                 log_container = LogInfoContainer(LOG_CONTAINER_INFO)
 
