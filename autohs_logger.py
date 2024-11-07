@@ -8,7 +8,7 @@ logger = loguru.logger
 def custom_format(record):
     time = record["time"].strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
     level = record["level"].name
-    name_function_line = record["name"] + ":" + record["function"] + ":" + str(record["line"])
+    name_function_line = record["name"] + ".py:" + str(record["line"]) + "(" + record["function"] + ")"
     message = record["message"]
     # Ensure the third column (function name) has a fixed length of 20 characters
     return f"<green>{time}</green> | <level>{level:<5}</level> | <cyan>{name_function_line:<40}</cyan> - <level>{message}</level>\n"
