@@ -29,7 +29,7 @@ def logger_init(level="INFO"):
 
     # 配置日志记录器
     logger.remove()  # 移除之前已经配置的日志记录器
-    logger.add(os.path.join(log_folder, "file_{time}.log"), rotation="1 MB", retention=20, level=level, format=custom_format)
+    logger.add(os.path.join(log_folder, "file_{time}.log"), retention=20, level=level, format=custom_format)
     logger.add(sys.stdout, level=level, format=custom_format)
 
     _logger_initialized = True
