@@ -1,8 +1,8 @@
 import sys
-
 import requests
 import json
 import os
+from datetime import datetime
 from autohs_logger import *
 
 # 来源于互联网的炉石JSON数据下载API, 更多信息可以访问 https://hearthstonejson.com/
@@ -15,6 +15,7 @@ def download_json(json_path):
 
 
 def read_json(re_download=False):
+    logger.info("正在读取cards.json文件")
     dir_path = os.path.dirname(__file__)
     if dir_path == "":
         dir_path = "."
@@ -28,7 +29,7 @@ def read_json(re_download=False):
         except Exception as e:
             logger.info(f"下载失败: {e}")
     elif re_download:
-        logger.info("疑似有新版本炉石数据，正在重新下载最新文件")
+        logger.info("正在重新下载最新cards.json文件")
         try:
             download_json(json_path)
             logger.info("下载完成")
@@ -43,27 +44,27 @@ def read_json(re_download=False):
         json_dict = {}
         for item in json_list:
             json_dict[item["id"]] = item
-        return json_dict
 
+    last_modified_time = datetime.fromtimestamp(os.path.getmtime(json_path)).strftime('%Y-%m-%d %H:%M:%S')
+    return json_dict, last_modified_time
+
+JSON_DICT, JSON_LAST_MODIFIED_TIME = read_json()
 
 def query_json_dict(key):
-    global JSON_DICT
+    json_dict = JSON_DICT
 
     if key == "":
         return "Unknown"
 
-    if key in JSON_DICT:
-        return JSON_DICT[key]["name"]
-    # 认为是炉石更新了，出现了新卡，需要重新下载。
+    if key in json_dict:
+        return json_dict[key]["name"]
     else:
-        JSON_DICT = read_json(True)
-        if key not in JSON_DICT:
+        logger.info(f"未找到卡牌{key}，尝试重新下载cards.json文件")
+        json_dict = read_json(True)
+        if key not in json_dict:
             logger.error("出现未识别卡牌，程序无法继续")
             sys.exit(-1)
-        return JSON_DICT[key]["name"]
-
-
-JSON_DICT = read_json()
+        return json_dict[key]["name"]
 
 if __name__ == "__main__":
     with open("id-name.txt", "w", encoding="utf8") as f:
