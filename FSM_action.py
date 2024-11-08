@@ -7,7 +7,7 @@ import get_screen
 from strategy import StrategyState
 from log_state import *
 from loguru import logger
-from config import AutoHSConfig
+from config import autohs_config
 
 FSM_state = ""
 time_begin = 0.0
@@ -16,13 +16,11 @@ win_count = 0
 quitting_flag = False
 log_state = LogState()
 log_iter = None
-autohs_config = None
 choose_hero_count = 0
 
-def init(config_arg : AutoHSConfig):
+def init():
     global log_state, log_iter, choose_hero_count, autohs_config
 
-    autohs_config = config_arg
     log_path = os.path.join(autohs_config.hearthstone_install_path , "Logs")
 
     log_state = LogState()

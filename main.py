@@ -76,7 +76,7 @@ def start_function():
     global gui_is_running
     gui_is_running = True
 
-    init(autohs_config)
+    init()
     AutoHS_automata()
 
 def close_gui():
