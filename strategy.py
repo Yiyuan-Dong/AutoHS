@@ -111,8 +111,12 @@ class StrategyState:
         logger.debug(f"总卡费启发值: {self.my_heuristic_value}")
 
     def debug_print_out(self):
-        logger.debug(f"对手墓地:")
-        logger.debug("    " + ", ".join([entity.name for entity in self.oppo_graveyard]))
+        if len(self.oppo_graveyard) > 0:
+            logger.debug(f"对手墓地:")
+            logger.debug("    " + ", ".join([entity.name for entity in self.oppo_graveyard]))
+        else:
+            logger.debug(f"对手墓地为空")
+
         logger.debug(f"对手有{self.oppo_hand_card_num}张手牌")
 
         self.debug_print_battlefield()
@@ -123,8 +127,11 @@ class StrategyState:
         for hand_card in self.my_hand_cards:
             logger.debug(f"    [{hand_card.zone_pos}] {hand_card.name} "
                         f"cost:{hand_card.current_cost}")
-        logger.debug(f"我的墓地:")
-        logger.debug("    " + ", ".join([entity.name for entity in self.my_graveyard]))
+        if len(self.my_graveyard) > 0:
+            logger.debug(f"我的墓地:")
+            logger.debug("    " + ", ".join([entity.name for entity in self.my_graveyard]))
+        else:
+            logger.debug(f"我的墓地为空")
 
     @property
     def my_last_mana(self):
@@ -145,7 +152,9 @@ class StrategyState:
     # 用卡费体系算启发值
     @property
     def oppo_heuristic_value(self):
-        total_h_val = self.oppo_hero.heuristic_val
+        total_h_val = 0
+        if self.oppo_hero:
+            total_h_val += self.oppo_hero.heuristic_val
         if self.oppo_weapon:
             total_h_val += self.oppo_weapon.heuristic_val
         for minion in self.oppo_minions:
@@ -154,7 +163,9 @@ class StrategyState:
 
     @property
     def my_heuristic_value(self):
-        total_h_val = self.my_hero.heuristic_val
+        total_h_val = 0
+        if self.my_hero:
+            total_h_val = self.my_hero.heuristic_val
         if self.my_weapon:
             total_h_val += self.my_weapon.heuristic_val
         for minion in self.my_minions:

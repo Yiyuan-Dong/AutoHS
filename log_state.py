@@ -5,15 +5,7 @@ from json_op import *
 from strategy_entity import *
 from autohs_logger import *
 import constants.constants
-
-MY_NAME = constants.constants.YOUR_NAME
-
-
-def check_name():
-    global MY_NAME
-    if MY_NAME == "ChangeThis#54321":
-        MY_NAME = input("请输入你的炉石用户名, 例子: \"为所欲为、异灵术#54321\" (不用输入引号!)\n").strip()
-
+from config import autohs_config
 
 class LogState:
     def __init__(self):
@@ -270,7 +262,7 @@ class CardEntity(Entity):
 
 def update_state(state, line_info_container):
     if line_info_container.line_type == LOG_LINE_CREATE_GAME:
-        logger.info("Read in new game and flush state")
+        logger.debug("新的对局开始，刷新状态")
         state.flush()
 
     if line_info_container.line_type == LOG_LINE_GAME_ENTITY:
@@ -323,7 +315,7 @@ def update_state(state, line_info_container):
         # 情形二 "TAG_CHANGE Entity=Example#51234"
         elif not entity_string.isdigit():
             # 关于为什么用 "in" 而非 "==", 因为我总是懒得输入后面的数字
-            if MY_NAME in entity_string:
+            if autohs_config.user_name in entity_string:
                 entity_id = state.my_entity_id
                 if entity_string != state.my_name:
                     state.my_name = entity_string
@@ -340,8 +332,8 @@ def update_state(state, line_info_container):
             entity_id = entity_string
 
         if entity_id not in state.entity_dict:
-            logger.warn(f"Invalid entity_id: {entity_id}")
-            logger.warn(f"Current line container: {line_info_container}")
+            logger.warning(f"Invalid entity_id: {entity_id}")
+            logger.warning(f"Current line container: {line_info_container}")
             return False
 
         tag = line_info_container.info_dict["tag"]
@@ -381,8 +373,8 @@ def update_state(state, line_info_container):
         # 再重新启动炉石. 此时在构建过程中看到的第一个确切的卡可能是对手
         # 场上的怪而非我自己的手牌, 进而误判 my_player_id
         if player_id == state.oppo_player_id and \
-                MY_NAME in player_name:
-            logger.warn("my_player_id may be wrong")
+                autohs_config.user_name in player_name:
+            logger.warning("my_player_id may be wrong")
             state.my_player_id, state.oppo_player_id = \
                 state.oppo_player_id, state.my_player_id
 

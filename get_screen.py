@@ -50,9 +50,9 @@ def move_window_foreground(hwnd, name=""):
         win32gui.SetForegroundWindow(hwnd)
     except Exception as e:
         if name != "":
-            logger.warn(f"Open {name}: {e}")
+            logger.warning(f"Open {name}: {e}")
         else:
-            logger.warn(e)
+            logger.warning(e)
 
     win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
 

@@ -132,7 +132,7 @@ def put_minion(gap_index, minion_num):
     rand_sleep(OPERATE_INTERVAL)
 
     if minion_num >= 7:
-        logger.warn(f"Try to put a minion but there has already been {minion_num} minions")
+        logger.warning(f"Try to put a minion but there has already been {minion_num} minions")
 
     x = 960 - (minion_num - 1) * 70 + 140 * gap_index - 70
     y = 600

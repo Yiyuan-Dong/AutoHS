@@ -61,7 +61,7 @@ class SpellPointOppo(SpellCard):
     def use_with_arg(cls, state, card_index, *args):
         if len(args) == 0:
             hand_card = state.my_hand_cards[card_index]
-            logger.warn(f"Receive 0 args in using SpellPointOppo card {hand_card.name}")
+            logger.warning(f"Receive 0 args in using SpellPointOppo card {hand_card.name}")
             return
 
         oppo_index = args[0]
@@ -79,7 +79,7 @@ class SpellPointMine(SpellCard):
     def use_with_arg(cls, state, card_index, *args):
         if len(args) == 0:
             hand_card = state.my_hand_cards[card_index]
-            logger.warn(f"Receive 0 args in using SpellPointMine card {hand_card.name}")
+            logger.warning(f"Receive 0 args in using SpellPointMine card {hand_card.name}")
             return
 
         mine_index = args[0]
