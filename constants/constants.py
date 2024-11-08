@@ -12,11 +12,6 @@ WIDTH, HEIGHT = get_screen_resolution()
 
 # 你的Power.log的路径, 应该在你的炉石安装目录下的`Logs/`文件夹中, 这里放的是我的路径
 # ** 一定要修改成自己电脑上的路径 **
-HEARTHSTONE_POWER_LOG_PATH = "D:/战网/Hearthstone/Logs/Power.log"
-
-# 你的炉石用户名, 注意英文标点符号'#', 把后面的数字也带上
-# 可以输入中文
-YOUR_NAME = "ChangeThis#54321"
 
 # 每个回合开始发个表情的概率
 EMOJ_RATIO = 0.15

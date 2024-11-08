@@ -1,14 +1,13 @@
 import random
 import sys
 import time
-
 import keyboard
-
 import click
 import get_screen
 from strategy import StrategyState
 from log_state import *
 from loguru import logger
+from config import AutoHSConfig
 
 FSM_state = ""
 time_begin = 0.0
@@ -16,34 +15,18 @@ game_count = 0
 win_count = 0
 quitting_flag = False
 log_state = LogState()
-log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
+log_iter = None
+autohs_config = None
 choose_hero_count = 0
 
+def init(config_arg : AutoHSConfig):
+    global log_state, log_iter, choose_hero_count, autohs_config
 
-def init():
-    global log_state, log_iter, choose_hero_count
-
-    # 有时候炉石退出时python握着Power.log的读锁, 因而炉石无法
-    # 删除Power.log. 而当炉石重启时, 炉石会从头开始写Power.log,
-    # 但此时python会读入完整的Power.log, 并在原来的末尾等待新的写入. 那
-    # 样的话python就一直读不到新的log. 状态机进而卡死在匹配状态(不
-    # 知道对战已经开始)
-    # 这里是试图在每次初始化文件句柄的时候删除已有的炉石日志. 如果要清空的
-    # 日志是关于当前打开的炉石的, 那么炉石会持有此文件的写锁, 使脚本无法
-    # 清空日志. 这使得脚本不会清空有意义的日志
-    if os.path.exists(HEARTHSTONE_POWER_LOG_PATH):
-        try:
-            file_handle = open(HEARTHSTONE_POWER_LOG_PATH, "w")
-            file_handle.seek(0)
-            file_handle.truncate()
-            logger.info("Success to truncate Power.log")
-        except OSError:
-            logger.warn("Fail to truncate Power.log, maybe someone is using it")
-    else:
-        logger.info("Power.log does not exist")
+    autohs_config = config_arg
+    log_path = os.path.join(autohs_config.hearthstone_install_path , "Logs")
 
     log_state = LogState()
-    log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
+    log_iter = log_iter_func(log_path)
     choose_hero_count = 0
 
 
@@ -57,10 +40,6 @@ def update_log_state():
         # if not ok:
         #     return False
 
-    if DEBUG_FILE_WRITE:
-        with open("./log/game_state_snapshot.txt", "w", encoding="utf8") as f:
-            f.write(str(log_state))
-
     # 注意如果Power.log没有更新, 这个函数依然会返回. 应该考虑到game_state只是被初始化
     # 过而没有进一步更新的可能
     if log_state.game_entity_id == 0:
@@ -72,12 +51,8 @@ def update_log_state():
 def system_exit():
     global quitting_flag
 
-    logger.info(f"一共完成了{game_count}场对战, 赢了{win_count}场")
-
     quitting_flag = True
-
-    sys.exit(0)
-
+    logger.info(f"一共完成了{game_count}场对战, 赢了{win_count}场")
 
 def print_out():
     global FSM_state
@@ -87,7 +62,7 @@ def print_out():
     logger.info("Enter State " + str(FSM_state))
 
     if FSM_state == FSM_LEAVE_HS:
-        logger.warn("HearthStone not found! Try to go back to HS")
+        logger.warning("HearthStone not found! Try to go back to HS")
 
     if FSM_state == FSM_CHOOSING_CARD:
         game_count += 1
@@ -147,7 +122,7 @@ def MatchingAction():
 
         loop_count += 1
         if loop_count >= 60:
-            logger.warn("Time out in Matching Opponent")
+            logger.warning("Time out in Matching Opponent")
             return FSM_ERROR
 
 
@@ -200,7 +175,7 @@ def ChoosingCardAction():
 
         loop_count += 1
         if loop_count >= 60:
-            logger.warn("Time out in Choosing Opponent")
+            logger.warning("Time out in Choosing Opponent")
             return FSM_ERROR
         time.sleep(STATE_CHECK_INTERVAL)
 
@@ -238,7 +213,7 @@ def Battling():
 
             not_mine_count += 1
             if not_mine_count >= 400:
-                logger.warn("Time out in Opponent's turn")
+                logger.warning("Time out in Opponent's turn")
                 return FSM_ERROR
 
             continue
@@ -418,10 +393,5 @@ def AutoHS_automata():
             sys.exit(0)
         if FSM_state == "":
             FSM_state = get_screen.get_state()
+        logger.debug("当前状态: " + str(FSM_state))
         FSM_state = FSM_dispatch(FSM_state)
-
-
-if __name__ == "__main__":
-    keyboard.add_hotkey("ctrl+q", system_exit)
-
-    init()

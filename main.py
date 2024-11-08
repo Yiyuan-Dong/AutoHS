@@ -2,7 +2,6 @@ import tkinter as tk
 import os
 import keyboard
 from FSM_action import system_exit, AutoHS_automata
-from log_state import check_name
 from FSM_action import init
 from autohs_logger import logger_init
 from tkinter import messagebox
@@ -12,6 +11,7 @@ from get_screen import test_hs_available, test_battlenet_available
 from json_op import JSON_LAST_MODIFIED_TIME
 
 ABNORMAL_WIDTH_HEIGHT_LIST = [(1707, 960), (2048, 1152), (1306, 720), (1536, 864)]
+gui_is_running = False
 
 def is_integer(s):
     try:
@@ -62,7 +62,7 @@ def update_install_path(event):
         autohs_config.hearthstone_install_path = entry_path.get()
 
 def update_player_name(event):
-    autohs_config.player_name = entry_player_name.get()
+    autohs_config.user_name = entry_player_name.get()
 
 def update_all():
     update_width(None)
@@ -73,33 +73,28 @@ def update_all():
     update_player_name(None)
 
 def start_function():
-    autohs_config.is_running = True
+    global gui_is_running
+    gui_is_running = True
 
-    check_name()
-    init()
+    init(autohs_config)
     AutoHS_automata()
 
-def mock_start_function():
-    # 创建一个隐藏的主窗口
-    autohs_config.is_running = True
-
-    root = tk.Tk()
-    root.withdraw()  # 隐藏主窗口
-
-    # 弹出提示框
-    messagebox.showinfo("Mock Function", "Mock function called. No actual functionality executed")
-
-    # 销毁主窗口
-    root.destroy()
-
 def close_gui():
-    root.quit()
-    root.destroy()
-    if autohs_config.is_running:
+    global gui_is_running
+
+    logger.info("关闭GUI")
+
+    if gui_is_running:
         system_exit()
 
+    # root.quit() will block until the main program exits
+    root.quit()
+    root.destroy()
+
+    sys.exit(0)
+
 def check_before_start():
-    if autohs_config.is_running:
+    if gui_is_running:
         messagebox.showinfo("Warning", "程序已在运行中，请勿重复启动。")
         return False
 
@@ -114,7 +109,7 @@ def check_before_start():
         messagebox.showinfo("Warning", "请先设置屏幕分辨率")
         return False
 
-    if (autohs_config.player_name == ""):
+    if (autohs_config.user_name == ""):
         messagebox.showinfo("Warning", "请先设置玩家名")
         return False
 
@@ -125,8 +120,7 @@ def check_before_start():
     if autohs_config.max_win_count == 0 and autohs_config.max_play_time == 0:
         messagebox.showinfo("Warning", "警告：程序将无限制运行，可能导致账号被封。")
 
-    mock_start_function()
-    # start_function()
+    start_function()
 
 def add_label_and_entry(root, label_text, entry_text, bind_func):
     if not hasattr(add_label_and_entry, "row"):
@@ -149,7 +143,6 @@ if __name__ == "__main__":
 
     logger_init()
 
-    autohs_config = AutoHSConfig()
     autohs_config.load_config()
     if autohs_config.width == 0:
         autohs_config.width = WIDTH
@@ -166,7 +159,7 @@ if __name__ == "__main__":
     entry_max_play_time = add_label_and_entry(root, "最大游戏时间(分钟)：", autohs_config.max_play_time, update_max_play_time)
     entry_max_win_count = add_label_and_entry(root, "最大胜利场次：", autohs_config.max_win_count, update_max_win_count)
     entry_path = add_label_and_entry(root, "炉石安装路径：\n(例：D:\\Hearthstone)", autohs_config.hearthstone_install_path, update_install_path)
-    entry_player_name = add_label_and_entry(root, "玩家名：", autohs_config.player_name, update_player_name)
+    entry_player_name = add_label_and_entry(root, "玩家名：", autohs_config.user_name, update_player_name)
 
     start_button = tk.Button(root, text="开始", command=lambda: (update_all(), check_before_start()), width=20, height=1)
     start_button.grid(row=0, column=2, padx=10, pady=10, sticky="ew")
@@ -179,6 +172,9 @@ if __name__ == "__main__":
 
     if (WIDTH, HEIGHT) in ABNORMAL_WIDTH_HEIGHT_LIST:
         warning_label = tk.Label(root, text="警告：屏幕缩放比例疑似不为100%，\n可能导致程序异常", fg="red")
+        warning_label.grid(row=3, column=2, padx=10, pady=5, sticky="ew")
+    else:
+        warning_label = tk.Label(root, text=f"屏幕像素数为{WIDTH}X{HEIGHT}", fg="gray")
         warning_label.grid(row=3, column=2, padx=10, pady=5, sticky="ew")
 
     hint_label = tk.Label(root, text="按Ctrl+Q可退出程序", fg="gray")
