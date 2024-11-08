@@ -1,6 +1,15 @@
+# Add the parent directory to sys.path
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from strategy import *
+from autohs_logger import *
+
+HEARTHSTONE_POWER_LOG_PATH = "D:/HearthStone/Logs"
 
 if __name__ == "__main__":
+    logger_init("DEBUG")
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
     state = LogState()
 
