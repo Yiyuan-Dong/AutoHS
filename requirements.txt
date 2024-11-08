@@ -1,6 +1,5 @@
 keyboard
 opencv-python
-imagehash
 pynput
 pillow
 scikit-learn
@@ -9,3 +8,4 @@ pywin32
 requests
 tk
 loguru
+scikit-image
