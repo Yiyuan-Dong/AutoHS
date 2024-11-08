@@ -10,7 +10,7 @@ def custom_format(record):
     level = record["level"].name
     name_function_line = record["name"] + ".py:" + str(record["line"]) + "(" + record["function"] + ")"
 
-    return f"<green>{time}</green> | <level>{level:<5}</level> | <cyan>{name_function_line:<40}</cyan>" + "- <level>{message}</level>\n"
+    return f"<green>{time}</green> | <level>{level:<9}</level> | <cyan>{name_function_line:<40}</cyan>" + "- <level>{message}</level>\n"
 
 def logger_init(level="INFO"):
     global _logger_initialized
