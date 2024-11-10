@@ -3,7 +3,7 @@ import sys
 import time
 import keyboard
 import click
-import get_screen
+import window_utils
 from strategy import StrategyState
 from log_state import *
 from loguru import logger
@@ -52,36 +52,8 @@ def system_exit():
     quitting_flag = True
     logger.info(f"一共完成了{game_count}场对战, 赢了{win_count}场")
 
-def print_out():
-    global FSM_state
-    global time_begin
-    global game_count
-
-    logger.info("Enter State " + str(FSM_state))
-
-    if FSM_state == FSM_LEAVE_HS:
-        logger.warning("HearthStone not found! Try to go back to HS")
-
-    if FSM_state == FSM_CHOOSING_CARD:
-        game_count += 1
-        logger.info("The " + str(game_count) + " game begins")
-        time_begin = time.time()
-
-    if FSM_state == FSM_QUITTING_BATTLE:
-        logger.info("The " + str(game_count) + " game ends")
-        time_now = time.time()
-        if time_begin > 0:
-            logger.info("The last game last for : {} mins {} secs"
-                       .format(int((time_now - time_begin) // 60),
-                               int(time_now - time_begin) % 60))
-
-    return
-
-
 def ChoosingHeroAction():
     global choose_hero_count
-
-    print_out()
 
     # 有时脚本会卡在某个地方, 从而在FSM_Matching
     # 和FSM_CHOOSING_HERO之间反复横跳. 这时候要
@@ -98,12 +70,11 @@ def ChoosingHeroAction():
 
 
 def MatchingAction():
-    print_out()
     loop_count = 0
 
     while True:
         if quitting_flag:
-            sys.exit(0)
+            return
 
         time.sleep(STATE_CHECK_INTERVAL)
 
@@ -114,7 +85,7 @@ def MatchingAction():
             if not log_state.is_end:
                 return FSM_CHOOSING_CARD
 
-        curr_state = get_screen.get_state()
+        curr_state = window_utils.get_state()
         if curr_state == FSM_CHOOSING_HERO:
             return FSM_CHOOSING_HERO
 
@@ -126,14 +97,23 @@ def MatchingAction():
 
 def ChoosingCardAction():
     global choose_hero_count
+    global game_count
+    global time_begin
+
     choose_hero_count = 0
 
-    print_out()
+    game_count += 1
+    logger.info("第" + str(game_count) + "场对战开始")
+    time_begin = time.time()
+
     time.sleep(21)
     loop_count = 0
     has_print = 0
 
     while True:
+        if quitting_flag:
+            return FSM_ERROR
+
         ok = update_log_state()
 
         if not ok:
@@ -182,15 +162,13 @@ def Battling():
     global win_count
     global log_state
 
-    print_out()
-
     not_mine_count = 0
     mine_count = 0
     last_controller_is_me = False
 
     while True:
         if quitting_flag:
-            sys.exit(0)
+            return
 
         ok = update_log_state()
         if not ok:
@@ -267,16 +245,24 @@ def Battling():
 
 
 def QuittingBattle():
-    print_out()
+    global game_count
+    global time_begin
+
+    logger.info("第" + str(game_count) + "场对战结束")
+    time_now = time.time()
+    if time_begin > 0:
+        logger.info("本场对战用时: {0}分{1}秒"
+                    .format(int((time_now - time_begin) // 60),
+                            int(time_now - time_begin) % 60))
 
     time.sleep(5)
 
     loop_count = 0
     while True:
         if quitting_flag:
-            sys.exit(0)
+            return FSM_ERROR
 
-        state = get_screen.get_state()
+        state = window_utils.get_state()
         if state in [FSM_CHOOSING_HERO, FSM_LEAVE_HS]:
             return state
         click.cancel_click()
@@ -293,12 +279,13 @@ def QuittingBattle():
 def GoBackHSAction():
     global FSM_state
 
-    print_out()
+    logger.warning("找不到炉石传说进程，尝试通过战网重新启动")
+
     time.sleep(3)
 
-    while not get_screen.test_hs_available():
+    while not window_utils.test_hs_available():
         if quitting_flag:
-            sys.exit(0)
+            return FSM_ERROR
         click.enter_HS()
         time.sleep(10)
 
@@ -309,18 +296,16 @@ def GoBackHSAction():
 
 
 def MainMenuAction():
-    print_out()
-
     time.sleep(3)
 
     while True:
         if quitting_flag:
-            sys.exit(0)
+            return FSM_ERROR
 
         click.enter_battle_mode()
         time.sleep(5)
 
-        state = get_screen.get_state()
+        state = window_utils.get_state()
 
         # 重新连接对战之类的
         if state == FSM_BATTLING:
@@ -332,17 +317,20 @@ def MainMenuAction():
 
 
 def WaitMainMenu():
-    print_out()
-    while get_screen.get_state() != FSM_MAIN_MENU:
+
+    while window_utils.get_state() != FSM_MAIN_MENU:
+        if quitting_flag:
+            return FSM_ERROR
+
         click.click_middle()
         time.sleep(5)
+
     return FSM_MAIN_MENU
 
 
 def HandleErrorAction():
-    print_out()
 
-    if not get_screen.test_hs_available():
+    if not window_utils.test_hs_available():
         return FSM_LEAVE_HS
     else:
         click.commit_error_report()
@@ -352,7 +340,7 @@ def HandleErrorAction():
         click.left_click(960, 380)
         time.sleep(2)
 
-        get_screen.terminate_HS()
+        window_utils.terminate_HS()
         time.sleep(STATE_CHECK_INTERVAL)
 
         return FSM_LEAVE_HS
@@ -381,15 +369,15 @@ def FSM_dispatch(next_state):
 def AutoHS_automata():
     global FSM_state
 
-    if get_screen.test_hs_available():
-        hs_hwnd = get_screen.get_HS_hwnd()
-        get_screen.move_window_foreground(hs_hwnd)
+    if window_utils.test_hs_available():
+        hs_hwnd = window_utils.get_HS_hwnd()
+        window_utils.move_window_foreground(hs_hwnd)
         time.sleep(0.5)
 
     while 1:
         if quitting_flag:
-            sys.exit(0)
+            return
         if FSM_state == "":
-            FSM_state = get_screen.get_state()
-        logger.debug("当前状态: " + str(FSM_state))
+            FSM_state = window_utils.get_state()
+        logger.debug("下一个状态: " + str(FSM_state))
         FSM_state = FSM_dispatch(FSM_state)
