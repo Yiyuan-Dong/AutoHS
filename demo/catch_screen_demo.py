@@ -6,18 +6,20 @@ import cv2
 import time
 import math
 import os
+import numpy as np
+from skimage.metrics import structural_similarity as ssim
 
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import get_screen
+import window_utils
 from constants.constants import *
+from autohs_logger import *
+
 
 PRINT_ALL_AREA_LIST = []
-# AREA_LIST = [((1495, 465), (1620, 522))]
-AREA_LIST = [((690, 290), (710, 310))]
-
-POINT_LIST = [(960, 650), (1090, 1070), (705, 305)]
+AREA_LIST = []
+POINT_LIST = []
 
 
 def get_sum(x):
@@ -88,30 +90,41 @@ def simplify_image(image):
 
     return edges_colored
 
+def compare_images(imageA, imageB):
+    # 计算结构相似性
+    s = ssim(imageA, imageB, multichannel=True, channel_axis = 2)
+    return s
+
 if __name__ == "__main__":
-    if get_screen.test_hs_available():
-        get_screen.move_window_foreground(get_screen.get_HS_hwnd(), "炉石传说")
+    logger_init("DEBUG")
+
+    if window_utils.test_hs_available():
+        window_utils.move_window_foreground(window_utils.get_HS_hwnd(), "炉石传说")
     else:
         print("未找到炉石传说")
         exit()
 
-    time.sleep(1)
+    time.sleep(0.4)
 
-    im_opencv = get_screen.take_snapshot()
+    im_opencv = window_utils.take_snapshot()
+    im_opencv = im_opencv
     if im_opencv is None:
         print("截图失败")
         sys.exit(-1)
 
-    print(f"图片尺寸: {im_opencv.shape}")
+    # 检查图像是否有四个通道（包括 alpha 通道）
+    if im_opencv.shape[2] == 4:
+        # 将四通道图像转换为三通道 BGR 图像
+        im_opencv = cv2.cvtColor(im_opencv, cv2.COLOR_BGRA2BGR)
 
+    print(f"图片尺寸: {im_opencv.shape}")
     print("Width: {}", WIDTH)
+
+    print("Current state: {}".format(window_utils.get_state()))
+
     add_line(im_opencv, WIDTH, HEIGHT)
     add_point(im_opencv, POINT_LIST)
 
-    # 简化图像
-    simplified_image = simplify_image(im_opencv)
-
-    # 显示简化后的图像
     cv2.imshow("Full Screen", im_opencv)  # 显示
     cv2.waitKey(0)
     try:
@@ -119,12 +132,7 @@ if __name__ == "__main__":
     except cv2.error as e:
         print(f"Error destroying window: {e}")
 
-    cv2.imshow("Simplified Image", simplified_image)
     cv2.waitKey(0)
-    try:
-        cv2.destroyWindow("Simplified Image")
-    except cv2.error as e:
-        print(f"Error destroying window: {e}")
 
     for area in AREA_LIST:
         if len(area) < 2 or len(area) > 3:

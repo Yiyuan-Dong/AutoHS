@@ -9,10 +9,20 @@ import win32com.client
 import win32api
 import win32process
 import numpy
+import cv2
 from autohs_logger import *
-
 from constants.constants import *
+from skimage.metrics import structural_similarity as ssim
 
+current_file_path = os.path.abspath(__file__)
+current_dir_path = os.path.dirname(current_file_path)
+figs_dir_path = os.path.join(current_dir_path, "figs")
+
+choose_card_img = cv2.imread(os.path.join(figs_dir_path, "choose_card.png"))
+choose_hero_img = cv2.imread(os.path.join(figs_dir_path, "choose_hero.png"))
+print(os.path.join(figs_dir_path, "choose_hero.png"))
+matching_img = cv2.imread(os.path.join(figs_dir_path, "matching.png"))
+main_menu_img = cv2.imread(os.path.join(figs_dir_path, "main_menu.png"))
 
 def get_HS_hwnd():
     hwnd = win32gui.FindWindow(None, "炉石传说")
@@ -103,6 +113,7 @@ def take_snapshot():
 
 def pixel_very_similar(im_opencv, y, x, expected_val):
     img_val = im_opencv[y][x][:3]
+    img_val = img_val.astype(int)
 
     diff = abs(img_val[0] - expected_val[0]) + \
            abs(img_val[1] - expected_val[1]) + \
@@ -119,18 +130,43 @@ def get_state():
         return FSM_LEAVE_HS
 
     im_opencv = take_snapshot()
+    if im_opencv.shape[2] == 4:
+        im_opencv = cv2.cvtColor(im_opencv, cv2.COLOR_BGRA2BGR)
 
-    if pixel_very_similar(im_opencv, 1070, 1090, [20, 51, 103]) or \
-            pixel_very_similar(im_opencv, 305, 705, [21, 43, 95]):  # 万圣节主界面会变
+    # if WIDTH == 2560:
+    curr_main_menu_part = im_opencv[300:900,980:1580]
+    curr_choose_hero_part = im_opencv[1040:1340, 1710:2010]
+    curr_matching_part = im_opencv[400:1000, 980:1580]
+    curr_choose_card_part = im_opencv[170:250, 1130:1430]
+
+    simm_main_menu = ssim(curr_main_menu_part, main_menu_img, multichannel=True, channel_axis = 2)
+    simm_choose_hero = ssim(curr_choose_hero_part, choose_hero_img, multichannel=True, channel_axis = 2)
+    simm_matching = ssim(curr_matching_part, matching_img, multichannel=True, channel_axis = 2)
+    simm_choose_card = ssim(curr_choose_card_part, choose_card_img, multichannel=True, channel_axis = 2)
+
+    logger.debug(f"Similarity: main_menu: {simm_main_menu}, choose_hero: {simm_choose_hero}, matching: {simm_matching}, choose_card: {simm_choose_card}")
+
+    if simm_main_menu > 0.88:
         return FSM_MAIN_MENU
-    elif pixel_very_similar(im_opencv, 1070, 1090, [8, 18, 24]):
+    elif simm_choose_hero > 0.9:
         return FSM_CHOOSING_HERO
-    elif pixel_very_similar(im_opencv, 1070, 1090, [17, 18, 19]):
+    elif simm_matching > 0.9:
         return FSM_MATCHING
-    elif pixel_very_similar(im_opencv, 860, 960, [71, 71, 71]):
+    elif simm_choose_card > 0.9:
         return FSM_CHOOSING_CARD
     else:
         return FSM_BATTLING
+    # if pixel_very_similar(im_opencv, 1070, 1090, [20, 51, 103]) or \
+    #         pixel_very_similar(im_opencv, 305, 705, [21, 43, 95]):  # 万圣节主界面会变
+    #     return FSM_MAIN_MENU
+    # elif pixel_very_similar(im_opencv, 1070, 1090, [8, 18, 24]):
+    #     return FSM_CHOOSING_HERO
+    # elif pixel_very_similar(im_opencv, 1070, 1090, [17, 18, 19]):
+    #     return FSM_MATCHING
+    # elif pixel_very_similar(im_opencv, 860, 960, [71, 71, 71]):
+    #     return FSM_CHOOSING_CARD
+    # else:
+    #     return FSM_BATTLING
 
 def terminate_HS():
     hwnd = get_HS_hwnd()

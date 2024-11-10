@@ -9,7 +9,7 @@ import sys
 
 from constants.constants import *
 from autohs_logger import *
-from get_screen import *
+from window_utils import *
 
 
 def rand_sleep(interval):

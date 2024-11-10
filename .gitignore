@@ -8,3 +8,5 @@ test*
 *.log
 *.txt
 !requirements.txt
+*.png
+*.jpg

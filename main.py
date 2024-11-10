@@ -7,7 +7,7 @@ from autohs_logger import logger_init
 from tkinter import messagebox
 from constants.constants import *
 from config import *
-from get_screen import test_hs_available, test_battlenet_available
+from window_utils import test_hs_available, test_battlenet_available
 from json_op import JSON_LAST_MODIFIED_TIME
 
 ABNORMAL_WIDTH_HEIGHT_LIST = [(1707, 960), (2048, 1152), (1306, 720), (1536, 864)]
@@ -182,5 +182,8 @@ if __name__ == "__main__":
 
     modified_time_label = tk.Label(root, text=f"cards.json最后更新时间：\n{JSON_LAST_MODIFIED_TIME}", fg="gray")
     modified_time_label.grid(row=5, column=2, padx=10, pady=5, sticky="ew")
+
+    debug_button = tk.Button(root, text="启用调试日志", command=lambda: logger_init("DEBUG"), width=20, height=1)
+    debug_button.grid(row=6, column=2, padx=10, pady=10, sticky="ew")
 
     root.mainloop()
