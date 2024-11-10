@@ -24,7 +24,7 @@ OPPO_DELTA_H_FACTOR = 1.2
 MY_DELTA_H_FACTOR = 1
 
 # 对于没有单独建一个类去描述的卡牌, 如果它的法力值花费大于这个值,
-# 就在流留牌阶段被换掉
+# 就在留牌阶段被换掉
 REPLACE_COST_BAR = 3
 
 OPERATE_INTERVAL = 0.2
