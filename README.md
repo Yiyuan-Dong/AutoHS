@@ -43,6 +43,8 @@ pip install -r requirements.txt
 > ConsolePrinting=False
 > ScreenPrinting=False
 > Verbose=True
+> [Log]
+> FileSizeLimit.Int=-1
 > ```
 > 
 > 关于炉石log的更多信息可以查看这个
@@ -136,28 +138,3 @@ AAEDAfWfAwSwlgTnlgS1oQSWowQNr5YEs5YE+qAEsaEEsqEEvqEE0KEE1aEEiKIEi6IEjqIExaME0qME
 - `log_state.py`: 读取`log.py`提取的日志信息，并把他们转化成字典的列表的形式。每一个字典是一个 **Entity**，**Entity** 由不同的 **tag** 及其对应值构成。
 - `strategy.py`: 读取`log_state.py`提取的信息，并从中提取出手牌信息，战场信息，墓地信息等，再根据这些具体信息思考行动策略。
 - `card/`: 用于存放针对某些特殊卡牌的具体逻辑。
-
-
-
-[comment]: <> (### 关于控制鼠标)
-
-[comment]: <> (原本想通过发送信号的方式在让炉石在后台也能接收到鼠标点击)
-
-[comment]: <> (但是发现炉石应该是所谓的接受直接输入的进程，信号模拟它不会接收……)
-
-[comment]: <> (所以只能使用很low的鼠标点击了)
-
-[comment]: <> (也许能直接模拟网络发包？)
-
-
-[comment]: <> (### 关于网络连接的观察)
-
-[comment]: <> (一打开炉石就会建立两个TCP连接，这两个所有的数据都是加密的。像分解卡牌， 只有退出了某个卡牌的分解界面（就是可以撤销的界面）才会发包确认分解结果。)
-
-[comment]: <> (实验下来感觉只有其中一条连接在真的交换数据。)
-
-[comment]: <> (点击匹配会新建一个连接，这个连接是加密的。在匹配完成后连接就销毁。)
-
-[comment]: <> (进入对战会又新建一个连接，这个是纯TCP没有加密，不过我仍然无法解析数据交换的格式……。)
-
-[comment]: <> (任何一个操作都会触发数据传输（比如空中乱晃鼠标……），而如果什么都不做炉石也会每个5秒跟服务器互相ping一下，应该是在确认是否掉线)
