@@ -157,17 +157,6 @@ def get_state():
         return FSM_CHOOSING_CARD
     else:
         return FSM_BATTLING
-    # if pixel_very_similar(im_opencv, 1070, 1090, [20, 51, 103]) or \
-    #         pixel_very_similar(im_opencv, 305, 705, [21, 43, 95]):  # 万圣节主界面会变
-    #     return FSM_MAIN_MENU
-    # elif pixel_very_similar(im_opencv, 1070, 1090, [8, 18, 24]):
-    #     return FSM_CHOOSING_HERO
-    # elif pixel_very_similar(im_opencv, 1070, 1090, [17, 18, 19]):
-    #     return FSM_MATCHING
-    # elif pixel_very_similar(im_opencv, 860, 960, [71, 71, 71]):
-    #     return FSM_CHOOSING_CARD
-    # else:
-    #     return FSM_BATTLING
 
 def terminate_HS():
     hwnd = get_HS_hwnd()
