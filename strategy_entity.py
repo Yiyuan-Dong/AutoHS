@@ -18,7 +18,15 @@ class StrategyEntity:
 
     @property
     def name(self):
-        return query_json_dict(self.card_id)
+        return query_json_get_name(self.card_id)
+
+    @property
+    def races(self):
+        return query_json_get_races(self.card_id)
+
+    @property
+    def is_pirate(self):
+        return "PIRATE" in self.races
 
     @property
     def heuristic_val(self):

@@ -50,25 +50,38 @@ def read_json(re_download=False):
 
 JSON_DICT, JSON_LAST_MODIFIED_TIME = read_json()
 
-def query_json_dict(key):
+
+def query_json_get_dict(key):
     json_dict = JSON_DICT
 
     if key == "":
-        return "Unknown"
+        return []
 
     if key in json_dict:
-        return json_dict[key]["name"]
+        return json_dict[key]
     else:
         logger.info(f"未找到卡牌{key}，尝试重新下载cards.json文件")
         json_dict = read_json(True)
         if key not in json_dict:
             logger.error("出现未识别卡牌，程序无法继续")
             sys.exit(-1)
-        return json_dict[key]["name"]
+        return json_dict[key]
+
+
+def query_json_get_name(key):
+    return query_json_get_dict(key).get("name", "Unknown")
+
+
+def query_json_get_races(key):
+    return query_json_get_dict(key).get("races", [])
+
 
 if __name__ == "__main__":
     with open("id-name.txt", "w", encoding="utf8") as f:
         for key, val in JSON_DICT.items():
-            f.write(key + " " + val["name"] + "\n")
+            if "races" in val:
+                f.write(key + " " + val["name"] + " " + str(val["races"]) + "\n")
+            else:
+                f.write(key + " " + val["name"] + "\n")
 
-    query_json_dict("SW_085t")
+    query_json_get_name("SW_085t")

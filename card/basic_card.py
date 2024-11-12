@@ -119,6 +119,7 @@ class MinionCard(Card):
     @classmethod
     def combo_delta_h(cls, state, hand_card_index):
         h_sum = 0
+        hand_card = state.my_hand_cards[hand_card_index]
 
         for my_minion in state.my_minions:
             # 有末日就别下怪了
@@ -128,6 +129,12 @@ class MinionCard(Card):
             # 有飞刀可以多下怪
             if my_minion.card_id == ["VAN_NEW1_019", "NEW1_019"]:
                 h_sum += 0.5
+
+        # 海盗可以把空降歹徒拉下来
+        for my_hand_card_id, my_hand_card in enumerate(state.my_hand_cards):
+            if hand_card.is_pirate and my_hand_card.card_id == "DRG_056" and my_hand_card_id != hand_card_index:
+                logger.debug(f"{my_hand_card.name} 可以配合 {hand_card.name}")
+                h_sum += 2
 
         return h_sum
 

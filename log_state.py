@@ -254,7 +254,7 @@ class CardEntity(Entity):
 
     @property
     def name(self):
-        return query_json_dict(self.card_id)
+        return query_json_get_name(self.card_id)
 
     def update_card_id(self, card_id):
         self.card_id = card_id
