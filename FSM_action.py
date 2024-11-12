@@ -67,7 +67,7 @@ def ChoosingHeroAction():
     time.sleep(2)
     click.match_opponent()
     time.sleep(1)
-    return FSM_MATCHING
+    return FSM_MATCHING_OPPONENT
 
 
 def MatchingAction():
@@ -352,7 +352,7 @@ def FSM_dispatch(next_state):
         FSM_LEAVE_HS: GoBackHSAction,
         FSM_MAIN_MENU: MainMenuAction,
         FSM_CHOOSING_HERO: ChoosingHeroAction,
-        FSM_MATCHING: MatchingAction,
+        FSM_MATCHING_OPPONENT: MatchingAction,
         FSM_CHOOSING_CARD: ChoosingCardAction,
         FSM_BATTLING: Battling,
         FSM_ERROR: HandleErrorAction,

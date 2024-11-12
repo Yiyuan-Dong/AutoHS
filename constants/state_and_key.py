@@ -3,7 +3,7 @@
 FSM_LEAVE_HS = "Leave Hearth Stone"
 FSM_MAIN_MENU = "Main Menu"
 FSM_CHOOSING_HERO = "Choosing Hero"
-FSM_MATCHING = "Match Opponent"
+FSM_MATCHING_OPPONENT = "Match Opponent"
 FSM_CHOOSING_CARD = "Choosing Card"
 # FSM_NOT_MY_TURN = "Not My Turn"
 # FSM_MY_TURN = "My Turn"
