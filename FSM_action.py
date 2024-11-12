@@ -19,6 +19,7 @@ log_state = LogState()
 log_iter = None
 choose_hero_count = 0
 
+
 def init():
     global log_state, log_iter, choose_hero_count, autohs_config
 
@@ -52,6 +53,7 @@ def system_exit():
 
     quitting_flag = True
     logger.info(f"一共完成了{game_count}场对战, 赢了{win_count}场")
+
 
 def ChoosingHeroAction():
     global choose_hero_count

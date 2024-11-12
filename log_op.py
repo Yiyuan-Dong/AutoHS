@@ -195,7 +195,6 @@ def log_iter_func(path):
 
         logger.info(f"开始读取Power.log, 路径为: {path}")
 
-        #TODO: Will Hearthstone open another log file after the current one reaches a certain size?
         with open(path, "r", encoding="utf8") as f:
             while True:
                 empty_line_count = 0

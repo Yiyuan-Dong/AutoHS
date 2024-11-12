@@ -1,6 +1,8 @@
 from json_op import *
 from abc import abstractmethod
 from card.id2card import ID2CARD_DICT
+from constants.state_and_key import *
+from constants.number import *
 import copy
 
 
@@ -216,8 +218,7 @@ class StrategyMinion(StrategyEntity):
                and not self.dormant
 
     # 简单介绍一下卡费理论
-    # 一点法力水晶 = 抽0.5张卡 = 造成1点伤害
-    # = 2点攻击力 = 2点生命值 = 回复2点血
+    # 一点法力水晶 = 抽0.5张卡 = 造成1点伤害 = 2点攻击力 = 2点生命值 = 回复2点血
     # 一张卡自带一点水晶
     # 可以类比一下月火术, 奥术射击, 小精灵, 战斗法师等卡
     @property
