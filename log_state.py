@@ -80,7 +80,7 @@ class LogState:
         return self.my_entity.query_tag("CURRENT_PLAYER") == "1"
 
     @property
-    def my_last_mana(self):
+    def my_remaining_mana(self):
         return self.my_entity.query_tag("RESOURCES") - \
                self.my_entity.query_tag("RESOURCES_USED")
 

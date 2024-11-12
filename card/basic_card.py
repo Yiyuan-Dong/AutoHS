@@ -220,7 +220,7 @@ class Coin(SpellNoPoint):
         for another_index, hand_card in enumerate(state.my_hand_cards):
             delta_h = 0
 
-            if hand_card.current_cost != state.my_last_mana + 1:
+            if hand_card.current_cost != state.my_remaining_mana + 1:
                 continue
             if hand_card.is_coin:
                 continue

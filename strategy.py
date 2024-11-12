@@ -122,7 +122,7 @@ class StrategyState:
         self.debug_print_battlefield()
         logger.debug("--------------------")
 
-        logger.debug(f"水晶: {self.my_last_mana}/{self.my_total_mana}")
+        logger.debug(f"水晶: {self.my_remaining_mana}/{self.my_total_mana}")
         logger.debug(f"我有{self.my_hand_card_num}张手牌:")
         for hand_card in self.my_hand_cards:
             logger.debug(f"    [{hand_card.zone_pos}] {hand_card.name} "
@@ -134,7 +134,7 @@ class StrategyState:
             logger.debug(f"我的墓地为空")
 
     @property
-    def my_last_mana(self):
+    def my_remaining_mana(self):
         return self.my_total_mana - self.my_used_mana + self.my_temp_mana
 
     @property
@@ -388,7 +388,7 @@ class StrategyState:
             delta_h = 0
             args = []
 
-            if hand_card.current_cost > self.my_last_mana:
+            if hand_card.current_cost > self.my_remaining_mana:
                 logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name}) 跳过")
                 continue
 
@@ -411,7 +411,7 @@ class StrategyState:
                 best_args = args
 
         # 考虑使用英雄技能
-        if self.my_last_mana >= 2 and \
+        if self.my_remaining_mana >= 2 and \
                 self.my_detail_hero_power and \
                 not self.my_hero_power.exhausted:
             hero_power = self.my_detail_hero_power
