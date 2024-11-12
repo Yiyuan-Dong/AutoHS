@@ -4,7 +4,7 @@ from log_op import *
 from json_op import *
 from strategy_entity import *
 from autohs_logger import *
-import constants.constants
+import constants.state_and_key
 from config import autohs_config
 
 class LogState:

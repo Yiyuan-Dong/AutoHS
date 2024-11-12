@@ -11,7 +11,8 @@ import win32process
 import numpy
 import cv2
 from autohs_logger import *
-from constants.constants import *
+from constants.state_and_key import *
+from constants.pixel_coordinate import *
 from skimage.metrics import structural_similarity as ssim
 
 current_file_path = os.path.abspath(__file__)

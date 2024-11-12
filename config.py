@@ -9,6 +9,7 @@ class AutoHSConfig:
         self.max_win_count = 0
         self.hearthstone_install_path = ""
         self.user_name = ""
+        self.click_coordinates = None
 
     def save_config(self, path="configs.json"):
         try:

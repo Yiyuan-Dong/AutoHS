@@ -5,7 +5,7 @@ from FSM_action import system_exit, AutoHS_automata
 from FSM_action import init
 from autohs_logger import logger_init
 from tkinter import messagebox
-from constants.constants import *
+from constants.pixel_coordinate import *
 from config import *
 from window_utils import test_hs_available, test_battlenet_available
 from json_op import JSON_LAST_MODIFIED_TIME
@@ -176,6 +176,11 @@ if __name__ == "__main__":
     else:
         warning_label = tk.Label(root, text=f"屏幕像素数为{WIDTH}X{HEIGHT}", fg="gray")
         warning_label.grid(row=3, column=2, padx=10, pady=5, sticky="ew")
+
+    if WIDTH == 1920 and HEIGHT == 1080:
+        autohs_config.click_coordinates = COORDINATES_1920_1080
+    elif WIDTH == 2560 and HEIGHT == 1440:
+        autohs_config.click_coordinates = COORDINATES_2560_1440
 
     hint_label = tk.Label(root, text="按Ctrl+Q可退出程序", fg="gray")
     hint_label.grid(row=4, column=2, padx=10, pady=5, sticky="ew")

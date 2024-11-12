@@ -13,7 +13,7 @@ from skimage.metrics import structural_similarity as ssim
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import window_utils
-from constants.constants import *
+from constants.pixel_coordinate import *
 from autohs_logger import *
 
 

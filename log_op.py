@@ -2,7 +2,7 @@ import os
 import re
 import time
 import copy
-from constants.constants import *
+from constants.state_and_key import *
 from autohs_logger import *
 import sys
 

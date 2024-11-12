@@ -2,7 +2,8 @@ import random
 import time
 from abc import ABC, abstractmethod
 import click
-from constants.constants import *
+from constants.state_and_key import *
+from constants.number import *
 from autohs_logger import *
 
 

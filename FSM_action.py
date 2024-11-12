@@ -8,6 +8,7 @@ from strategy import StrategyState
 from log_state import *
 from loguru import logger
 from config import autohs_config
+from constants.number import *
 
 FSM_state = ""
 time_begin = 0.0
