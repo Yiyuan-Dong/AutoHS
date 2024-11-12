@@ -122,11 +122,11 @@ class MinionCard(Card):
 
         for my_minion in state.my_minions:
             # 有末日就别下怪了
-            if my_minion.card_id == "VAN_NEW1_021":
+            if my_minion.card_id in ["VAN_NEW1_021", "CORE_NEW1_021", "NEW1_021"]:
                 h_sum += -1000
 
             # 有飞刀可以多下怪
-            if my_minion.card_id == "VAN_NEW1_019":
+            if my_minion.card_id == ["VAN_NEW1_019", "NEW1_019"]:
                 h_sum += 0.5
 
         return h_sum
