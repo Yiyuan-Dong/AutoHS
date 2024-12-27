@@ -1,6 +1,5 @@
 from card.basic_card import Coin
-from card.standard_card import *
-from card.classic_card import *
+from card.detail_card import *
 from card.hero_power_card import *
 
 ID2CARD_DICT = {
@@ -11,8 +10,9 @@ ID2CARD_DICT = {
     "TOTEMIC_CALL": TotemicCall,
     "LESSER_HEAL": LesserHeal,
     "BALLISTA_SHOT": BallistaShot,
+    "EX1_625t": MindSpike,
 
-    # 标准模式-牧师
+    # 部分牧师卡
     "YOP_032": ArmorVendor,  # 护甲商贩
     "CORE_CS1_130": HolySmite,  # 神圣惩击
     "CS1_130": HolySmite,  # 神圣惩击
@@ -54,4 +54,30 @@ ID2CARD_DICT = {
     "VAN_NEW1_041": StampedingKodo,
     "VAN_EX1_590": BloodKnight,
     "VAN_EX1_247": StormforgedAxe,
+
+    # 暗牧
+    "CFM_637": PatchesThePirate,
+    "SW_446": VoidtouchedAttendant,
+    "TOY_518": TreasureMerchant,
+    "VAC_512": MindrenderIllucia,
+    "NAX4_04": RaiseDead,
+    "NAX4_04H": RaiseDead,
+    "SCH_514": RaiseDead,
+    "GVG_009": ShadowBomber,
+    "WON_062": ShadowBomber,
+    "NX2_019": MindBlast,
+    "VAC_419": Acupuncture,
+    "CORE_WON_065": ShipSurgeon,
+    "WON_065": ShipSurgeon,
+    "DS1_233": MindShatter,
+    "VAN_DS1_233": MindShatter,
+    "SW_444": TwilightDeceptor,
+    "DRG_056": CathedralOfAtonement,
+    "TOY_381": PaperCranes,
+    # "CORE_REV_290": CathedralOfAtonement,
+    # "REV_290": CathedralOfAtonement,
+    # "REV_791": CathedralOfAtonement,
+    "CORE_SW_448": DarkbishopBenedictus,
+    "SW_448": DarkbishopBenedictus,
+    "YOD_032": DefiasCleaner,
 }

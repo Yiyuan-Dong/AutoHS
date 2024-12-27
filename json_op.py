@@ -48,6 +48,7 @@ def read_json(re_download=False):
     last_modified_time = datetime.fromtimestamp(os.path.getmtime(json_path)).strftime('%Y-%m-%d %H:%M:%S')
     return json_dict, last_modified_time
 
+
 JSON_DICT, JSON_LAST_MODIFIED_TIME = read_json()
 
 
@@ -72,8 +73,13 @@ def query_json_get_name(key):
     return query_json_get_dict(key).get("name", "Unknown")
 
 
+# return like ["PIRATE"]
 def query_json_get_races(key):
     return query_json_get_dict(key).get("races", [])
+
+# return like "SHADOW". Note that it is not a list.
+def query_json_get_spell_school(key):
+    return query_json_get_dict(key).get("spellSchool", "None")
 
 
 if __name__ == "__main__":
@@ -81,6 +87,8 @@ if __name__ == "__main__":
         for key, val in JSON_DICT.items():
             if "races" in val:
                 f.write(key + " " + val["name"] + " " + str(val["races"]) + "\n")
+            elif "spellSchool" in val:
+                f.write(key + " " + val["name"] + " " + str(val["spellSchool"]) + "\n")
             else:
                 f.write(key + " " + val["name"] + "\n")
 

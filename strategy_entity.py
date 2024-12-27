@@ -29,6 +29,10 @@ class StrategyEntity:
         return "PIRATE" in self.races
 
     @property
+    def is_shadow_spell(self):
+        return query_json_get_spell_school(self.card_id) == "SHADOW"
+
+    @property
     def heuristic_val(self):
         return 0
 
@@ -413,6 +417,9 @@ class StrategyHero(StrategyEntity):
         return not self.stealth and not self.immune
 
     def get_damaged(self, damage):
+        if self.immune:
+            return
+
         if damage <= self.armor:
             self.armor -= damage
         else:

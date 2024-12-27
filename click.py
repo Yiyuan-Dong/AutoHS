@@ -225,6 +225,15 @@ def use_skill_point_mine(my_index, my_num):
 
     cancel_click()
 
+def use_skill_point_oppo(oppo_index, oppo_num):
+    click_skill()
+
+    if oppo_index < 0:
+        choose_oppo_hero()
+    else:
+        choose_opponent_minion(oppo_index, oppo_num)
+
+    cancel_click()
 
 def minion_beat_minion(mine_index, mine_number, oppo_index, oppo_num):
     choose_my_minion(mine_index, mine_number)

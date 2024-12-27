@@ -539,3 +539,150 @@ class SoulMirror(SpellNoPoint):
 class BloodOfGhuun(MinionNoPoint):
     value = 8
     keep_in_hand_bool = False
+
+
+# 下面是狂野暗牧的卡牌
+# 海盗帕奇斯
+class PatchesThePirate(MinionNoPoint):
+    value = 1
+    keep_in_hand_bool = False
+
+
+# 虚触侍从
+class VoidtouchedAttendant(MinionNoPoint):
+    value = 3
+    keep_in_hand_bool = True
+
+
+# 宝藏经销商
+class TreasureMerchant(MinionNoPoint):
+    value = 2
+    keep_in_hand_bool = True
+
+
+# 心灵按摩师
+class MindrenderIllucia(MinionNoPoint):
+    value = 4
+    keep_in_hand_bool = True
+
+
+# 亡者复生
+class RaiseDead(SpellNoPoint):
+    wait_time = 5
+    keep_in_hand_bool = False
+
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        if len(state.my_graveyaed) and state.my_hero.health > 5:
+            return 4
+
+        return 0
+
+
+# 暗影投弹手
+class ShadowBomber(MinionNoPoint):
+    value = 2
+    keep_in_hand_bool = False
+
+    @classmethod
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+        return state.oppo_hero.delta_h_after_damage(3) + cls.value, 0
+
+# 精神灼烧
+class MindBlast(SpellPointOppo):
+    wait_time = 2
+    bias = -1
+
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        best_delta_h = -1
+        best_oppo_index = -1
+
+        for oppo_minion in state.oppo_minions:
+            if not oppo_minion.can_be_pointed_by_spell:
+                continue
+
+            temp_delta_h = oppo_minion.delta_h_after_damage(2) + cls.bias
+            if not oppo_minion.divine_shield and oppo_minion.health <= 3:
+                temp_delta_h += state.oppo_hero.delta_h_after_damage(3)
+
+            if temp_delta_h > best_delta_h:
+                best_delta_h = temp_delta_h
+                best_oppo_index = state.oppo_minions.index(oppo_minion)
+
+        return best_delta_h, best_oppo_index
+
+
+# 针灸
+class Acupuncture(SpellNoPoint):
+    wait_time = 2
+    bias = 0
+
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        return state.oppo_hero.delta_h_after_damage(3) + cls.bias,
+
+
+# 随船外科医师
+class ShipSurgeon(MinionNoPoint):
+    value = 4
+    keep_in_hand_bool = True
+
+
+# 心灵震爆
+class MindShatter(SpellNoPoint):
+    wait_time = 2
+    bias = -2
+
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        return state.oppo_hero.delta_h_after_damage(5) + cls.bias,
+
+
+# 暮光欺诈者
+class TwilightDeceptor(MinionPointOppo):
+    pass
+
+# 赎罪教堂
+# 还没想好怎么写
+class ChurchOfAtonement(MinionNoPoint):
+    value = -100
+
+# 空降歹徒
+class CathedralOfAtonement(MinionNoPoint):
+    value = 0.1  # 最好是从手牌里被拉出来
+
+# 纸艺天使
+class PaperCranes(MinionNoPoint):
+    value = 4    # 就要下就要下
+
+# 暗影主教本尼迪塔斯
+class DarkbishopBenedictus(MinionNoPoint):
+    value = 4
+
+# 狂暴邪翼蝠
+class FrenziedFelwing(MinionNoPoint):
+    value = 2
+
+# 迪菲亚麻风侏儒
+class DefiasCleaner(MinionPointOppo):
+    @classmethod
+    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+        has_shadow_spell = any(my_hand_card.is_shadow_spell for my_hand_card in state.my_hand_cards)
+
+        if not has_shadow_spell:
+            return 0, state.my_minion_num, -1   # 要是真的没事干，就算不打三也下去战场
+
+        best_delta_h = state.oppo_hero.delta_h_after_damage(3)
+        best_oppo_index = -1
+
+        for oppo_index, oppo_minion in enumerate(state.oppo_minions):
+            if not oppo_minion.can_be_pointed_by_minion:
+                continue
+
+            delta_h = oppo_minion.delta_h_after_damage(3)
+            if delta_h > best_delta_h:
+                best_delta_h = delta_h
+                best_oppo_index = oppo_index
+
+        return best_delta_h, state.my_minion_num, best_oppo_index
