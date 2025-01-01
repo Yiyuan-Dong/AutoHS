@@ -7,10 +7,11 @@ ID2CARD_DICT = {
     "COIN": Coin,
 
     # 英雄技能
+    # 注意：英雄技能通过 detail_hero_power() 驱动
     "TOTEMIC_CALL": TotemicCall,
     "LESSER_HEAL": LesserHeal,
     "BALLISTA_SHOT": BallistaShot,
-    "EX1_625t": MindSpike,
+    "MIND_SPIKE": MindSpike,
 
     # 部分牧师卡
     "YOP_032": ArmorVendor,  # 护甲商贩

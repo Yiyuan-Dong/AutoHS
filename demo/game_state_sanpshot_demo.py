@@ -5,12 +5,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from strategy import *
 from autohs_logger import *
+from config import autohs_config
 
 HEARTHSTONE_POWER_LOG_PATH = "D:/HearthStone/Logs"
+PLAYER_NAME = "多谋的猫咪"     # !!!请根据实际情况修改!!!
 
 if __name__ == "__main__":
     logger_init("DEBUG")
+
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
+    autohs_config.user_name = PLAYER_NAME
+
     state = LogState()
 
     log_container = next(log_iter)
@@ -27,3 +32,7 @@ if __name__ == "__main__":
 
     strategy_state = StrategyState(state)
     strategy_state.debug_print_out()
+    logger.debug("当前最佳出牌抉择:")
+    strategy_state.best_h_index_arg()
+    logger.debug("当前最佳随从攻击: ")
+    strategy_state.get_best_attack_target()

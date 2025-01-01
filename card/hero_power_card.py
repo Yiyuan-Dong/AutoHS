@@ -62,8 +62,8 @@ class MindSpike(HeroPowerCard):
                 continue
 
             delta_h = oppo_minion.delta_h_after_damage(2)
-            if delta_h > best_h:
-                best_h = delta_h
+            if delta_h > best_delta_h:
+                best_delta_h = delta_h
                 best_index = oppo_index
 
         return best_delta_h, best_index

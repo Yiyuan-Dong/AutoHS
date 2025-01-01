@@ -3,6 +3,7 @@ from abc import abstractmethod
 from card.id2card import ID2CARD_DICT
 from constants.state_and_key import *
 from constants.number import *
+from autohs_logger import *
 import copy
 
 
@@ -466,8 +467,12 @@ class StrategyHeroPower(StrategyEntity):
     def detail_hero_power(self):
         if self.name == "次级治疗术":
             return ID2CARD_DICT["LESSER_HEAL"]
-        if self.name == "图腾召唤":
+        elif self.name == "图腾召唤":
             return ID2CARD_DICT["TOTEMIC_CALL"]
-        if self.name == "稳固射击":
+        elif self.name == "稳固射击":
             return ID2CARD_DICT["BALLISTA_SHOT"]
+        elif self.name == "心灵尖刺":
+            return ID2CARD_DICT["MIND_SPIKE"]
+        else:
+            logger.error("发现我方英雄具有尚未支持的英雄技能：" + self.name)
         return None

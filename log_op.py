@@ -198,7 +198,7 @@ def log_iter_func(path):
         with open(path, "r", encoding="utf8") as f:
             while True:
                 empty_line_count = 0
-                log_container = LogInfoContainer(LOG_CONTAINER_INFO)
+                log_info_container = LogInfoContainer(LOG_CONTAINER_INFO)
 
                 while True:
                     line = f.readline()
@@ -212,11 +212,12 @@ def log_iter_func(path):
                         empty_line_count = 0
                         line_container = parse_line(line)
                         if line_container is not None:
-                            log_container.append_info(line_container)
+                            log_info_container.append_info(line_container)
 
-                yield log_container
+                yield log_info_container
 
                 if not os.path.exists(path):
+                    logger.error(f"Power.log意外失踪, 预期路径为: {path}")
                     yield LogInfoContainer(LOG_CONTAINER_ERROR)
                     break
 

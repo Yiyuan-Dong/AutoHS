@@ -53,6 +53,9 @@ class StrategyState:
                     else:
                         self.oppo_hero = hero
 
+                # 好吧，有些时候英雄技能会在对局中被替换掉，比如暗黑主教本尼迪塔斯的开局效果。
+                # 不过在 python 的 3.7 版本之后，字典的遍历顺序是按照插入顺序的，后出现的技能
+                # 会覆盖掉先出现的技能，完美。
                 elif entity.cardtype == "HERO_POWER":
                     hero_power = entity.generate_strategy_entity(log_state)
                     if log_state.is_my_entity(entity):
@@ -81,7 +84,7 @@ class StrategyState:
         logger.debug("对手英雄:")
         logger.debug("    " + str(self.oppo_hero))
         logger.debug(f"技能:")
-        logger.debug("    " + self.oppo_hero_power.name)
+        logger.debug("    " + self.oppo_hero_power.name + " 费用：" + str(self.oppo_hero_power.current_cost))
         if self.oppo_weapon:
             logger.debug("头上有把武器:")
             logger.debug("    " + str(self.oppo_weapon))
@@ -98,7 +101,7 @@ class StrategyState:
         logger.debug("我的英雄:")
         logger.debug("    " + str(self.my_hero))
         logger.debug(f"技能:")
-        logger.debug("    " + self.my_hero_power.name)
+        logger.debug("    " + self.my_hero_power.name + " 费用：" + str(self.my_hero_power.current_cost))
         if self.my_weapon:
             logger.debug("头上有把武器:")
             logger.debug("    " + str(self.my_weapon))
@@ -297,11 +300,12 @@ class StrategyState:
         min_attack = 0
 
         # 枚举每一个己方随从
+        logger.debug("枚举随从")
         for my_index, my_minion in enumerate(self.my_minions):
             if not my_minion.can_attack_minion:
                 continue
 
-            # 如果没有墙,自己又能打脸,应该试一试
+            # 如果没有墙,随从又能打脸,应该试一试
             if not has_taunt \
                     and my_minion.can_beat_face \
                     and self.oppo_hero.can_be_pointed_by_minion:
@@ -330,7 +334,7 @@ class StrategyState:
                 tmp_delta_h -= my_minion.delta_h_after_damage(oppo_minion.attack)
                 tmp_delta_h += oppo_minion.delta_h_after_damage(my_minion.attack)
 
-                logger.debug(f"攻击决策：[{my_index}]({my_minion.name})->"
+                logger.debug(f"攻击尝试：[{my_index}]({my_minion.name})->"
                             f"[{oppo_index}]({oppo_minion.name}) "
                             f"delta_h_val: {tmp_delta_h}")
 
@@ -343,6 +347,7 @@ class StrategyState:
 
         # 试一试英雄攻击
         if self.my_hero.can_attack:
+            logger.debug("考虑英雄攻击")
             if not has_taunt and self.oppo_hero.can_be_pointed_by_minion:
                 if beat_face_win:
                     logger.debug(f"攻击决策: [-1]({self.my_hero.name})->"
@@ -398,7 +403,7 @@ class StrategyState:
         return tmp
 
     def best_h_index_arg(self):
-        logger.debug("---开始决策---")
+        logger.debug("------ 开始决策 ------")
         best_delta_h = 0
         best_index = -2
         best_args = []
@@ -431,7 +436,7 @@ class StrategyState:
                 best_args = args
 
         # 考虑使用英雄技能
-        if self.my_remaining_mana >= 2 and \
+        if self.my_remaining_mana >= self.my_hero_power.current_cost and \
                 self.my_detail_hero_power and \
                 not self.my_hero_power.exhausted:
             hero_power = self.my_detail_hero_power
@@ -450,7 +455,7 @@ class StrategyState:
 
         logger.debug(f"决策结果: best_delta_h:{best_delta_h}, "
                     f"best_index:{best_index}, best_args:{best_args}")
-        logger.debug("---结束决策---")
+        logger.debug("------ 结束决策 ------")
         return best_index, best_args
 
     def use_best_entity(self, index, args):

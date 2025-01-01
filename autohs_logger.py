@@ -8,7 +8,8 @@ logger = loguru.logger
 def custom_format(record):
     time = record["time"].strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
     level = record["level"].name
-    name_function_line = record["name"] + ".py:" + str(record["line"]) + "(" + record["function"] + ")"
+    function_name = "__main__" if record["function"] == "<module>" else record["function"]
+    name_function_line = record["name"] + ".py:" + str(record["line"]) + "(" + function_name + ")"
 
     return f"<green>{time}</green> | <level>{level:<7}</level> | <cyan>{name_function_line:<40}</cyan>" + "- <level>{message}</level>\n"
 
@@ -30,6 +31,8 @@ def logger_init(level="INFO"):
     logger.remove()  # 移除之前已经配置的日志记录器
     logger.add(os.path.join(log_folder, "file_{time}.log"), retention=20, level=level, format=custom_format)
     logger.add(sys.stdout, level=level, format=custom_format)
+
+    logger.debug("日志记录器已初始化")
 
     _logger_initialized = True
 

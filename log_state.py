@@ -244,10 +244,10 @@ class CardEntity(Entity):
                 card_id=self.card_id,
                 zone=self.query_tag("ZONE"),
                 zone_pos=int(self.query_tag("ZONE_POS")),
-                current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
+                current_cost=int(self.query_tag("COST")),
                 overload=int(self.query_tag("OVERLOAD")),
                 is_mine=log_state.is_my_entity(self),
-                exhausted=int(self.query_tag("EXHAUSTED")),
+                exhausted=int(self.query_tag("EXHAUSTED", default_val="0")),
             )
         else:
             return None

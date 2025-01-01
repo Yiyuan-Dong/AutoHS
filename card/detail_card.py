@@ -573,10 +573,10 @@ class RaiseDead(SpellNoPoint):
 
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):
-        if len(state.my_graveyaed) and state.my_hero.health > 5:
-            return 4
+        if len(state.my_graveyard) and state.my_hero.health > 5:
+            return 4,
 
-        return 0
+        return 0,
 
 
 # 暗影投弹手
