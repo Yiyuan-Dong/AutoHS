@@ -70,6 +70,8 @@ def query_json_get_dict(key):
 
 
 def query_json_get_name(key):
+    if key == "":
+        return "Unknown"
     return query_json_get_dict(key).get("name", "Unknown")
 
 
