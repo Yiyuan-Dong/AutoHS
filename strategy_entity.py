@@ -9,13 +9,17 @@ import copy
 
 class StrategyEntity:
     def __init__(self, card_id, zone, zone_pos,
-                 current_cost, overload, is_mine):
+                 current_cost, overload, is_mine, powered_up):
         self.card_id = card_id
         self.zone = zone
         self.zone_pos = zone_pos
         self.current_cost = current_cost
         self.overload = overload
         self.is_mine = is_mine
+
+        # 有特效的手牌（比如姐夫），在他的特效可以触发时会亮起黄框，
+        # powered_up属性表示的就是黄框是否亮起
+        self.powered_up = powered_up
 
     @property
     def name(self):
@@ -77,7 +81,7 @@ CRITICAL_MINION = {
 
 class StrategyMinion(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
-                 current_cost, overload, is_mine,
+                 current_cost, overload, is_mine, powered_up,
                  attack, max_health, damage=0,
                  taunt=0, divine_shield=0, stealth=0,
                  windfury=0, poisonous=0, life_steal=0,
@@ -86,9 +90,10 @@ class StrategyMinion(StrategyEntity):
                  charge=0, rush=0,
                  attackable_by_rush=0, frozen=0,
                  dormant=0, untouchable=0, immune=0,
-                 cant_attack=0, exhausted=1, num_turns_in_play=1):
+                 cant_attack=0, exhausted=1, num_turns_in_play=1
+        ):
         super().__init__(card_id, zone, zone_pos,
-                         current_cost, overload, is_mine)
+                         current_cost, overload, is_mine, powered_up)
         self.attack = attack
         self.max_health = max_health
         self.damage = damage
@@ -167,6 +172,8 @@ class StrategyMinion(StrategyEntity):
             temp += f" 法术伤害+{self.spell_power}"
         if self.cant_attack:
             temp += " 不能攻击"
+        if self.powered_up:
+            temp += " 特效激活"
 
         temp += f" h_val:{self.heuristic_val}"
 
@@ -299,10 +306,10 @@ class StrategyMinion(StrategyEntity):
 
 class StrategyWeapon(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
-                 current_cost, overload, is_mine,
+                 current_cost, overload, is_mine, powered_up,
                  attack, durability, damage=0, windfury=0):
         super().__init__(card_id, zone, zone_pos,
-                         current_cost, overload, is_mine)
+                         current_cost, overload, is_mine, powered_up)
         self.attack = attack
         self.durability = durability
         self.damage = damage
@@ -330,13 +337,13 @@ class StrategyWeapon(StrategyEntity):
 
 class StrategyHero(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
-                 current_cost, overload, is_mine,
+                 current_cost, overload, is_mine, powered_up,
                  max_health, damage=0,
                  stealth=0, immune=0,
                  not_targeted_by_spell=0, not_targeted_by_power=0,
                  armor=0, attack=0, exhausted=1):
         super().__init__(card_id, zone, zone_pos,
-                         current_cost, overload, is_mine)
+                         current_cost, overload, is_mine, powered_up)
         self.max_health = max_health
         self.damage = damage
         self.stealth = stealth
@@ -453,10 +460,10 @@ class StrategySpell(StrategyEntity):
 
 class StrategyHeroPower(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
-                 current_cost, overload, is_mine,
+                 current_cost, overload, is_mine, powered_up,
                  exhausted):
         super().__init__(card_id, zone, zone_pos,
-                         current_cost, overload, is_mine)
+                         current_cost, overload, is_mine, powered_up)
         self.exhausted = exhausted
 
     @property

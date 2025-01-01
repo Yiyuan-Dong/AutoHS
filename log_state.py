@@ -174,6 +174,7 @@ class CardEntity(Entity):
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
                 is_mine=log_state.is_my_entity(self),
+                powered_up=int(self.query_tag("POWERED_UP")),
                 attack=int(self.query_tag("ATK")),
                 max_health=int(self.query_tag("HEALTH")),
                 damage=int(self.query_tag("DAMAGE")),
@@ -207,6 +208,7 @@ class CardEntity(Entity):
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
                 is_mine=log_state.is_my_entity(self),
+                powered_up=int(self.query_tag("POWERED_UP")),
             )
         elif self.cardtype == "WEAPON":
             return StrategyWeapon(
@@ -216,6 +218,7 @@ class CardEntity(Entity):
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
                 is_mine=log_state.is_my_entity(self),
+                powered_up=int(self.query_tag("POWERED_UP")),
                 attack=int(self.query_tag("ATK")),
                 durability=int(self.query_tag("DURABILITY")),
                 damage=int(self.query_tag("DAMAGE")),
@@ -229,6 +232,7 @@ class CardEntity(Entity):
                 current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
                 overload=int(self.query_tag("OVERLOAD")),
                 is_mine=log_state.is_my_entity(self),
+                powered_up=int(self.query_tag("POWERED_UP")),
                 max_health=int(self.query_tag("HEALTH")),
                 damage=int(self.query_tag("DAMAGE")),
                 stealth=int(self.query_tag("STEALTH")),
@@ -247,6 +251,7 @@ class CardEntity(Entity):
                 current_cost=int(self.query_tag("COST")),
                 overload=int(self.query_tag("OVERLOAD")),
                 is_mine=log_state.is_my_entity(self),
+                powered_up=int(self.query_tag("POWERED_UP")),
                 exhausted=int(self.query_tag("EXHAUSTED", default_val="0")),
             )
         else:

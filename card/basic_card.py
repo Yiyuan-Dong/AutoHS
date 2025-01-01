@@ -5,7 +5,7 @@ import click
 from constants.state_and_key import *
 from constants.number import *
 from autohs_logger import *
-
+from strategy import StrategyState
 
 class Card(ABC):
     # 用来指示是否在留牌阶段把它留下, 默认留下
@@ -103,7 +103,7 @@ class MinionCard(Card):
             return 0
 
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         if cls.value != 0:
             return cls.value, state.my_minion_num
         else:

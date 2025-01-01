@@ -7,28 +7,29 @@ from card.basic_card import MinionNoPoint
 from log_state import *
 from log_op import *
 from strategy_entity import *
+from typing import List
 
 
 class StrategyState:
     def __init__(self, log_state=None):
-        self.oppo_minions = []
-        self.oppo_graveyard = []
-        self.my_minions = []
-        self.my_hand_cards = []
-        self.my_graveyard = []
+        self.oppo_minions: List[StrategyMinion] = []
+        self.oppo_graveyard: List[StrategyEntity] = []
+        self.my_minions: List[StrategyMinion] = []
+        self.my_hand_cards: List[StrategyEntity] = []
+        self.my_graveyard: List[StrategyEntity] = []
 
-        self.my_hero = None
-        self.my_hero_power = None
-        self.can_use_power = False
-        self.my_weapon = None
-        self.oppo_hero = None
-        self.oppo_hero_power = None
-        self.oppo_weapon = None
-        self.oppo_hand_card_num = 0
+        self.my_hero: StrategyHero = None
+        self.my_hero_power: StrategyHeroPower = None
+        self.can_use_power: bool = False
+        self.my_weapon: StrategyWeapon = None
+        self.oppo_hero: StrategyHero = None
+        self.oppo_hero_power: StrategyHeroPower = None
+        self.oppo_weapon: StrategyWeapon = None
+        self.oppo_hand_card_num: int = 0
 
-        self.my_total_mana = int(log_state.my_entity.query_tag("RESOURCES"))
-        self.my_used_mana = int(log_state.my_entity.query_tag("RESOURCES_USED"))
-        self.my_temp_mana = int(log_state.my_entity.query_tag("TEMP_RESOURCES"))
+        self.my_total_mana: int = int(log_state.my_entity.query_tag("RESOURCES"))
+        self.my_used_mana: int = int(log_state.my_entity.query_tag("RESOURCES_USED"))
+        self.my_temp_mana: int = int(log_state.my_entity.query_tag("TEMP_RESOURCES"))
 
         for entity in log_state.entity_dict.values():
             if entity.query_tag("ZONE") == "HAND":
@@ -195,7 +196,7 @@ class StrategyState:
         return self.my_hero_power.detail_hero_power
 
     @property
-    def touchable_oppo_minions(self):
+    def touchable_oppo_minions(self) -> List[StrategyMinion]:
         ret = []
 
         for oppo_minion in self.oppo_minions:

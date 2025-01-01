@@ -7,7 +7,7 @@ class LightingBolt(SpellPointOppo):
     bias = -4
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         spell_power = state.my_total_spell_power
         damage = 3 + spell_power
         best_delta_h = state.oppo_hero.delta_h_after_damage(damage)
@@ -30,7 +30,7 @@ class Hex(SpellPointOppo):
     keep_in_hand_bool = False
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         best_delta_h = 0
         best_oppo_index = -1
 
@@ -52,7 +52,7 @@ class LightningStorm(SpellNoPoint):
     bias = -10
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         h_sum = 0
         spell_power = state.my_total_spell_power
 
@@ -69,7 +69,7 @@ class MindControlTech(MinionNoPoint):
     keep_in_hand_bool = False
 
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         if state.oppo_minion_num < 4:
             return cls.value, state.my_minion_num
         else:
@@ -83,7 +83,7 @@ class FeralSpirit(SpellNoPoint):
     value = 2.4
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         if state.my_minion_num >= 7:
             return -1, 0
         else:
@@ -107,7 +107,7 @@ class FireElemental(MinionPointOppo):
     keep_in_hand_bool = False
 
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         best_h = 3 + state.oppo_hero.delta_h_after_damage(3)
         best_oppo_index = -1
 
@@ -126,7 +126,7 @@ class FireElemental(MinionPointOppo):
 # 精灵弓箭手
 class ElvenArcher(MinionPointOppo):
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         # 不能让她下去点脸, 除非对面快死了
         best_h = -0.8 + state.oppo_hero.delta_h_after_damage(1)
         best_oppo_index = -1
@@ -146,7 +146,7 @@ class ElvenArcher(MinionPointOppo):
 # 大地之环先知
 class EarthenRingFarseer(MinionPointMine):
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         best_h = 0.2 + state.my_hero.delta_h_after_heal(3)
         if state.my_hero.health <= 5:
             best_h += 4
@@ -166,7 +166,7 @@ class Abomination(MinionNoPoint):
     keep_in_hand_bool = True
 
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         h_sum = 0
         for oppo_minion in state.oppo_minions:
             h_sum += oppo_minion.delta_h_after_damage(2)
@@ -183,7 +183,7 @@ class StampedingKodo(MinionNoPoint):
     keep_in_hand_bool = False
 
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         h_sum = 2
         temp_sum = 0
         temp_count = 0
@@ -203,7 +203,7 @@ class BloodKnight(MinionNoPoint):
     keep_in_hand_bool = False
 
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         h_sum = 1
 
         for oppo_minion in state.oppo_minions:
@@ -221,7 +221,7 @@ class DoomSayer(MinionNoPoint):
     keep_in_hand_bool = True
 
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         # 一费别跳末日
         if state.my_total_mana == 1:
             return 0,
@@ -250,7 +250,7 @@ class StormforgedAxe(WeaponCard):
     value = 1.5
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         # 不要已经有刀了再顶刀
         if state.my_weapon is not None:
             return 0,
@@ -276,7 +276,7 @@ class HolySmite(SpellPointOppo):
     bias = -2
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         best_oppo_index = -1
         best_delta_h = 0
 
@@ -297,7 +297,7 @@ class WaveOfApathy(SpellNoPoint):
     bias = -4
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         tmp = 0
 
         for minion in state.oppo_minions:
@@ -318,7 +318,7 @@ class ShadowWordDeath(SpellPointOppo):
     bias = -6
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         best_oppo_index = -1
         best_delta_h = 0
 
@@ -341,7 +341,7 @@ class Apotheosis(SpellPointMine):
     bias = -6
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         best_delta_h = 0
         best_mine_index = -1
 
@@ -372,7 +372,7 @@ class DevouringPlague(SpellNoPoint):
     bias = -4  # 把吸的血直接算进bias
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         curr_h = state.heuristic_value
 
         delta_h_sum = 0
@@ -399,7 +399,7 @@ class HolyNova(SpellNoPoint):
     bias = -8
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         return cls.bias + sum([minion.delta_h_after_damage(2)
                                for minion in state.oppo_minions]),
 
@@ -411,7 +411,7 @@ class Hysteria(SpellPointOppo):
     keep_in_hand_bool = False
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         best_delta_h = 0
         best_arg = 0
         sample_times = 10
@@ -472,7 +472,7 @@ class ShadowWordRuin(SpellNoPoint):
     keep_in_hand_bool = False
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         return cls.bias + sum([minion.heuristic_val
                                for minion in state.oppo_minions
                                if minion.attack >= 5]),
@@ -484,7 +484,7 @@ class AgainstAllOdds(SpellNoPoint):
     keep_in_hand_bool = False
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         return cls.bias + \
                sum([minion.heuristic_val
                     for minion in state.oppo_minions
@@ -526,7 +526,7 @@ class SoulMirror(SpellNoPoint):
     keep_in_hand_bool = False
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         copy_number = min(7 - state.my_minion_num, state.oppo_minion_num)
         h_sum = 0
         for i in range(copy_number):
@@ -572,7 +572,7 @@ class RaiseDead(SpellNoPoint):
     keep_in_hand_bool = False
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         if len(state.my_graveyard) and state.my_hero.health > 5:
             return 4,
 
@@ -585,7 +585,7 @@ class ShadowBomber(MinionNoPoint):
     keep_in_hand_bool = False
 
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         return state.oppo_hero.delta_h_after_damage(3) + cls.value, 0
 
 # 精神灼烧
@@ -594,7 +594,7 @@ class MindBlast(SpellPointOppo):
     bias = -1
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         best_delta_h = -1
         best_oppo_index = -1
 
@@ -619,7 +619,7 @@ class Acupuncture(SpellNoPoint):
     bias = 0
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         return state.oppo_hero.delta_h_after_damage(3) + cls.bias,
 
 
@@ -635,7 +635,7 @@ class MindShatter(SpellNoPoint):
     bias = -2
 
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: StrategyState, hand_card_index: int):
         return state.oppo_hero.delta_h_after_damage(5) + cls.bias,
 
 
@@ -667,11 +667,11 @@ class FrenziedFelwing(MinionNoPoint):
 # 迪菲亚麻风侏儒
 class DefiasCleaner(MinionPointOppo):
     @classmethod
-    def utilize_delta_h_and_arg(cls, state, hand_card_index):
-        has_shadow_spell = any(my_hand_card.is_shadow_spell for my_hand_card in state.my_hand_cards)
+    def utilize_delta_h_and_arg(cls, state: StrategyState, hand_card_index: int):
+        this_card = state.my_hand_cards[hand_card_index]
 
-        if not has_shadow_spell:
-            return 0, state.my_minion_num, -1   # 要是真的没事干，就算不打三也下去战场
+        if not this_card.powered_up:
+            return 0.1, state.my_minion_num, -1   # 要是真的没事干，就算不打三也下去当白板打架
 
         best_delta_h = state.oppo_hero.delta_h_after_damage(3)
         best_oppo_index = -1
