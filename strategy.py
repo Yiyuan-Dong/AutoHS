@@ -250,6 +250,16 @@ class StrategyState:
 
         return count
 
+    @property
+    # 给亡者复生用的
+    def num_minions_in_my_graveyard(self):
+        count = 0
+        for entity in self.my_graveyard:
+            if entity.cardtype == "MINION":
+                count += 1
+
+        return count
+
     def fetch_uni_entity(self, uni_index):
         if 0 <= uni_index < 7:
             return self.my_minions[uni_index]

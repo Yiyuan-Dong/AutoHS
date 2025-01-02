@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     strategy_state = StrategyState(state)
     strategy_state.debug_print_out()
-    logger.debug("当前最佳出牌抉择:")
+    logger.debug("当前最佳出牌抉择: ")
     strategy_state.best_h_index_arg()
     logger.debug("当前最佳随从攻击: ")
     strategy_state.get_best_attack_target()
