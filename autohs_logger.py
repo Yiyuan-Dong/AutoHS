@@ -8,16 +8,20 @@ logger = loguru.logger
 def custom_format(record):
     time = record["time"].strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
     level = record["level"].name
+    file_name = "main" if record["name"] == "__main__" else record["name"]
     function_name = "__main__" if record["function"] == "<module>" else record["function"]
-    name_function_line = record["name"] + ".py:" + str(record["line"]) + "(" + function_name + ")"
+    file_function_line = file_name + ".py:" + str(record["line"]) + "(" + function_name + ")"
 
-    return f"<green>{time}</green> | <level>{level:<7}</level> | <cyan>{name_function_line:<40}</cyan>" + "- <level>{message}</level>\n"
+    return f"<green>{time}</green> | <level>{level:<7}</level> | <cyan>{file_function_line:<40}</cyan>" + "- <level>{message}</level>\n"
 
 def logger_init(level="INFO"):
     global _logger_initialized
+
     if _logger_initialized and logger.level == level:
         logger.debug("日志记录器不会被重复初始化")
         return
+    elif _logger_initialized:
+        logger.info(f"更新日志记录器的日志级别: {level}")
 
     # 获取当前脚本文件所在的文件夹路径
     current_folder = os.path.dirname(os.path.abspath(__file__))
