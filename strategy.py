@@ -435,7 +435,7 @@ class StrategyState:
                     logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name}) "
                                 f"delta_h: {delta_h}, *args: {[]} (默认行为) ")
                 else:
-                    logger.debug(f"卡牌[{hand_card_index}]({hand_card.name})无法评判")
+                    logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name})无法评判")
             else:
                 delta_h, *args = detail_card.best_h_and_arg(self, hand_card_index)
                 logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name}) "

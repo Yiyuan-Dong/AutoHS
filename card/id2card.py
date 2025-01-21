@@ -80,5 +80,5 @@ ID2CARD_DICT = {
     # "REV_791": CathedralOfAtonement,
     "CORE_SW_448": DarkbishopBenedictus,
     "SW_448": DarkbishopBenedictus,
-    "YOD_032": DefiasCleaner,
+    "DED_513": DefiasCleaner,
 }

@@ -138,6 +138,14 @@ def add_label_and_entry(root, label_text, entry_text, bind_func):
 
     return entry
 
+def toggle_debug_log():
+    if debug_button.config('text')[-1] == "调试日志：未启用":
+        logger_init("DEBUG")
+        debug_button.config(text="调试日志：启用")
+    else:
+        logger_init("INFO")  # 或者其他你想要的默认日志级别
+        debug_button.config(text="调试日志：未启用")
+
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", close_gui)
 
@@ -188,7 +196,7 @@ if __name__ == "__main__":
     modified_time_label = tk.Label(root, text=f"cards.json最后更新时间：\n{JSON_LAST_MODIFIED_TIME}", fg="gray")
     modified_time_label.grid(row=5, column=2, padx=10, pady=5, sticky="ew")
 
-    debug_button = tk.Button(root, text="启用调试日志", command=lambda: logger_init("DEBUG"), width=20, height=1)
+    debug_button = tk.Button(root, text="调试日志：未启用", command=toggle_debug_log, width=20, height=1)
     debug_button.grid(row=6, column=2, padx=10, pady=10, sticky="ew")
 
     root.mainloop()

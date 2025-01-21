@@ -14,8 +14,11 @@ class AutoHSConfig:
     def save_config(self, path="configs.json"):
         try:
             with open(path, "w") as f:
+                temp = self.click_coordinates
+                self.click_coordinates = None
                 json.dump(self.__dict__, f)
-                logger.info("配置文件保存成功")
+                logger.info(f"配置文件成功保存至{path}")
+                self.click_coordinates = temp
         except (IOError, OSError) as e:
             logger.error(f"保存配置文件时出错: {e}")
 
