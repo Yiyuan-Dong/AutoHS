@@ -546,6 +546,7 @@ class BloodOfGhuun(MinionNoPoint):
 
 
 # ------ 下面是狂野暗牧的卡牌 ------
+# 随从优先级：心灵按摩师>肥婆>随船外科医生>暗影投弹手>宝藏经销商>海盗帕奇斯
 # 海盗帕奇斯
 class PatchesThePirate(MinionNoPoint):
     value = 1
@@ -554,7 +555,7 @@ class PatchesThePirate(MinionNoPoint):
 
 # 虚触侍从
 class VoidtouchedAttendant(MinionNoPoint):
-    value = 3
+    value = 4
     keep_in_hand_bool = True
 
 
@@ -566,7 +567,7 @@ class TreasureMerchant(MinionNoPoint):
 
 # 心灵按摩师
 class MindrenderIllucia(MinionNoPoint):
-    value = 4
+    value = 4.5
     keep_in_hand_bool = True
 
 
@@ -587,7 +588,7 @@ class RaiseDead(SpellNoPoint):
 
 # 暗影投弹手
 class ShadowBomber(MinionNoPoint):
-    value = 2
+    value = 1
     keep_in_hand_bool = True
 
     @classmethod
@@ -633,7 +634,7 @@ class Acupuncture(SpellNoPoint):
 
 # 随船外科医师
 class ShipSurgeon(MinionNoPoint):
-    value = 4
+    value = 3
     keep_in_hand_bool = True
 
 
