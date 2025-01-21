@@ -90,6 +90,9 @@ class SpellPointMine(SpellCard):
 
 
 class MinionCard(Card):
+    # 有的随从带有光环，其价值不仅仅由身材决定，所以加上一个偏移量
+    live_value = 0
+
     @classmethod
     def get_card_type(cls):
         return CARD_MINION

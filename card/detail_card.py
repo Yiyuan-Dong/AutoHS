@@ -546,7 +546,7 @@ class BloodOfGhuun(MinionNoPoint):
 
 
 # ------ 下面是狂野暗牧的卡牌 ------
-# 随从优先级：心灵按摩师>肥婆>随船外科医生>暗影投弹手>宝藏经销商>海盗帕奇斯
+# 随从优先级：随船外科医生>宝藏经销商>心灵按摩师>肥婆>暗影投弹手>海盗帕奇斯
 # 海盗帕奇斯
 class PatchesThePirate(MinionNoPoint):
     value = 1
@@ -555,18 +555,28 @@ class PatchesThePirate(MinionNoPoint):
 
 # 虚触侍从
 class VoidtouchedAttendant(MinionNoPoint):
-    value = 4
+    live_value = 2
+    value = 3
     keep_in_hand_bool = True
 
 
 # 宝藏经销商
 class TreasureMerchant(MinionNoPoint):
-    value = 2
+    live_value = 1
+    value = 4
     keep_in_hand_bool = True
 
 
 # 心灵按摩师
 class MindrenderIllucia(MinionNoPoint):
+    live_value = 1
+    value = 3.5
+    keep_in_hand_bool = True
+
+
+# 随船外科医师
+class ShipSurgeon(MinionNoPoint):
+    live_value = 1
     value = 4.5
     keep_in_hand_bool = True
 
@@ -588,7 +598,7 @@ class RaiseDead(SpellNoPoint):
 
 # 暗影投弹手
 class ShadowBomber(MinionNoPoint):
-    value = 1
+    value = 1.8
     keep_in_hand_bool = True
 
     @classmethod
@@ -596,10 +606,11 @@ class ShadowBomber(MinionNoPoint):
         return state.oppo_hero.delta_h_after_damage(3) + cls.value, 0
 
 # 精神灼烧
+# TODO: 理论上可以打死自己的随从实现斩杀...
 class MindBlast(SpellPointOppo):
     wait_time = 2
     bias = -1
-    keep_in_hand_bool = True   # 大数据显示起手留他正收益
+    keep_in_hand_bool = True   # 大数据显示起手留它正收益
 
     @classmethod
     def best_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
@@ -608,6 +619,9 @@ class MindBlast(SpellPointOppo):
 
         for oppo_minion in state.oppo_minions:
             if not oppo_minion.can_be_pointed_by_spell:
+                continue
+            # 我发现这个法术打不死随从的时候看着就很蠢
+            if oppo_minion.health > 2:
                 continue
 
             temp_delta_h = oppo_minion.delta_h_after_damage(2) + cls.bias
@@ -632,16 +646,10 @@ class Acupuncture(SpellNoPoint):
         return state.oppo_hero.delta_h_after_damage(3) + cls.bias,
 
 
-# 随船外科医师
-class ShipSurgeon(MinionNoPoint):
-    value = 3
-    keep_in_hand_bool = True
-
-
 # 心灵震爆
 class MindShatter(SpellNoPoint):
     wait_time = 2
-    bias = -2
+    bias = -1
     keep_in_hand_bool = False
 
     @classmethod
@@ -662,25 +670,31 @@ class TwilightDeceptor(MinionNoPoint):
         else:
             return 4, state.my_minion_num
 
+
 # 赎罪教堂
 # 还没想好怎么写
 class ChurchOfAtonement(MinionNoPoint):
     value = -100
+
 
 # 空降歹徒
 class CathedralOfAtonement(MinionNoPoint):
     value = 0.1  # 最好是从手牌里被拉出来
     keep_in_hand_bool = True
 
+
 # 纸艺天使
 class PaperCranes(MinionNoPoint):
+    live_value = 3
     value = 4
     keep_in_hand_bool = True
+
 
 # 暗影主教本尼迪塔斯
 class DarkbishopBenedictus(MinionNoPoint):
     value = 4
     keep_in_hand_bool = False
+
 
 # 狂暴邪翼蝠
 class FrenziedFelwing(MinionNoPoint):
@@ -692,9 +706,10 @@ class FrenziedFelwing(MinionNoPoint):
         if hand_card.current_cost == 0:
             return 50, state.my_minion_num
         elif hand_card.current_cost == 1:
-            return 2, state.my_minion_num
+            return 1, state.my_minion_num
         else:
             return 0.1, state.my_minion_num
+
 
 # 迪菲亚麻风侏儒
 class DefiasCleaner(MinionPointOppo):
@@ -705,16 +720,16 @@ class DefiasCleaner(MinionPointOppo):
         this_card = state.my_hand_cards[hand_card_index]
 
         if not this_card.powered_up:
-            return 0.1, state.my_minion_num, -1   # 要是真的没事干，就算不打三也下去当白板打架
+            return 0.1, state.my_minion_num, -1   # 要是真的没事干，就算不打二也下去当白板打架
 
-        best_delta_h = state.oppo_hero.delta_h_after_damage(3)
+        best_delta_h = state.oppo_hero.delta_h_after_damage(2)
         best_oppo_index = -1
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):
             if not oppo_minion.can_be_pointed_by_minion:
                 continue
 
-            delta_h = oppo_minion.delta_h_after_damage(3)
+            delta_h = oppo_minion.delta_h_after_damage(2)
             if delta_h > best_delta_h:
                 best_delta_h = delta_h
                 best_oppo_index = oppo_index

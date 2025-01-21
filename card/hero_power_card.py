@@ -66,6 +66,10 @@ class MindSpike(HeroPowerCard):
                 best_delta_h = delta_h
                 best_index = oppo_index
 
+        # 二费打二不赚
+        if state.my_hero_power.current_cost >= 2:
+            best_delta_h /= state.my_hero_power.current_cost
+
         return best_delta_h, best_index
 
     @classmethod
