@@ -147,7 +147,7 @@ def get_state():
 
     logger.debug(f"Similarity: main_menu: {simm_main_menu}, choose_hero: {simm_choose_hero}, matching: {simm_matching}, choose_card: {simm_choose_card}")
 
-    if simm_main_menu > 0.88:
+    if simm_main_menu > 0.83:
         return FSM_MAIN_MENU
     elif simm_choose_hero > 0.9:
         return FSM_CHOOSING_HERO
