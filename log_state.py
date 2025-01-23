@@ -183,7 +183,7 @@ class CardEntity(Entity):
                "name: " + self.name + "\n" + \
                super().__str__()
 
-    def generate_strategy_entity(self, log_state):
+    def generate_strategy_entity(self, log_state : LogState):
         if self.cardtype == "MINION":
             return StrategyMinion(
                 card_id=self.card_id,
@@ -283,7 +283,7 @@ class CardEntity(Entity):
         self.card_id = card_id
 
 
-def update_state(state, line_info_container):
+def update_state(state : LogState, line_info_container):
     if line_info_container.line_type == LOG_LINE_CREATE_GAME:
         logger.debug("新的对局开始，刷新状态")
         state.flush()
@@ -343,6 +343,8 @@ def update_state(state, line_info_container):
                 if entity_string != state.my_name:
                     state.my_name = entity_string
             else:
+                if state.oppo_name != "" and entity_string != state.oppo_name:
+                    logger.error(f"我方用户名无法匹配，请检查是否正确配置用户名，当前配置{autohs_config.user_name}")
                 entity_id = state.oppo_entity_id
                 if entity_string != state.oppo_name:
                     state.oppo_name = entity_string
@@ -374,8 +376,8 @@ def update_state(state, line_info_container):
         # 张牌确定双方的 PlayerID
         if state.my_player_id == "0":
             if tag == "CARDTYPE" \
-               and value not in ["HERO", "HERO_POWER", "PLAYER", "GAME"] \
-               and "CONTROLLER" in state.current_update_entity.tag_dict:
+                    and value not in ["HERO", "HERO_POWER", "PLAYER", "GAME"] \
+                    and "CONTROLLER" in state.current_update_entity.tag_dict:
                 state.my_player_id = state.current_update_entity.query_tag("CONTROLLER")
                 # 双方PlayerID, 一个是1, 一个是2
                 state.oppo_player_id = str(3 - int(state.my_player_id))
