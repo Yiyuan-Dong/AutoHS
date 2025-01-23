@@ -13,6 +13,10 @@ PLAYER_NAME = ""     # !!!请根据实际情况修改!!!
 if __name__ == "__main__":
     logger_init("DEBUG")
 
+    if PLAYER_NAME == "":
+        logger.error("请设置PLAYER_NAME")
+        sys.exit(-1)
+
     log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
     autohs_config.user_name = PLAYER_NAME
 
