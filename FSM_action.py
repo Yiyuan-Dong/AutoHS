@@ -202,6 +202,7 @@ def Battling():
         # 如果是这个我的回合的第一次操作
         if not last_controller_is_me:
             time.sleep(4)
+            window_utils.wait_battlefield_stable(autohs_config, 5, 40)
             # 在游戏的第一个我的回合, 发一个你好
             # game_num_turns_in_play在每一个回合开始时都会加一, 即
             # 后手放第一个回合这个数是2
@@ -239,7 +240,7 @@ def Battling():
         # 如果不出牌, 考虑随从怎么打架
         my_index, oppo_index = strategy_state.get_best_attack_target()
 
-        # my_index == -1代表英雄攻击, -2 代表不攻击
+        # my_index == -1 代表英雄攻击, -2 代表不攻击
         if my_index != -2:
             strategy_state.my_entity_attack_oppo(my_index, oppo_index)
         else:

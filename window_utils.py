@@ -10,6 +10,7 @@ import win32api
 import win32process
 import numpy
 import cv2
+import time
 from autohs_logger import *
 from constants.state_and_key import *
 from constants.pixel_coordinate import *
@@ -112,18 +113,42 @@ def take_snapshot():
     return im_opencv
 
 
-def pixel_very_similar(im_opencv, y, x, expected_val):
-    img_val = im_opencv[y][x][:3]
-    img_val = img_val.astype(int)
+def wait_battlefield_stable(autohs_config, wait_count = 3, max_try = 40):
+    last_battlefield_snapshot = None
+    stable_count = 0
+    start_time = 0
+    end_time = 0
 
-    diff = abs(img_val[0] - expected_val[0]) + \
-           abs(img_val[1] - expected_val[1]) + \
-           abs(img_val[2] - expected_val[2])
+    for i in range(max_try):
+        im_opencv = take_snapshot()
+        if im_opencv.shape[2] == 4:
+            im_opencv = cv2.cvtColor(im_opencv, cv2.COLOR_BGRA2BGR)
 
-    if diff <= 3:
-        return True
+        start_x = autohs_config.click_coordinates[COORDINATE_BATTLEFILED_RANGE_X][0]
+        end_x = autohs_config.click_coordinates[COORDINATE_BATTLEFILED_RANGE_X][1]
+        start_y = autohs_config.click_coordinates[COORDINATE_BATTLEFILED_RANGE_Y][0]
+        end_y = autohs_config.click_coordinates[COORDINATE_BATTLEFILED_RANGE_Y][1]
+        curr_battlefield_snapshot = im_opencv[start_y:end_y, start_x:end_x]
+        # simm计算比较慢，所以压缩一下
+        curr_battlefield_snapshot = cv2.resize(curr_battlefield_snapshot, ((end_x - start_x) // 2, (end_y - start_y) // 2))
 
-    return False
+        if last_battlefield_snapshot is not None:
+            start_time = time.time()
+            simm = ssim(curr_battlefield_snapshot, last_battlefield_snapshot, multichannel=True, channel_axis = 2)
+            end_time = time.time()
+            logger.debug(f"Similarity: {simm}")
+            if simm > 0.95:
+                stable_count += 1
+                if stable_count >= wait_count:
+                    return
+            else:
+                stable_count = 0
+
+        last_battlefield_snapshot = curr_battlefield_snapshot
+        if end_time - start_time < 0.3:
+            time.sleep(0.3 - (end_time - start_time))
+
+    logger.warning("等待战场稳定超时")
 
 def get_state():
     hwnd = get_HS_hwnd()
