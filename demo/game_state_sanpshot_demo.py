@@ -8,7 +8,7 @@ from autohs_logger import *
 from config import autohs_config
 
 HEARTHSTONE_POWER_LOG_PATH = "D:/HearthStone/Logs"
-PLAYER_NAME = "多谋的猫咪"     # !!!请根据实际情况修改!!!
+PLAYER_NAME = ""     # !!!请根据实际情况修改!!!
 
 if __name__ == "__main__":
     logger_init("DEBUG")
@@ -36,3 +36,7 @@ if __name__ == "__main__":
     strategy_state.best_h_index_arg()
     logger.debug("当前最佳随从攻击: ")
     strategy_state.get_best_attack_target()
+
+    # 可以在选择起手手牌的时候使用，小透...
+    logger.debug(f"我方手牌及牌库共有{state.num_my_card}张牌")
+    logger.debug(f"对方手牌及牌库共有{state.num_oppo_card}张牌")

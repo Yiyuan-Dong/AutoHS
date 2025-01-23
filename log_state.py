@@ -47,6 +47,24 @@ class LogState:
         return res
 
     @property
+    def num_my_card(self):
+        count = 0
+        for entity in self.entity_dict.values():
+            if entity.query_tag("CONTROLLER") == self.my_player_id:
+                if entity.query_tag("ZONE") in ["HAND", "DECK"]:
+                    count += 1
+        return count
+
+    @property
+    def num_oppo_card(self):
+        count = 0
+        for entity in self.entity_dict.values():
+            if entity.query_tag("CONTROLLER") == self.oppo_player_id:
+                if entity.query_tag("ZONE") in ["HAND", "DECK"]:
+                    count += 1
+        return count
+
+    @property
     def is_end(self):
         return self.game_state == "COMPLETE"
 
@@ -384,14 +402,3 @@ def update_state(state, line_info_container):
                 state.oppo_player_id, state.my_player_id
 
     return True
-
-
-if __name__ == "__main__":
-    log_iter = log_iter_func("./Power.log")
-    log_container = next(log_iter)
-    temp_state = LogState()
-
-    for x in log_container.message_list:
-        # print(x)
-        update_state(temp_state, x)
-    print(temp_state)
