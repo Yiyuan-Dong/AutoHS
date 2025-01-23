@@ -610,7 +610,7 @@ class ShadowBomber(MinionNoPoint):
 class MindBlast(SpellPointOppo):
     wait_time = 2
     bias = -1
-    keep_in_hand_bool = True   # 大数据显示起手留它正收益
+    keep_in_hand_bool = False   # 大数据显示起手留它正收益，但是很难用好这张牌
 
     @classmethod
     def best_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
