@@ -48,6 +48,33 @@ def update_log_state():
     return True
 
 
+last_decision = None
+repeat_count = 0
+
+def check_repeat_decision(hash_code):
+    global last_decision
+    global repeat_count
+
+    if last_decision == hash_code:
+        repeat_count += 1
+        if repeat_count >= 10:
+            logger.error("连续10次相同操作，一定是哪里出了问题")
+            return True
+    else:
+        last_decision = hash_code
+        repeat_count = 0
+
+    return False
+
+
+def clear_decision():
+    global last_decision
+    global repeat_count
+
+    last_decision = None
+    repeat_count = 0
+
+
 def system_exit():
     global quitting_flag
 
@@ -201,8 +228,8 @@ def Battling():
 
         # 如果是这个我的回合的第一次操作
         if not last_controller_is_me:
-            time.sleep(4)
             window_utils.wait_battlefield_stable(autohs_config, 5, 40)
+            clear_decision()
             # 在游戏的第一个我的回合, 发一个你好
             # game_num_turns_in_play在每一个回合开始时都会加一, 即
             # 后手放第一个回合这个数是2
@@ -234,6 +261,8 @@ def Battling():
 
         # index == -1 代表使用技能, -2 代表不出牌
         if index != -2:
+            if check_repeat_decision(hash("card" + str(index) + str(args))):
+                return FSM_ERROR
             strategy_state.use_best_entity(index, args)
             continue
 
@@ -242,6 +271,8 @@ def Battling():
 
         # my_index == -1 代表英雄攻击, -2 代表不攻击
         if my_index != -2:
+            if check_repeat_decision(hash("attack" + str(my_index) + str(oppo_index))):
+                return FSM_ERROR
             strategy_state.my_entity_attack_oppo(my_index, oppo_index)
         else:
             click.end_turn()
