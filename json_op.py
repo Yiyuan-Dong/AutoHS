@@ -53,6 +53,7 @@ JSON_DICT, JSON_LAST_MODIFIED_TIME = read_json()
 
 
 def query_json_get_dict(key):
+    global JSON_DICT
     json_dict = JSON_DICT
 
     if key == "":
@@ -62,9 +63,10 @@ def query_json_get_dict(key):
         return json_dict[key]
     else:
         logger.info(f"未找到卡牌{key}，尝试重新下载cards.json文件")
-        json_dict = read_json(True)
+        json_dict, _ = read_json(True)
+        JSON_DICT = json_dict
         if key not in json_dict:
-            logger.error("出现未识别卡牌，程序无法继续")
+            logger.error(f"出现未识别卡牌{key}，程序无法继续")
             sys.exit(-1)
         return json_dict[key]
 
