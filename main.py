@@ -146,12 +146,17 @@ def toggle_debug_log():
         logger_init("INFO")
         debug_button.config(text="调试日志：未启用")
 
+def toggle_give_up_with_dignity():
+    autohs_config.give_up_with_dignity = not autohs_config.give_up_with_dignity
+    give_up_button.config(text=f"快攻智能投降：{'启用' if autohs_config.give_up_with_dignity else '未启用'}")
+
 if __name__ == "__main__":
     keyboard.add_hotkey("ctrl+q", close_gui)
 
     logger_init()
 
     autohs_config.load_config()
+    autohs_config.exit_func = close_gui
     if autohs_config.width == 0:
         autohs_config.width = WIDTH
     if autohs_config.height == 0:
@@ -198,5 +203,8 @@ if __name__ == "__main__":
 
     debug_button = tk.Button(root, text="调试日志：未启用", command=toggle_debug_log, width=20, height=1)
     debug_button.grid(row=6, column=2, padx=10, pady=10, sticky="ew")
+
+    give_up_button = tk.Button(root, text=f"快攻智能投降：{'启用' if autohs_config.give_up_with_dignity else '未启用'}", command=toggle_give_up_with_dignity, width=20, height=1)
+    give_up_button.grid(row=6, column=0, padx=10, pady=10, sticky="ew")
 
     root.mainloop()

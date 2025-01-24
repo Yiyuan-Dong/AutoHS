@@ -343,8 +343,8 @@ def update_state(state : LogState, line_info_container):
                 if entity_string != state.my_name:
                     state.my_name = entity_string
             else:
-                if state.oppo_name != "" and entity_string != state.oppo_name:
-                    logger.error(f"我方用户名无法匹配，请检查是否正确配置用户名，当前配置{autohs_config.user_name}")
+                if state.oppo_name != "" and entity_string not in state.oppo_name and state.oppo_name != "UNKNOWN HUMAN PLAYER":
+                    logger.error(f"我方用户名无法匹配，请检查是否正确配置用户名，当前配置{autohs_config.user_name}，双方用户名{entity_string}和{state.oppo_name}")
                 entity_id = state.oppo_entity_id
                 if entity_string != state.oppo_name:
                     state.oppo_name = entity_string

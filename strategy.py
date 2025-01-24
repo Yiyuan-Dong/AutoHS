@@ -81,6 +81,36 @@ class StrategyState:
         self.oppo_minions.sort(key=lambda temp: temp.zone_pos)
         self.my_hand_cards.sort(key=lambda temp: temp.zone_pos)
 
+    def should_give_up(self):
+        # 为时尚早
+        if self.my_total_mana <= 6:
+            return False
+
+        score = 0
+        if self.oppo_hero.health >= 30:
+            score += 4
+        if self.oppo_hero.health >= 25:
+            score += 2
+        elif self.oppo_hero.health >= 15:
+            score += 1
+
+        if self.my_hand_card_num <= 1:
+            score += 2
+
+        if self.my_minion_num <= 1:
+            score += 2
+
+        if self.oppo_hand_card_num >= 4:
+            score += 1
+
+        if self.oppo_minion_num >= 4:
+            score += 2
+
+        if score >= 7:
+            return True
+        return False
+
+
     def debug_print_battlefield(self):
         logger.debug("对手英雄:")
         logger.debug("    " + str(self.oppo_hero))

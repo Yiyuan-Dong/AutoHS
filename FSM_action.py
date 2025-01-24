@@ -5,6 +5,7 @@ import keyboard
 import click
 import window_utils
 import cv2
+import time
 from strategy import StrategyState
 from log_state import *
 from loguru import logger
@@ -83,8 +84,21 @@ def system_exit():
     logger.info(f"一共完成了{game_count}场对战, 赢了{win_count}场")
 
 
+start_play_time = time.time()
+
 def ChoosingHeroAction():
     global choose_hero_count
+    global start_play_time
+
+    if autohs_config.max_play_time > 0 and time.time() - start_play_time > autohs_config.max_play_time * 60:
+        logger.info("已经达到最大游玩时间，退出脚本")
+        window_utils.terminate_HS()
+        autohs_config.exit_func()
+
+    if autohs_config.max_win_count > 0 and win_count >= autohs_config.max_win_count:
+        logger.info("已经达到最大胜利场次，退出脚本")
+        window_utils.terminate_HS()
+        autohs_config.exit_func()
 
     # 有时脚本会卡在某个地方, 从而在FSM_Matching
     # 和FSM_CHOOSING_HERO之间反复横跳. 这时候要
@@ -226,6 +240,9 @@ def Battling():
             continue
 
         # 接下来考虑在我的回合的出牌逻辑
+        logger.debug("-" * 60)
+        strategy_state = StrategyState(log_state)
+        strategy_state.debug_print_out()
 
         # 如果是这个我的回合的第一次操作
         if not last_controller_is_me:
@@ -240,6 +257,13 @@ def Battling():
                 # 在之后每个回合开始时有概率发表情
                 if random.random() < EMOJ_RATIO:
                     click.emoj()
+                if strategy_state.should_give_up() and autohs_config.give_up_with_dignity:
+                    click.give_up()
+                    # 打得不错
+                    click.emoj(1)
+                    time.sleep(3)
+                    # 脚本应通过读取日志进入FSM_QUITTING_BATTLE状态
+                    continue
 
         last_controller_is_me = True
         not_mine_count = 0
@@ -252,10 +276,6 @@ def Battling():
             click.commit_error_report()
             click.cancel_click()
             time.sleep(STATE_CHECK_INTERVAL)
-
-        logger.debug("-" * 60)
-        strategy_state = StrategyState(log_state)
-        strategy_state.debug_print_out()
 
         # 考虑要不要出牌
         index, args = strategy_state.best_h_index_arg()
