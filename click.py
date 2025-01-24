@@ -132,6 +132,13 @@ def choose_and_use_spell(card_index, card_num):
     click_middle()
 
 
+def click_give_up():
+    coors = autohs_config.click_coordinates
+
+    rand_sleep(OPERATE_INTERVAL)
+    left_click(coors[COORDINATE_GIVE_UP_X], coors[COORDINATE_GIVE_UP_Y])
+
+
 # 第[i]个随从左边那个空隙记为第[i]个gap
 def put_minion(gap_index, minion_num):
     coors = autohs_config.click_coordinates

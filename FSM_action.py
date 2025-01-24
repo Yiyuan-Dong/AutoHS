@@ -382,7 +382,7 @@ def HandleErrorAction():
         click.click_setting()
         time.sleep(0.5)
         # 先尝试点认输
-        click.left_click(960, 380)
+        click.click_give_up()
         time.sleep(2)
 
         window_utils.terminate_HS()
