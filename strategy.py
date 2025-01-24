@@ -11,7 +11,8 @@ from typing import List
 
 
 class StrategyState:
-    def __init__(self, log_state=None):
+    def __init__(self, log_state : LogState=None):
+        # 注意地标也算 minion
         self.oppo_minions: List[StrategyMinion] = []
         self.oppo_graveyard: List[StrategyEntity] = []
         self.my_minions: List[StrategyMinion] = []
@@ -40,7 +41,10 @@ class StrategyState:
                     self.oppo_hand_card_num += 1
 
             elif entity.zone == "PLAY":
-                if entity.cardtype == "MINION":
+                if entity.cardtype == "GAME" or entity.cardtype == "PLAYER":
+                    continue
+
+                elif entity.cardtype == "MINION" or entity.cardtype == "LOCATION":
                     minion = entity.generate_strategy_entity(log_state)
                     if log_state.is_my_entity(entity):
                         self.my_minions.append(minion)
@@ -70,6 +74,9 @@ class StrategyState:
                         self.my_weapon = weapon
                     else:
                         self.oppo_weapon = weapon
+
+                else:
+                    logger.error(f"未知的PLAY区域卡牌类型: {entity.cardtype}")
 
             elif entity.zone == "GRAVEYARD":
                 if log_state.is_my_entity(entity):
@@ -289,19 +296,6 @@ class StrategyState:
                 count += 1
 
         return count
-
-    def fetch_uni_entity(self, uni_index):
-        if 0 <= uni_index < 7:
-            return self.my_minions[uni_index]
-        elif uni_index == 9:
-            return self.my_hero
-        elif 10 <= uni_index < 17:
-            return self.oppo_minions[uni_index]
-        elif uni_index == 19:
-            return self.oppo_hero
-        else:
-            logger.error(f"Get invalid uni_index: {uni_index}")
-            sys.exit(-1)
 
     def fight_between(self, oppo_index, my_index):
         oppo_minion = self.oppo_minions[oppo_index]

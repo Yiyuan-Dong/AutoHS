@@ -272,7 +272,19 @@ class CardEntity(Entity):
                 powered_up=int(self.query_tag("POWERED_UP")),
                 exhausted=int(self.query_tag("EXHAUSTED", default_val="0")),
             )
+        elif self.cardtype == "LOCATION":
+            return StrategyLocation(
+                card_id=self.card_id,
+                zone=self.query_tag("ZONE"),
+                zone_pos=int(self.query_tag("ZONE_POS")),
+                current_cost=int(self.query_tag("COST")),
+                overload=int(self.query_tag("OVERLOAD")),
+                is_mine=log_state.is_my_entity(self),
+                powered_up=int(self.query_tag("POWERED_UP")),
+                health=int(self.query_tag("HEALTH")),
+            )
         else:
+            logger.warning(f"未知卡牌类型{self.cardtype}")
             return None
 
     @property

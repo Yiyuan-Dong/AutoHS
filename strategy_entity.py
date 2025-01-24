@@ -57,17 +57,6 @@ class StrategyEntity:
         else:
             return ID2CARD_DICT.get(self.card_id, None)
 
-    # uni_index是对场上可能要被鼠标指到的对象的统一编号.
-    # 包括敌我随从和敌我英雄, 具体编号为:
-    # 0-6: 我方随从
-    # 9: 我方英雄
-    # 10-16: 敌方随从
-    # 19: 敌方英雄　
-    @property
-    def uni_index(self):
-        return -1
-
-
 class StrategyMinion(StrategyEntity):
     def __init__(self, card_id, zone, zone_pos,
                  current_cost, overload, is_mine, powered_up,
@@ -173,13 +162,6 @@ class StrategyMinion(StrategyEntity):
     @property
     def cardtype(self):
         return CARD_MINION
-
-    @property
-    def uni_index(self):
-        if self.is_mine:
-            return self.zone_pos - 1
-        else:
-            return self.zone_pos - 1 + 10
 
     @property
     def health(self):
@@ -368,13 +350,6 @@ class StrategyHero(StrategyEntity):
         return CARD_HERO
 
     @property
-    def uni_index(self):
-        if self.is_mine:
-            return 9
-        else:
-            return 19
-
-    @property
     def health(self):
         return self.max_health + self.armor - self.damage
 
@@ -448,6 +423,65 @@ class StrategySpell(StrategyEntity):
     @property
     def cardtype(self):
         return CARD_SPELL
+
+
+# TODO: 目前脚本不支持使用地标
+class StrategyLocation(StrategyEntity):
+    def __init__(self, card_id, zone, zone_pos,
+                 current_cost, overload, is_mine, powered_up,
+                 health):
+        super().__init__(card_id, zone, zone_pos,
+                         current_cost, overload, is_mine, powered_up)
+        self.health = health
+        self.attack = 0
+
+    def __str__(self):
+        return f"[{self.zone_pos}] {self.name} 耐久:{self.health}"
+
+    @property
+    def cardtype(self):
+        return CARD_LOCATION
+
+    @property
+    def can_beat_face(self):
+        return False
+
+    @property
+    def can_attack_minion(self):
+        return False
+
+    @property
+    def can_be_pointed_by_spell(self):
+        return False
+
+    @property
+    def can_be_pointed_by_hero_power(self):
+        return False
+
+    @property
+    def can_be_pointed_by_minion(self):
+        return False
+
+    @property
+    def can_be_attacked(self):
+        return False
+
+    @property
+    def heuristic_val(self):
+        return 0
+
+    def get_damaged(self, damage):
+        return False
+
+    def get_heal(self, heal):
+        return
+
+    # 这样应该就不会被攻击或是指向了
+    def delta_h_after_damage(self, damage):
+        return -1
+
+    def delta_h_after_heal(self, heal):
+        return -1
 
 
 class StrategyHeroPower(StrategyEntity):
