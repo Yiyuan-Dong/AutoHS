@@ -12,7 +12,7 @@ def custom_format(record):
     function_name = "__main__" if record["function"] == "<module>" else record["function"]
     file_function_line = file_name + ".py:" + str(record["line"]) + "(" + function_name + ")"
 
-    return f"<green>{time}</green> | <level>{level:<7}</level> | <cyan>{file_function_line:<40}</cyan>" + "- <level>{message}</level>\n"
+    return f"<green>{time}</green> | <level>{level:<7}</level> | <cyan>{file_function_line:<44}</cyan>" + "- <level>{message}</level>\n"
 
 def logger_init(level="INFO"):
     global _logger_initialized

@@ -4,6 +4,7 @@ import time
 import keyboard
 import click
 import window_utils
+import cv2
 from strategy import StrategyState
 from log_state import *
 from loguru import logger
@@ -364,6 +365,15 @@ def WaitMainMenu():
 
 
 def HandleErrorAction():
+    global log_state
+
+    logger.warning("开始异常记录")
+    curr_date_time = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
+    with open("autohs_log/" + curr_date_time + "_game_state_snapshot.txt", "w", encoding="utf8") as f:
+        f.write(str(log_state))
+    im_opencv = window_utils.take_snapshot()
+    if im_opencv is not None:
+        cv2.imwrite("autohs_log/" + curr_date_time + "_error.png", im_opencv)
 
     if not window_utils.test_hs_available():
         return FSM_LEAVE_HS
