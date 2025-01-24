@@ -440,7 +440,6 @@ class Hysteria(SpellPointOppo):
                         break
                     another_index = another_index_list[random.randint(0, len(another_index_list) - 1)]
 
-                    # print("another index: ", another_index)
                     if another_index >= tmp_state.oppo_minion_num:
                         another_minion = tmp_state.my_minions[another_index - tmp_state.oppo_minion_num]
                         if another_minion.get_damaged(chosen_minion.attack):
@@ -453,16 +452,13 @@ class Hysteria(SpellPointOppo):
                                 tmp_chosen_index -= 1
 
                     if chosen_minion.get_damaged(another_minion.attack):
-                        # print("h:", tmp_state.heuristic_value, state.heuristic_value)
                         tmp_state.oppo_minions.pop(tmp_chosen_index)
                         break
 
-                    # print("h:", tmp_state.heuristic_value, state.heuristic_value)
 
                 delta_h_count += tmp_state.heuristic_value - state.heuristic_value
 
             delta_h_count /= sample_times
-            # print("average delta_h:", delta_h_count)
             if delta_h_count > best_delta_h:
                 best_delta_h = delta_h_count
                 best_arg = chosen_index

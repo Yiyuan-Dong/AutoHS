@@ -22,7 +22,6 @@ figs_dir_path = os.path.join(current_dir_path, "figs")
 
 choose_card_img = cv2.imread(os.path.join(figs_dir_path, "choose_card.png"))
 choose_hero_img = cv2.imread(os.path.join(figs_dir_path, "choose_hero.png"))
-print(os.path.join(figs_dir_path, "choose_hero.png"))
 matching_img = cv2.imread(os.path.join(figs_dir_path, "matching.png"))
 main_menu_img = cv2.imread(os.path.join(figs_dir_path, "main_menu.png"))
 
