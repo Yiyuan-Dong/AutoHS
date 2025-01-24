@@ -143,7 +143,7 @@ def toggle_debug_log():
         logger_init("DEBUG")
         debug_button.config(text="调试日志：启用")
     else:
-        logger_init("INFO")  # 或者其他你想要的默认日志级别
+        logger_init("INFO")
         debug_button.config(text="调试日志：未启用")
 
 if __name__ == "__main__":
