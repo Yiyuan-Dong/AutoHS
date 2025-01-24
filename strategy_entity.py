@@ -433,6 +433,8 @@ class StrategyLocation(StrategyEntity):
         super().__init__(card_id, zone, zone_pos,
                          current_cost, overload, is_mine, powered_up)
         self.health = health
+        self.taunt = False
+        self.stealth = False
         self.attack = 0
 
     def __str__(self):

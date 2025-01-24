@@ -210,6 +210,13 @@ def emoj(target=None):
     rand_sleep(OPERATE_INTERVAL)
 
 
+def give_up_routine():
+    # 打得不错
+    emoj(1)
+    click_give_up()
+    time.sleep(3)
+
+
 def click_skill():
     coors = autohs_config.click_coordinates
 

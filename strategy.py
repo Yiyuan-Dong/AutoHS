@@ -75,9 +75,6 @@ class StrategyState:
                     else:
                         self.oppo_weapon = weapon
 
-                else:
-                    logger.error(f"未知的PLAY区域卡牌类型: {entity.cardtype}")
-
             elif entity.zone == "GRAVEYARD":
                 if log_state.is_my_entity(entity):
                     self.my_graveyard.append(entity)
@@ -113,10 +110,21 @@ class StrategyState:
         if self.oppo_minion_num >= 4:
             score += 2
 
+        if self.oppo_has_taunt:
+            score += 1
+
         if score >= 7:
             return True
         return False
 
+    def will_die_next_turn(self):
+        if self.mine_has_taunt:
+            return False
+
+        if self.my_hero.health <= self.oppo_total_attack + self.num_voidtouched_attendant_on_board * self.oppo_minion_num:
+            return True
+
+        return False
 
     def debug_print_battlefield(self):
         logger.debug("对手英雄:")
@@ -256,6 +264,14 @@ class StrategyState:
         return False
 
     @property
+    def mine_has_taunt(self):
+        for my_minion in self.my_minions:
+            if my_minion.taunt and not my_minion.stealth:
+                return True
+
+        return False
+
+    @property
     def my_total_attack(self):
         count = 0
         for my_minion in self.my_minions:
@@ -267,9 +283,20 @@ class StrategyState:
 
         return count
 
+    @property
+    def oppo_total_attack(self):
+        count = 0
+        for oppo_minion in self.oppo_minions:
+            count += oppo_minion.attack
+
+        if self.oppo_hero.can_attack:
+            count += self.oppo_hero.attack
+
+        return count
+
     # 场上有多少个虚触侍从，敌我双方都会生效，所以都算进去
     @property
-    def voidtouched_attendant_on_board(self):
+    def num_voidtouched_attendant_on_board(self):
         count = 0
         for minion in self.my_minions + self.oppo_minions:
             if minion.card_id == "SW_446":

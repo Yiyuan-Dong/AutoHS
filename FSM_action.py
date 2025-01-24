@@ -257,11 +257,8 @@ def Battling():
                 # 在之后每个回合开始时有概率发表情
                 if random.random() < EMOJ_RATIO:
                     click.emoj()
-                if strategy_state.should_give_up() and autohs_config.give_up_with_dignity:
-                    click.give_up()
-                    # 打得不错
-                    click.emoj(1)
-                    time.sleep(3)
+                if autohs_config.give_up_with_dignity and strategy_state.should_give_up():
+                    click.give_up_routine()
                     # 脚本应通过读取日志进入FSM_QUITTING_BATTLE状态
                     continue
 
@@ -296,8 +293,11 @@ def Battling():
                 return FSM_ERROR
             strategy_state.my_entity_attack_oppo(my_index, oppo_index)
         else:
-            click.end_turn()
-            time.sleep(STATE_CHECK_INTERVAL)
+            if autohs_config.give_up_with_dignity and strategy_state.will_die_next_turn():
+                click.give_up_routine()
+            else:
+                click.end_turn()
+                time.sleep(STATE_CHECK_INTERVAL)
 
 
 def QuittingBattle():
