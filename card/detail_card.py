@@ -584,7 +584,7 @@ class RaiseDead(SpellNoPoint):
 
     @classmethod
     def best_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
-        if state.my_hero.health <= 3 + state.voidtouched_attendant_on_board:  # 用了就死
+        if state.my_hero.health <= 3 + state.num_voidtouched_attendant_on_board:  # 用了就死
             return 0,
         elif state.num_minions_in_my_graveyard >= 2:
             return 100,
@@ -634,12 +634,17 @@ class MindBlast(SpellPointOppo):
 # 针灸
 class Acupuncture(SpellNoPoint):
     wait_time = 2
-    bias = 0
+    bias = -0.5
     keep_in_hand_bool = False
 
     @classmethod
     def best_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
-        return state.oppo_hero.delta_h_after_damage(3) + cls.bias,
+        damage = 4 + state.my_total_spell_power + state.num_voidtouched_attendant_on_board
+        if state.my_hero.health <= damage:
+            return -1,
+
+        # 我的血不重要
+        return state.oppo_hero.delta_h_after_damage(damage) + cls.bias,
 
 
 # 心灵震爆
@@ -688,7 +693,8 @@ class PaperCranes(MinionNoPoint):
 
 # 暗影主教本尼迪塔斯
 class DarkbishopBenedictus(MinionNoPoint):
-    value = 4
+    # 5费把直伤全用了很可能就赢了，不要下这个
+    value = 0.1
     keep_in_hand_bool = False
 
 
