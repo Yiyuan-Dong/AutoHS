@@ -399,11 +399,7 @@ def HandleErrorAction():
         return FSM_LEAVE_HS
     else:
         click.commit_error_report()
-        click.click_setting()
-        time.sleep(0.5)
-        # 先尝试点认输
-        click.click_give_up()
-        time.sleep(2)
+        click.give_up_routine()
 
         window_utils.terminate_HS()
         time.sleep(STATE_CHECK_INTERVAL)

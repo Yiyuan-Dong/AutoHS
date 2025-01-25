@@ -213,6 +213,8 @@ def emoj(target=None):
 def give_up_routine():
     # 打得不错
     emoj(1)
+    click_setting()
+    time.sleep(0.5)
     click_give_up()
     time.sleep(3)
 
