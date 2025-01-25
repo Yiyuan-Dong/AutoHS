@@ -107,7 +107,6 @@ if __name__ == "__main__":
     time.sleep(0.4)
 
     im_opencv = window_utils.take_snapshot()
-    im_opencv = im_opencv
     if im_opencv is None:
         print("截图失败")
         sys.exit(-1)
@@ -118,7 +117,6 @@ if __name__ == "__main__":
         im_opencv = cv2.cvtColor(im_opencv, cv2.COLOR_BGRA2BGR)
 
     print(f"图片尺寸: {im_opencv.shape}")
-    print("Width: {}", WIDTH)
 
     print("Current state: {}".format(window_utils.get_state()))
 

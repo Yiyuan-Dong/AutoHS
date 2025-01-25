@@ -20,10 +20,14 @@ current_file_path = os.path.abspath(__file__)
 current_dir_path = os.path.dirname(current_file_path)
 figs_dir_path = os.path.join(current_dir_path, "figs")
 
-choose_card_img = cv2.imread(os.path.join(figs_dir_path, "choose_card.png"))
-choose_hero_img = cv2.imread(os.path.join(figs_dir_path, "choose_hero.png"))
-matching_img = cv2.imread(os.path.join(figs_dir_path, "matching.png"))
-main_menu_img = cv2.imread(os.path.join(figs_dir_path, "main_menu.png"))
+choose_card_img_2k = cv2.imread(os.path.join(figs_dir_path, "choose_card_2k.png"))
+choose_hero_img_2k = cv2.imread(os.path.join(figs_dir_path, "choose_hero_2k.png"))
+matching_img_2k = cv2.imread(os.path.join(figs_dir_path, "matching_2k.png"))
+main_menu_img_2k = cv2.imread(os.path.join(figs_dir_path, "main_menu_2k.png"))
+choose_card_img_1080 = cv2.imread(os.path.join(figs_dir_path, "choose_card_1080.png"))
+choose_hero_img_1080 = cv2.imread(os.path.join(figs_dir_path, "choose_hero_1080.png"))
+matching_img_1080 = cv2.imread(os.path.join(figs_dir_path, "matching_1080.png"))
+main_menu_img_1080 = cv2.imread(os.path.join(figs_dir_path, "main_menu_1080.png"))
 
 def get_HS_hwnd():
     hwnd = win32gui.FindWindow(None, "炉石传说")
@@ -158,18 +162,33 @@ def get_state():
     if im_opencv.shape[2] == 4:
         im_opencv = cv2.cvtColor(im_opencv, cv2.COLOR_BGRA2BGR)
 
-    # if WIDTH == 2560:
-    curr_main_menu_part = im_opencv[300:900,980:1580]
-    curr_choose_hero_part = im_opencv[1040:1340, 1710:2010]
-    curr_matching_part = im_opencv[400:1000, 980:1580]
-    curr_choose_card_part = im_opencv[170:250, 1130:1430]
+    if WIDTH == 2560:
+        curr_main_menu_part = im_opencv[300:900,980:1580]
+        curr_choose_hero_part = im_opencv[1040:1340, 1710:2010]
+        curr_matching_part = im_opencv[400:1000, 980:1580]
+        curr_choose_card_part = im_opencv[170:250, 1130:1430]
 
-    simm_main_menu = ssim(curr_main_menu_part, main_menu_img, multichannel=True, channel_axis = 2)
-    simm_choose_hero = ssim(curr_choose_hero_part, choose_hero_img, multichannel=True, channel_axis = 2)
-    simm_matching = ssim(curr_matching_part, matching_img, multichannel=True, channel_axis = 2)
-    simm_choose_card = ssim(curr_choose_card_part, choose_card_img, multichannel=True, channel_axis = 2)
+        simm_main_menu = ssim(curr_main_menu_part, main_menu_img_2k, multichannel=True, channel_axis = 2)
+        simm_choose_hero = ssim(curr_choose_hero_part, choose_hero_img_2k, multichannel=True, channel_axis = 2)
+        simm_matching = ssim(curr_matching_part, matching_img_2k, multichannel=True, channel_axis = 2)
+        simm_choose_card = ssim(curr_choose_card_part, choose_card_img_2k, multichannel=True, channel_axis = 2)
 
-    logger.debug(f"Similarity: main_menu: {simm_main_menu}, choose_hero: {simm_choose_hero}, matching: {simm_matching}, choose_card: {simm_choose_card}")
+        logger.debug(f"Similarity: main_menu: {simm_main_menu}, choose_hero: {simm_choose_hero}, matching: {simm_matching}, choose_card: {simm_choose_card}")
+    elif WIDTH == 1920:
+        curr_main_menu_part = im_opencv[300:600, 810:1110]
+        curr_choose_hero_part = im_opencv[800:980, 1310:1490]
+        curr_matching_part = im_opencv[300:700, 770:1170]
+        curr_choose_card_part = im_opencv[130:190, 800:1120]
+
+        simm_main_menu = ssim(curr_main_menu_part, main_menu_img_1080, multichannel=True, channel_axis = 2)
+        simm_choose_hero = ssim(curr_choose_hero_part, choose_hero_img_1080, multichannel=True, channel_axis = 2)
+        simm_matching = ssim(curr_matching_part, matching_img_1080, multichannel=True, channel_axis = 2)
+        simm_choose_card = ssim(curr_choose_card_part, choose_card_img_1080, multichannel=True, channel_axis = 2)
+
+        logger.debug(f"Similarity: main_menu: {simm_main_menu}, choose_hero: {simm_choose_hero}, matching: {simm_matching}, choose_card: {simm_choose_card}")
+    else:
+        logger.error("Unsupported resolution")
+        return FSM_BATTLING
 
     if simm_main_menu > 0.83:
         return FSM_MAIN_MENU
