@@ -190,7 +190,7 @@ def get_state():
         logger.error("Unsupported resolution")
         return FSM_BATTLING
 
-    if simm_main_menu > 0.83:
+    if simm_main_menu > 0.8:
         return FSM_MAIN_MENU
     elif simm_choose_hero > 0.9:
         return FSM_CHOOSING_HERO

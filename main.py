@@ -133,7 +133,7 @@ def add_label_and_entry(root, label_text, entry_text, bind_func):
     entry = tk.Entry(root, width=20)
     entry.grid(row=add_label_and_entry.row, column=1, padx=10, pady=5, sticky="ew")
     entry.insert(0, entry_text)
-    entry.bind("<Leave>", bind_func)
+    # entry.bind("<Leave>", bind_func)
     entry.bind("<Return>", bind_func)
 
     return entry
