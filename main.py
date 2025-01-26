@@ -157,18 +157,20 @@ if __name__ == "__main__":
 
     autohs_config.load_config()
     autohs_config.exit_func = close_gui
-    if autohs_config.width == 0:
-        autohs_config.width = WIDTH
-    if autohs_config.height == 0:
-        autohs_config.height = HEIGHT
+    # if autohs_config.width == 0:
+    #     autohs_config.width = WIDTH
+    # if autohs_config.height == 0:
+    #     autohs_config.height = HEIGHT
+    autohs_config.width = WIDTH
+    autohs_config.height = HEIGHT
 
     root = tk.Tk()
     root.title("AutoHS GUI")
     root.geometry("500x340")
     root.protocol("WM_DELETE_WINDOW", close_gui)
 
-    entry_width = add_label_and_entry(root, "游戏水平像素数：", autohs_config.width, update_width)
-    entry_height = add_label_and_entry(root, "游戏垂直像素数：", autohs_config.height, update_height)
+    entry_width = add_label_and_entry(root, "游戏水平像素数：\n（不支持手动修改）", autohs_config.width, update_width)
+    entry_height = add_label_and_entry(root, "游戏垂直像素数：\n（不支持手动修改）", autohs_config.height, update_height)
     entry_max_play_time = add_label_and_entry(root, "最大游戏时间(分钟)：", autohs_config.max_play_time, update_max_play_time)
     entry_max_win_count = add_label_and_entry(root, "最大胜利场次：", autohs_config.max_win_count, update_max_win_count)
     entry_path = add_label_and_entry(root, "炉石安装路径：\n(例：D:\\Hearthstone)", autohs_config.hearthstone_install_path, update_install_path)

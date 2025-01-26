@@ -166,7 +166,7 @@ def enter_battle_mode():
     coors = autohs_config.click_coordinates
 
     # 一些奇怪的错误提示
-    commit_error_report()
+    # commit_error_report()
     rand_sleep(OPERATE_INTERVAL)
     left_click(coors[COORDINATE_MID_X], coors[COORDINATE_ENTER_BATTLE_Y])
 
