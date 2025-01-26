@@ -65,8 +65,8 @@ def update_player_name(event):
     autohs_config.user_name = entry_player_name.get()
 
 def update_all():
-    update_width(None)
-    update_height(None)
+    # update_width(None)
+    # update_height(None)
     update_max_play_time(None)
     update_max_win_count(None)
     update_install_path(None)
