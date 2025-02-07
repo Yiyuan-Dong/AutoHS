@@ -92,8 +92,8 @@ class StrategyMinion(StrategyEntity):
         self.attackable_by_rush = attackable_by_rush
         self.frozen = frozen
         self.dormant = dormant
-        # UNTOUCHABLE作用不明, 不过休眠的随从会在休眠时具有UNTOUCHABLE属性
-        # self.untouchable = untouchable
+        # 休眠的随从会在休眠时具有UNTOUCHABLE属性，星舰在未发射时也具有这个属性
+        self.untouchable = untouchable
         self.immune = immune
         self.cant_attack = cant_attack
         self.num_turns_in_play = num_turns_in_play
@@ -187,6 +187,7 @@ class StrategyMinion(StrategyEntity):
     @property
     def can_be_pointed_by_spell(self):
         return not self.stealth \
+               and not self.untouchable \
                and not self.not_targeted_by_spell \
                and not self.dormant \
                and not self.immune
@@ -194,6 +195,7 @@ class StrategyMinion(StrategyEntity):
     @property
     def can_be_pointed_by_hero_power(self):
         return not self.stealth \
+               and not self.untouchable \
                and not self.not_targeted_by_power \
                and not self.dormant \
                and not self.immune
@@ -201,12 +203,14 @@ class StrategyMinion(StrategyEntity):
     @property
     def can_be_pointed_by_minion(self):
         return not self.stealth \
+               and not self.untouchable \
                and not self.dormant \
                and not self.immune
 
     @property
     def can_be_attacked(self):
         return not self.stealth \
+               and not self.untouchable \
                and not self.immune \
                and not self.dormant
 
