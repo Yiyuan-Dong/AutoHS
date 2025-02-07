@@ -2,6 +2,8 @@
 
 **目前已经恢复了对狂野模式暗牧的支持，不过整体胜率并不是很乐观，只能说未来可期。不过可以用来刷经验。**
 
+欢迎加入QQ群[1012629918](点击链接加入群聊【AutoHS神奇交流群】：http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=a8wTD1v8YA190h3W95Q1iuEGZsRn0hwg&authKey=qnGdACuWGAvYI4mN0o3jzTLbAyUjj1QqY6SjFoAPjkCkVmQMUABVHgw7DxN26TkT&noverify=0&group_code=1012629918)，讨论交流。
+
 ### 主要新特性
 
 - 已支持回归后的新版炉石，包括新版`Power.log`定位，星际主题进入界面识别等
