@@ -117,6 +117,10 @@ def check_before_start():
         messagebox.showinfo("Warning", "未找到炉石传说或战网，请至少打开一个")
         return False
 
+    if autohs_config.click_coordinates is None:
+        messagebox.showinfo("Warning", "未找到对应分辨率的点击坐标")
+        return False
+
     if autohs_config.max_win_count == 0 and autohs_config.max_play_time == 0:
         messagebox.showinfo("Warning", "警告：程序将无限制运行，可能导致账号被封。")
 
@@ -196,6 +200,8 @@ if __name__ == "__main__":
         autohs_config.click_coordinates = COORDINATES_1920_1080
     elif WIDTH == 2560 and HEIGHT == 1440:
         autohs_config.click_coordinates = COORDINATES_2560_1440
+    else:
+        logger.error(f"未找到对应分辨率的点击坐标，当前分辨率为{WIDTH}X{HEIGHT}")
 
     hint_label = tk.Label(root, text="按Ctrl+Q可退出程序", fg="gray")
     hint_label.grid(row=4, column=2, padx=10, pady=5, sticky="ew")
