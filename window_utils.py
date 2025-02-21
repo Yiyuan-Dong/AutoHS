@@ -192,7 +192,7 @@ def get_state():
 
     if simm_main_menu > 0.8:
         return FSM_MAIN_MENU
-    elif simm_choose_hero > 0.9:
+    elif simm_choose_hero > 0.85:
         return FSM_CHOOSING_HERO
     elif simm_matching > 0.75:
         return FSM_MATCHING_OPPONENT

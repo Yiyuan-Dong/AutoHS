@@ -54,9 +54,10 @@ class LineInfoContainer:
     def __str__(self):
         res = "line_type: " + str(self.line_type) + "\n"
         if len(self.info_dict) > 0:
-            res += "info_dict\n"
+            res += "info_dict: {\n"
             for key, value in self.info_dict.items():
                 res += "\t" + str(key) + ": " + str(value) + "\n"
+            res += "}\n"
         return res
 
 
