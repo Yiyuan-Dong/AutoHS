@@ -2,7 +2,6 @@ import sys
 
 from log_op import *
 from json_op import *
-from strategy_entity import *
 from autohs_logger import *
 import constants.state_and_key
 from config import autohs_config
@@ -182,110 +181,6 @@ class CardEntity(Entity):
         return "cardID: " + self.card_id + "\n" + \
                "name: " + self.name + "\n" + \
                super().__str__()
-
-    def generate_strategy_entity(self, log_state : LogState):
-        if self.cardtype == "MINION":
-            return StrategyMinion(
-                card_id=self.card_id,
-                zone=self.query_tag("ZONE"),
-                zone_pos=int(self.query_tag("ZONE_POSITION")),
-                current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
-                overload=int(self.query_tag("OVERLOAD")),
-                is_mine=log_state.is_my_entity(self),
-                powered_up=int(self.query_tag("POWERED_UP")),
-                attack=int(self.query_tag("ATK")),
-                max_health=int(self.query_tag("HEALTH")),
-                damage=int(self.query_tag("DAMAGE")),
-                taunt=int(self.query_tag("TAUNT")),
-                divine_shield=int(self.query_tag("DIVINE_SHIELD")),
-                stealth=int(self.query_tag("STEALTH")),
-                windfury=int(self.query_tag("WINDFURY")),
-                poisonous=int(self.query_tag("POISONOUS")),
-                freeze=int(self.query_tag("FREEZE")),
-                battlecry=int(self.query_tag("BATTLECRY")),
-                spell_power=int(self.query_tag("SPELLPOWER")),
-                not_targeted_by_spell=int(self.query_tag("CANT_BE_TARGETED_BY_SPELLS")),
-                not_targeted_by_power=int(self.query_tag("CANT_BE_TARGETED_BY_HERO_POWERS")),
-                charge=int(self.query_tag("CHARGE")),
-                rush=int(self.query_tag("RUSH")),
-                attackable_by_rush=int(self.query_tag("ATTACKABLE_BY_RUSH")),
-                frozen=int(self.query_tag("FROZEN")),
-                dormant=int(self.query_tag("DORMANT")),
-                untouchable=int(self.query_tag("UNTOUCHABLE")),
-                immune=int(self.query_tag("IMMUNE")),
-                # -1代表标签缺失, 有两种情况会产生-1: 断线重连; 卡刚从手牌中被打出来
-                exhausted=int(self.query_tag("EXHAUSTED")),
-                cant_attack=int(self.query_tag("CANT_ATTACK")),
-                num_turns_in_play=int(self.query_tag("NUM_TURNS_IN_PLAY")),
-            )
-        elif self.cardtype == "SPELL":
-            return StrategySpell(
-                card_id=self.card_id,
-                zone=self.query_tag("ZONE"),
-                zone_pos=int(self.query_tag("ZONE_POSITION")),
-                current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
-                overload=int(self.query_tag("OVERLOAD")),
-                is_mine=log_state.is_my_entity(self),
-                powered_up=int(self.query_tag("POWERED_UP")),
-            )
-        elif self.cardtype == "WEAPON":
-            return StrategyWeapon(
-                card_id=self.card_id,
-                zone=self.query_tag("ZONE"),
-                zone_pos=int(self.query_tag("ZONE_POSITION")),
-                current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
-                overload=int(self.query_tag("OVERLOAD")),
-                is_mine=log_state.is_my_entity(self),
-                powered_up=int(self.query_tag("POWERED_UP")),
-                attack=int(self.query_tag("ATK")),
-                durability=int(self.query_tag("DURABILITY")),
-                damage=int(self.query_tag("DAMAGE")),
-                windfury=int(self.query_tag("WINDFURY")),
-            )
-        elif self.cardtype == "HERO":
-            return StrategyHero(
-                card_id=self.card_id,
-                zone=self.query_tag("ZONE"),
-                zone_pos=int(self.query_tag("ZONE_POS")),
-                current_cost=int(self.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
-                overload=int(self.query_tag("OVERLOAD")),
-                is_mine=log_state.is_my_entity(self),
-                powered_up=int(self.query_tag("POWERED_UP")),
-                max_health=int(self.query_tag("HEALTH")),
-                damage=int(self.query_tag("DAMAGE")),
-                stealth=int(self.query_tag("STEALTH")),
-                immune=int(self.query_tag("IMMUNE")),
-                not_targeted_by_spell=int(self.query_tag("CANT_BE_TARGETED_BY_SPELLS")),
-                not_targeted_by_power=int(self.query_tag("CANT_BE_TARGETED_BY_HERO_POWERS")),
-                armor=int(self.query_tag("ARMOR")),
-                attack=int(self.query_tag("ATK")),
-                exhausted=int(self.query_tag("EXHAUSTED")),
-            )
-        elif self.cardtype == "HERO_POWER":
-            return StrategyHeroPower(
-                card_id=self.card_id,
-                zone=self.query_tag("ZONE"),
-                zone_pos=int(self.query_tag("ZONE_POS")),
-                current_cost=int(self.query_tag("COST")),
-                overload=int(self.query_tag("OVERLOAD")),
-                is_mine=log_state.is_my_entity(self),
-                powered_up=int(self.query_tag("POWERED_UP")),
-                exhausted=int(self.query_tag("EXHAUSTED", default_val="0")),
-            )
-        elif self.cardtype == "LOCATION":
-            return StrategyLocation(
-                card_id=self.card_id,
-                zone=self.query_tag("ZONE"),
-                zone_pos=int(self.query_tag("ZONE_POS")),
-                current_cost=int(self.query_tag("COST")),
-                overload=int(self.query_tag("OVERLOAD")),
-                is_mine=log_state.is_my_entity(self),
-                powered_up=int(self.query_tag("POWERED_UP")),
-                health=int(self.query_tag("HEALTH")),
-            )
-        else:
-            logger.warning(f"未知卡牌类型{self.cardtype}")
-            return None
 
     @property
     def name(self):

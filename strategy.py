@@ -35,7 +35,7 @@ class StrategyState:
         for entity in log_state.entity_dict.values():
             if entity.query_tag("ZONE") == "HAND":
                 if log_state.is_my_entity(entity):
-                    hand_card = entity.generate_strategy_entity(log_state)
+                    hand_card = generate_strategy_entity(entity, log_state)
                     self.my_hand_cards.append(hand_card)
                 else:
                     self.oppo_hand_card_num += 1
@@ -45,14 +45,14 @@ class StrategyState:
                     continue
 
                 elif entity.cardtype == "MINION" or entity.cardtype == "LOCATION":
-                    minion = entity.generate_strategy_entity(log_state)
+                    minion = generate_strategy_entity(entity, log_state)
                     if log_state.is_my_entity(entity):
                         self.my_minions.append(minion)
                     else:
                         self.oppo_minions.append(minion)
 
                 elif entity.cardtype == "HERO":
-                    hero = entity.generate_strategy_entity(log_state)
+                    hero = generate_strategy_entity(entity, log_state)
                     if log_state.is_my_entity(entity):
                         self.my_hero = hero
                     else:
@@ -62,14 +62,14 @@ class StrategyState:
                 # 不过在 python 的 3.7 版本之后，字典的遍历顺序是按照插入顺序的，后出现的技能
                 # 会覆盖掉先出现的技能，完美。
                 elif entity.cardtype == "HERO_POWER":
-                    hero_power = entity.generate_strategy_entity(log_state)
+                    hero_power = generate_strategy_entity(entity, log_state)
                     if log_state.is_my_entity(entity):
                         self.my_hero_power = hero_power
                     else:
                         self.oppo_hero_power = hero_power
 
                 elif entity.cardtype == "WEAPON":
-                    weapon = entity.generate_strategy_entity(log_state)
+                    weapon = generate_strategy_entity(entity, log_state)
                     if log_state.is_my_entity(entity):
                         self.my_weapon = weapon
                     else:
