@@ -1,0 +1,145 @@
+<mxfile host="Electron" modified="2025-02-22T11:57:44.851Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.6.1 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" etag="LnzymzYKn0OVEti0Bpv4" version="24.6.1" type="device">
+  <diagram name="第 1 页" id="U2I3OTtjGib0rVJSeLhh">
+    <mxGraphModel dx="2236" dy="886" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="700" pageHeight="1150" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-1" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-664" width="630" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-2" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;炉石日志文本&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-650" y="46" width="142" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-7" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-496" y="120" as="sourcePoint" />
+            <mxPoint x="-496" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-8" value="&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;div&gt;FULL_ENTITY - Creating ID=26 CardID=CORE_WON_065&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space:pre&quot;&gt;&#x9;&lt;/span&gt;tag=CONTROLLER value=1&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space:pre&quot;&gt;&#x9;&lt;/span&gt;tag=CARDTYPE value=MINION&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space:pre&quot;&gt;&#x9;&lt;/span&gt;tag=TAG_LAST_KNOWN_COST_IN_HAND value=1&lt;/div&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-487" y="6" width="433" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-14" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-664" y="220" width="630" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-15" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;LogInfoContainer&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-650" y="265" width="142" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-16" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-496" y="338" as="sourcePoint" />
+            <mxPoint x="-496" y="218" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-17" value="&lt;span style=&quot;background-color: initial; font-size: 14px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;[&lt;/font&gt;&lt;/span&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;(line_type=Full Entity, info_dict={entity: 26, card: CORE_WON_065}),&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;(line_type=Tag, info_dict={CONTROLLER: 1}),&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;(line_type=Tag, info_dict={CARDTYPE: MINION}),&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;(line_type=Tag, info_dict={&lt;/font&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;TAG_LAST_KNOWN_COST_IN_HAND: 1&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;}),&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;]&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-487" y="224" width="443" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-18" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-664" y="440" width="630" height="162" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-19" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CardEntity&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-650" y="510" width="142" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-20" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-495" y="601" as="sourcePoint" />
+            <mxPoint x="-495" y="443" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-21" value="&lt;div&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;LogState.entity_dict[26] =&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px; background-color: initial;&quot;&gt;CardEntity(&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px; background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;font-size: 14px; background-color: initial;&quot;&gt;cardID = CORE_WON_065,&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px; background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;tag_dict = {&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px; background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;font-size: 14px; background-color: initial;&quot;&gt;CONTROLLER: 1,&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px; background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;/span&gt;CARDTYPE: MINION,&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px; background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;TAG_LAST_KNOWN_COST_IN_HAND: 1,&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px; background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;}&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-486" y="450" width="443" height="147" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-22" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-664" y="701" width="630" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-23" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;StrategyMinion&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-650" y="749" width="142" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-24" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-495" y="822" as="sourcePoint" />
+            <mxPoint x="-495" y="702" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7Y5WHmtBz6ZAp9REiZZ3-25" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;[1] 随船外科医师 1-2(2) [不能动] 光环价值:1 h_val:4&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-486" y="708" width="443" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-1" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="7Y5WHmtBz6ZAp9REiZZ3-1" target="7Y5WHmtBz6ZAp9REiZZ3-14">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-440" y="330" as="sourcePoint" />
+            <mxPoint x="-390" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-3" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;利用正则表达式提取文本信息&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-550" y="152" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-4" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="7Y5WHmtBz6ZAp9REiZZ3-14" target="7Y5WHmtBz6ZAp9REiZZ3-18">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-370" y="430" as="sourcePoint" />
+            <mxPoint x="-320" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-5" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;将文本信息依据其作用对象进行归类，对于每个tag仅保留其最新值，以字典形式存储&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-580" y="364" width="220" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-6" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="7Y5WHmtBz6ZAp9REiZZ3-18" target="7Y5WHmtBz6ZAp9REiZZ3-22">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-330" y="610" as="sourcePoint" />
+            <mxPoint x="-320" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-7" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;从tag字典中提取出攻击、血量等关键数据，并以此创建随从、武器等符合炉石玩家思维的对象&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-580" y="620" width="215" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-9" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;log_op.py&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-330" y="152" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-11" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;log_state.py&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-327.25" y="375" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-12" value="&lt;span style=&quot;font-size: 14px;&quot;&gt;strategy_entity.py&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-327.25" y="635" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-13" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="7Y5WHmtBz6ZAp9REiZZ3-22" target="bAhIKvix73ol6-P0YYy8-17">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-370" y="520" as="sourcePoint" />
+            <mxPoint x="-349" y="898" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-17" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-664" y="921" width="630" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-18" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;行为决策&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-650" y="969" width="142" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-19" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-495" y="1042" as="sourcePoint" />
+            <mxPoint x="-495" y="922" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-20" value="&lt;div&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;卡牌-[0](纸艺天使) 跳过&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;卡牌-[1](宝藏经销商) delta_h: 4, *args: [0] (手写行为)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;卡牌-[2](精神灼烧) delta_h: -1, *args: [-1] (手写行为)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;卡牌-[3](心灵按摩师) delta_h: 3.5, *args: [0] (手写行为)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;技能-[&amp;nbsp; ](心灵尖刺) 跳过&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;决策结果: best_delta_h:4, best_index:1, best_args:[0]&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-486" y="928" width="443" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-21" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;为每一张可用手牌以及每一个潜在攻击行为计算预期启发值，进而选出当前最优行为&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-580" y="840" width="215" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-22" value="&lt;span style=&quot;font-size: 14px;&quot;&gt;strategy.py&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-330" y="855" width="75.5" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-23" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="bAhIKvix73ol6-P0YYy8-17">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-500" y="960" as="sourcePoint" />
+            <mxPoint x="-349" y="1142" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-26" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;驱动鼠标完成使用卡牌、随从&lt;/font&gt;&lt;span style=&quot;font-size: 14px; background-color: initial;&quot;&gt;攻击、回合结束、认输等行为&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-580" y="1060" width="217.5" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bAhIKvix73ol6-P0YYy8-27" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;click.py&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-327.25" y="1075" width="50" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

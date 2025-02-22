@@ -86,8 +86,20 @@ pip install -r requirements.txt
 AAEBAZ/HAgKRvAK79wMOoQSRD+mwA7q2A9fOA633A42BBN2kBZWqBcSoBvyoBte6BtXBBtzzBgAA
 
 
+### 项目架构
 
-### 如果想加入新的卡牌
+AutoHS在运行时首先通过逐行分析日志重构对局现状，继而基于启发值选出最优决策，最后利用鼠标点击完成决策执行。下图简单展示了代码整体运行流程。
+
+![arch](./figs/arch.png)
+
+
+### Demo文件说明
+- `demo/catch_screen_demo.py`: 运行此文件会获取炉石传说进程的整个截屏(无论是在前台还是后台)，并画上一些坐标基准线，方便判断想实现的操作的坐标值。
+- `demo/game_state_snapshot_demo.py`: 在命令行显示目前的炉石战局情况，包括手牌情况，英雄情况，随从情况等； 还会在`demo/`目录下创建一个名为`game_state_sanpshot.txt`的文件，记录log分析情况。 需要在`Power.log`存在，即进入对战模式后调用。（甚至可以在选起手手牌时使用）
+- `demo/get_window_name.py`: 显示当前所有窗口的名称和编号，可以用来看炉石传说叫什么名字……
+- `demo/mouse_control_demo.py`: 一个样例程序，展示了如何控制鼠标。
+
+### 如何加入新卡牌
 对于所有的**非战吼随从**，如果没有具体实现它，脚本会根据它的费用猜测它的价值（费用越高越厉害）。而脚本不会使用未识别的战吼随从、法术、武器。如果想要让脚本识别并合理运用一张卡牌，你需要干两件事：
 1. 在`card/detail_card.py`中写下它的使用规则，比如使用它的期望值、使用它时鼠标要点哪里等。
 2. 在`card/id2card.py`中加入一个它的**id**与其卡牌实现类的键值对。
@@ -120,16 +132,3 @@ AAEBAZ/HAgKRvAK79wMOoQSRD+mwA7q2A9fOA633A42BBN2kBZWqBcSoBvyoBte6BtXBBtzzBgAA
 > - SW_091t5 枯萎化身
 > 
 > 如果想获取卡牌的**id**，可以直接运行`json_op.py`，它会在脚本根目录下生成一个名为`id-name.txt`的文件，包含了炉石中每一个对象的**id**与中文名的对应关系。
-
-### Demo文件说明
-- `demo/catch_screen_demo.py`: 运行此文件会获取炉石传说进程的整个截屏(无论是在前台还是后台)，并画上一些坐标基准线，方便判断想实现的操作的坐标值。
-- `demo/game_state_snapshot_demo.py`: 在控制台显示目前的炉石战局情况，包括显示手牌情况，英雄情况，随从情况等； 还会在`demo/`目录下创建一个名为`game_state_sanpshot.txt`的文件，记录log分析情况。 需要在`Power.log`存在，即进入对战模式后调用。（甚至可以在选起手手牌时使用）
-- `demo/get_window_name.py`: 显示当前所有窗口的名称和编号，可以用来看炉石传说叫什么名字……
-- `demo/mouse_control_demo.py`: 一个样例程序，展示了如何控制鼠标。
-<!-- - `click.py`: 包含了与鼠标控制相关的代码。
-- `FSM_action.py`: 包含了脚本在炉石运行中的不同状态（比如选英雄界面、对战时、对扎结束后）应该采取什么行为以及何时进入下一站状态的代码。
-- `lop_op.py`: 包含了与读取`Power.log`相关的代码，比如针对不同日志行的正则表达式。
-- `json_op.py`: 包含了从网络上下载炉石数据JSON文件，并将其初步处理的代码。直接运行可以生成`id-name.txt`，一个包含了炉石所有对象**id**与中文名对应关系的文件。  
-- `log_state.py`: 读取`log.py`提取的日志信息，并把他们转化成字典的列表的形式。每一个字典是一个 **Entity**，**Entity** 由不同的 **tag** 及其对应值构成。
-- `strategy.py`: 读取`log_state.py`提取的信息，并从中提取出手牌信息，战场信息，墓地信息等，再根据这些具体信息思考行动策略。
-- `card/`: 用于存放针对某些特殊卡牌的具体逻辑。 -->
