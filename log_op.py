@@ -193,6 +193,12 @@ def log_iter_func(path):
                 highest_subdir = max(subdirs)
                 path = os.path.join(path, highest_subdir)
                 path = path + "/Power.log"
+                if not os.path.exists(path):
+                    logger.warning(f"最新文件夹下不存在Power.log, 路径为: {path}")
+                    # 创建一个空的Power.log文件
+                    with open(path, "w", encoding="utf8") as f:
+                        pass
+                    logger.info(f"已创建空的Power.log")
 
         logger.info(f"开始读取Power.log, 路径为: {path}")
 
