@@ -580,7 +580,7 @@ def generate_strategy_entity(input_card_entity: CardEntity, log_state : LogState
         return StrategyHero(
             card_id=input_card_entity.card_id,
             zone=input_card_entity.query_tag("ZONE"),
-            zone_pos=int(input_card_entity.query_tag("ZONE_POS")),
+            zone_pos=int(input_card_entity.query_tag("ZONE_POSITION")),
             current_cost=int(input_card_entity.query_tag("TAG_LAST_KNOWN_COST_IN_HAND")),
             overload=int(input_card_entity.query_tag("OVERLOAD")),
             is_mine=log_state.is_my_entity(input_card_entity),
@@ -599,7 +599,7 @@ def generate_strategy_entity(input_card_entity: CardEntity, log_state : LogState
         return StrategyHeroPower(
             card_id=input_card_entity.card_id,
             zone=input_card_entity.query_tag("ZONE"),
-            zone_pos=int(input_card_entity.query_tag("ZONE_POS")),
+            zone_pos=int(input_card_entity.query_tag("ZONE_POSITION")),
             current_cost=int(input_card_entity.query_tag("COST")),
             overload=int(input_card_entity.query_tag("OVERLOAD")),
             is_mine=log_state.is_my_entity(input_card_entity),
@@ -610,7 +610,7 @@ def generate_strategy_entity(input_card_entity: CardEntity, log_state : LogState
         return StrategyLocation(
             card_id=input_card_entity.card_id,
             zone=input_card_entity.query_tag("ZONE"),
-            zone_pos=int(input_card_entity.query_tag("ZONE_POS")),
+            zone_pos=int(input_card_entity.query_tag("ZONE_POSITION")),
             current_cost=int(input_card_entity.query_tag("COST")),
             overload=int(input_card_entity.query_tag("OVERLOAD")),
             is_mine=log_state.is_my_entity(input_card_entity),
