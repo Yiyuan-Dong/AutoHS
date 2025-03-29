@@ -138,6 +138,28 @@ class MinionCard(Card):
                 logger.debug(f"{my_hand_card.name} 可以配合 {hand_card.name}")
                 h_sum += 2
 
+        # 新增逻辑：如果剩余法力值充沛（>= 3），并且手牌中存在虚触侍从，
+        # 则优先下虚触侍从：虚触侍从的 combo 值加 bonus，
+        # 而“心灵震爆”、“针灸”、“精神灼烧”的 combo 值减 penalty
+        if state.my_remaining_mana >= 2:
+            # 检查手牌中是否存在虚触侍从
+            has_voidtouched = any(card.card_id == "SW_446" for card in state.my_hand_cards)
+            if has_voidtouched:
+                if hand_card.card_id == "SW_446":
+                    # 计算除了亡者复生的法术数量
+                    num_spells = sum(
+                        1 for card in state.my_hand_cards
+                        if card.cardtype == CARD_SPELL and card.card_id != "RaiseDead"
+                    )
+                    # 虚触侍从的 bonus = 场上随从数量 + 自己手牌中法术数量（不含亡者复生）
+                    h_sum += len(state.my_minions) + num_spells # bonus 数值可调
+                elif hand_card.card_id in ["MindShatter", "Acupuncture", "MindBlast"]:
+                    # 如果当前卡牌是这三个法术中的一个，则降低其 combo 价值
+                    # TODO: 可考虑删去
+                    h_sum -= 2  # penalty 数值可调
+
+        return h_sum
+
         return h_sum
 
     @classmethod
