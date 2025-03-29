@@ -32,7 +32,7 @@ class StrategyEntity:
 
     @property
     def is_pirate(self):
-        return "PIRATE" in self.races
+        return "PIRATE" in self.races or "ALL" in self.races
 
     @property
     def is_shadow_spell(self):
