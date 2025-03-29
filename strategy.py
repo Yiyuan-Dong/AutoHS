@@ -488,7 +488,11 @@ class StrategyState:
                 else:
                     logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name})无法评判")
             else:
-                delta_h, *args = detail_card.best_h_and_arg(self, hand_card_index)
+                res = detail_card.best_h_and_arg(self, hand_card_index) 
+                if not isinstance(res, tuple): #解决如果战吼随从没有对方可点击的随从的问题
+                    res = (res,)
+                delta_h, *args = res
+
                 logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name}) "
                             f"delta_h: {delta_h}, *args: {args} (手写行为)")
 
