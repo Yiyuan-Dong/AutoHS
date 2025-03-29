@@ -586,6 +586,8 @@ class RaiseDead(SpellNoPoint):
     def best_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
         if state.my_hero.health <= 3 + state.num_voidtouched_attendant_on_board:  # 用了就死
             return 0,
+        elif any(card.card_id == "DED_513" for card in state.my_hand_cards) and state.my_remaining_mana > 3: #有麻风侏儒先战吼点击
+            return 0
         elif state.num_minions_in_my_graveyard >= 2:
             return 100,
         else:
@@ -599,6 +601,18 @@ class ShadowBomber(MinionNoPoint):
 
     @classmethod
     def utilize_delta_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
+        # 如果剩余法力 >= 2 且手牌中存在虚触侍从（假设其卡牌ID为 "SW_446"），则降低投弹手的价值，
+        # 使得系统优先下虚触侍从
+        if state.my_remaining_mana >= 2:
+            has_voidtouched = any(
+                card.cardtype == CARD_MINION and card.card_id == "SW_446"
+                for card in state.my_hand_cards
+            )
+            if has_voidtouched:
+                # 返回一个非常低的价值，确保在决策时不选择投弹手
+                return -100, 0
+
+        # 否则，正常计算投弹手的收益
         return state.oppo_hero.delta_h_after_damage(3) + cls.value, 0
 
 # 精神灼烧
@@ -643,6 +657,19 @@ class Acupuncture(SpellNoPoint):
         if state.my_hero.health <= damage:
             return -1,
 
+        damage = 4 + state.my_total_spell_power + state.num_voidtouched_attendant_on_board
+        if state.my_hero.health <= damage:
+            return -1,
+
+        base_value = state.oppo_hero.delta_h_after_damage(damage) + cls.bias
+        # 如果法力充沛，主动降低针灸的收益（或不加 bonus）
+        if state.my_remaining_mana >= 2:
+            adjustment = -1  # 例如减少1点价值，使其在决策排序中落后于英雄技能
+        else:
+            adjustment = 0
+        bonus = 1 if any(minion.card_id == "SW_446" for minion in state.my_minions) else 0
+        return base_value + adjustment+bonus,
+
         # 我的血不重要
         return state.oppo_hero.delta_h_after_damage(damage) + cls.bias,
 
@@ -655,7 +682,14 @@ class MindShatter(SpellNoPoint):
 
     @classmethod
     def best_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
-        return state.oppo_hero.delta_h_after_damage(5) + cls.bias,
+        # 同上，我们使得心灵震爆能够打出combo
+        base_value = state.oppo_hero.delta_h_after_damage(5) + cls.bias
+        if state.my_remaining_mana >= 2:
+            adjustment = -1
+        else:
+            adjustment = 0
+        bonus = 1 if any(minion.card_id == "SW_446" for minion in state.my_minions) else 0
+        return base_value + adjustment + bonus,
 
 
 # 暮光欺诈者
