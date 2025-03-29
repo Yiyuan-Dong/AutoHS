@@ -170,6 +170,13 @@ class MinionCard(Card):
 
         delta_h += cls.basic_delta_h(state, hand_card_index)
         delta_h += cls.combo_delta_h(state, hand_card_index)
+
+        # 新增逻辑：
+        # 如果对方英雄血量小于等于20且没有嘲讽随从，
+        # 则增加一个 bonus，并将攻击目标设为 -1（即直接攻击对方英雄）
+        if state.oppo_hero.health <= 20 and not state.oppo_has_taunt:
+            args = [-1]  # -1 表示将目标设置为对方英雄
+        
         return (delta_h,) + tuple(args)
 
 
