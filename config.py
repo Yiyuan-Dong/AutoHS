@@ -12,6 +12,7 @@ class AutoHSConfig:
         self.give_up_with_dignity = False
         self.click_coordinates = None
         self.exit_func = None
+        self.debug_log_start = False
 
     def save_config(self, path="configs.json"):
         try:

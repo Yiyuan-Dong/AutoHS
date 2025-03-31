@@ -145,9 +145,11 @@ def add_label_and_entry(root, label_text, entry_text, bind_func):
 def toggle_debug_log():
     if debug_button.config('text')[-1] == "调试日志：未启用":
         logger_init("DEBUG")
-        debug_button.config(text="调试日志：启用")
+        autohs_config.debug_log_start = True
+        debug_button.config(text="调试日志：已启用")
     else:
         logger_init("INFO")
+        autohs_config.debug_log_start = False
         debug_button.config(text="调试日志：未启用")
 
 def toggle_give_up_with_dignity():
@@ -160,6 +162,10 @@ if __name__ == "__main__":
     logger_init()
 
     autohs_config.load_config()
+
+    if autohs_config.debug_log_start:
+        logger_init("DEBUG")
+
     autohs_config.exit_func = close_gui
     # if autohs_config.width == 0:
     #     autohs_config.width = WIDTH
@@ -209,10 +215,10 @@ if __name__ == "__main__":
     modified_time_label = tk.Label(root, text=f"cards.json最后更新时间：\n{JSON_LAST_MODIFIED_TIME}", fg="gray")
     modified_time_label.grid(row=4, column=1, padx=10, pady=5, sticky="ew")
 
-    debug_button = tk.Button(root, text="调试日志：未启用", command=toggle_debug_log, width=20, height=1)
+    debug_button = tk.Button(root, text=f"调试日志：{'已启用' if autohs_config.debug_log_start else '未启用'}", command=toggle_debug_log, width=20, height=1)
     debug_button.grid(row=5, column=2, padx=10, pady=10, sticky="ew")
 
-    give_up_button = tk.Button(root, text=f"快攻智能投降：{'启用' if autohs_config.give_up_with_dignity else '未启用'}", command=toggle_give_up_with_dignity, width=20, height=1)
+    give_up_button = tk.Button(root, text=f"快攻智能投降：{'已启用' if autohs_config.give_up_with_dignity else '未启用'}", command=toggle_give_up_with_dignity, width=20, height=1)
     give_up_button.grid(row=5, column=0, padx=10, pady=10, sticky="ew")
 
     root.mainloop()
