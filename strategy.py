@@ -193,6 +193,12 @@ class StrategyState:
     def oppo_minion_num(self):
         return len(self.oppo_minions)
 
+    def num_card_in_hand(self, name_or_id):
+        return sum(1 for hand_card in self.my_hand_cards if hand_card.name == name_or_id or hand_card.card_id == name_or_id)
+
+    def if_card_in_hand(self, name_or_id):
+        return any(hand_card.name == name_or_id or hand_card.card_id == name_or_id for hand_card in self.my_hand_cards)
+
     @property
     def my_minion_num(self):
         return len(self.my_minions)
@@ -491,7 +497,12 @@ class StrategyState:
                 else:
                     logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name})无法评判")
             else:
-                delta_h, *args = detail_card.best_h_and_arg(self, hand_card_index)
+                res = detail_card.best_h_and_arg(self, hand_card_index) 
+                if not isinstance(res, tuple): #解决如果战吼随从没有对方可点击的随从的问题
+                    logger.warning(f"卡牌-[{hand_card_index}]({hand_card.name}) best_h_and_arg返回值格式错误: {res}")
+                    res = (res,)
+                delta_h, *args = res
+
                 logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name}) "
                             f"delta_h: {delta_h}, *args: {args} (手写行为)")
 

@@ -58,6 +58,10 @@ class MindSpike(HeroPowerCard):
         if state.my_hero_power.exhausted:
             return 0,
 
+        # 如果手牌中有纸艺天使，则直接返回0
+        if state.if_card_in_hand("TOY_381"):
+            return 0,
+
         best_index = -1
         best_delta_h = state.oppo_hero.delta_h_after_damage(2 + state.num_voidtouched_attendant_on_board)
 

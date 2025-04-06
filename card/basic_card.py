@@ -148,6 +148,7 @@ class MinionCard(Card):
 
         delta_h += cls.basic_delta_h(state, hand_card_index)
         delta_h += cls.combo_delta_h(state, hand_card_index)
+
         return (delta_h,) + tuple(args)
 
 
@@ -164,8 +165,12 @@ class MinionNoPoint(MinionCard):
 class MinionPointOppo(MinionCard):
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
-        gap_index = args[0]
-        oppo_index = args[1]
+        if len(args) <= 1:
+            logger.warning(f"Receive {len(args)} args in using MinionPointOppo card {state.my_hand_cards[card_index].name}")
+
+        gap_index = args[0] if len(args) > 0 else state.my_minion_num
+        oppo_index = args[1] if len(args) > 1 else -1
+
 
         click.choose_card(card_index, state.my_hand_card_num)
         click.put_minion(gap_index, state.my_minion_num)

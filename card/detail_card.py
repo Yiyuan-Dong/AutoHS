@@ -555,6 +555,14 @@ class VoidtouchedAttendant(MinionNoPoint):
     value = 3
     keep_in_hand_bool = True
 
+    @classmethod
+    def utilize_delta_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
+        num_spells = sum(
+            1 for card in state.my_hand_cards
+            if card.cardtype == CARD_SPELL and card.name != "亡者复生"
+        )
+        return cls.value + num_spells * 0.5 + len(state.my_minions) * 0.5,
+
 
 # 宝藏经销商
 class TreasureMerchant(MinionNoPoint):
@@ -586,6 +594,8 @@ class RaiseDead(SpellNoPoint):
     def best_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
         if state.my_hero.health <= 3 + state.num_voidtouched_attendant_on_board:  # 用了就死
             return 0,
+        elif state.if_card_in_hand("迪菲亚麻风侏儒") and state.my_remaining_mana > 3: #有迪菲亚麻风侏儒先使用他
+            return 0,
         elif state.num_minions_in_my_graveyard >= 2:
             return 100,
         else:
@@ -599,6 +609,12 @@ class ShadowBomber(MinionNoPoint):
 
     @classmethod
     def utilize_delta_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
+        # 如果剩余法力 >= 2 且手牌中存在虚触侍从，则降低投弹手的价值，使脚本优先下虚触侍从
+        if state.my_remaining_mana >= 2:
+            if state.if_card_in_hand("虚触侍从"):
+                return -100, 0
+
+        # 否则，正常计算投弹手的收益
         return state.oppo_hero.delta_h_after_damage(3 + state.num_voidtouched_attendant_on_board) + cls.value, 0
 
 # 精神灼烧
@@ -644,8 +660,13 @@ class Acupuncture(SpellNoPoint):
         if state.my_hero.health <= damage:
             return -1,
 
-        # 我的血不重要
-        return state.oppo_hero.delta_h_after_damage(damage) + cls.bias,
+        # 如果法力充沛，且可以使用英雄技能打脸，那么无论如何也轮不到使用直伤
+        if state.my_remaining_mana >= 2 and not state.my_hero_power.exhausted and state.oppo_hero.can_be_pointed_by_hero_power:
+            return -1,
+
+        # 虚触侍从可能会被对面解掉，所以要好好利用它，在她活着的时候多打伤害
+        base_value = state.oppo_hero.delta_h_after_damage(damage) + cls.bias + state.num_voidtouched_attendant_on_board
+        return base_value,
 
 
 # 心灵震爆
@@ -656,8 +677,12 @@ class MindShatter(SpellNoPoint):
 
     @classmethod
     def best_h_and_arg(cls, state: 'StrategyState', hand_card_index: int):
+        if state.my_remaining_mana >= 2 and not state.my_hero_power.exhausted and state.oppo_hero.can_be_pointed_by_hero_power:
+            return -1,
+
         damage = 5 + state.my_total_spell_power + state.num_voidtouched_attendant_on_board
-        return state.oppo_hero.delta_h_after_damage(damage) + cls.bias,
+        base_value = state.oppo_hero.delta_h_after_damage(damage) + cls.bias + state.num_voidtouched_attendant_on_board
+        return base_value,
 
 
 # 暮光欺诈者
