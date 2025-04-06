@@ -271,16 +271,24 @@ class StrategyMinion(StrategyEntity):
         delta = self.heuristic_val - temp_minion.heuristic_val
 
         if self.is_mine:
-            delta *= MY_DELTA_H_FACTOR
+            delta *= MY_MINION_DELTA_H_FACTOR
         else:
-            delta *= OPPO_DELTA_H_FACTOR
+            delta *= OPPO_MINION_DELTA_H_FACTOR
 
         return delta
 
     def delta_h_after_heal(self, heal):
         temp_minion = copy.copy(self)
         temp_minion.get_heal(heal)
-        return temp_minion.heuristic_val - self.heuristic_val
+
+        delta = temp_minion.heuristic_val - self.heuristic_val
+
+        if self.is_mine:
+            delta *= MY_MINION_DELTA_H_FACTOR
+        else:
+            delta *= OPPO_MINION_DELTA_H_FACTOR
+
+        return delta
 
 
 class StrategyWeapon(StrategyEntity):
@@ -416,12 +424,12 @@ class StrategyHero(StrategyEntity):
     def delta_h_after_damage(self, damage):
         temp_hero = copy.copy(self)
         temp_hero.get_damaged(damage)
-        return self.heuristic_val - temp_hero.heuristic_val
+        return (self.heuristic_val - temp_hero.heuristic_val) * (1 if self.is_mine else OPPO_HERO_DELTA_H_FACTOR)
 
     def delta_h_after_heal(self, heal):
         temp_hero = copy.copy(self)
         temp_hero.get_heal(heal)
-        return temp_hero.heuristic_val - self.heuristic_val
+        return (temp_hero.heuristic_val - self.heuristic_val) * (1 if self.is_mine else OPPO_HERO_DELTA_H_FACTOR)
 
 
 class StrategySpell(StrategyEntity):

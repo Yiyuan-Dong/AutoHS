@@ -1,5 +1,9 @@
 import click
 from card.basic_card import *
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from strategy import StrategyState
 
 
 class TotemicCall(HeroPowerCard):
@@ -50,7 +54,7 @@ class BallistaShot(HeroPowerCard):
 
 class MindSpike(HeroPowerCard):
     @classmethod
-    def best_h_and_arg(cls, state, hand_card_index):
+    def best_h_and_arg(cls, state: 'StrategyState', hand_card_index):
         if state.my_hero_power.exhausted:
             return 0,
 
@@ -59,7 +63,7 @@ class MindSpike(HeroPowerCard):
             return 0,
 
         best_index = -1
-        best_delta_h = state.oppo_hero.delta_h_after_damage(2)
+        best_delta_h = state.oppo_hero.delta_h_after_damage(2 + state.num_voidtouched_attendant_on_board)
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):
             if not oppo_minion.can_be_pointed_by_minion:

@@ -87,6 +87,8 @@ class StrategyState:
 
     def should_give_up(self):
         # 为时尚早
+        THRESHOLD = 7
+
         if self.my_total_mana <= 6:
             return False
 
@@ -113,7 +115,8 @@ class StrategyState:
         if self.oppo_has_taunt:
             score += 1
 
-        if score >= 7:
+        logger.debug(f"智能投降分数: {score}/{THRESHOLD}")
+        if score >= THRESHOLD:
             return True
         return False
 

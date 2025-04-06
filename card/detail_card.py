@@ -615,7 +615,7 @@ class ShadowBomber(MinionNoPoint):
                 return -100, 0
 
         # 否则，正常计算投弹手的收益
-        return state.oppo_hero.delta_h_after_damage(3) + cls.value, 0
+        return state.oppo_hero.delta_h_after_damage(3 + state.num_voidtouched_attendant_on_board) + cls.value, 0
 
 # 精神灼烧
 # TODO: 理论上可以打死自己的随从实现斩杀...
@@ -636,9 +636,10 @@ class MindBlast(SpellPointOppo):
             if oppo_minion.health > 2:
                 continue
 
-            temp_delta_h = oppo_minion.delta_h_after_damage(2) + cls.bias
+            temp_delta_h = oppo_minion.delta_h_after_damage(2 + state.my_total_spell_power) + cls.bias
             if not oppo_minion.divine_shield and oppo_minion.health <= 3:
-                temp_delta_h += state.oppo_hero.delta_h_after_damage(3)
+                damage = 3 + state.my_total_spell_power + state.num_voidtouched_attendant_on_board
+                temp_delta_h += state.oppo_hero.delta_h_after_damage(damage)
 
             if temp_delta_h > best_delta_h:
                 best_delta_h = temp_delta_h
@@ -750,7 +751,7 @@ class DefiasCleaner(MinionPointOppo):
         if not this_card.powered_up:
             return 0.1, state.my_minion_num, -1   # 要是真的没事干，就算不打二也下去当白板打架
 
-        best_delta_h = state.oppo_hero.delta_h_after_damage(2)
+        best_delta_h = state.oppo_hero.delta_h_after_damage(2 + state.num_voidtouched_attendant_on_board)
         best_oppo_index = -1
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):

@@ -7,9 +7,11 @@ EMOJ_RATIO = 0.05
 # 随从相互攻击的启发值包括两个部分：敌方随从受伤的带来的收益；
 # 以及我方随从受伤带来的损失。下面两个比例表示这两个启发值变化
 # 数值应该以怎样权值比例相加。如果是控制卡组，可以略微调高
-# OPPO_DELTA_H_FACTOR 来鼓励解场
-OPPO_DELTA_H_FACTOR = 1.2
-MY_DELTA_H_FACTOR = 1
+# OPPO_MINION_DELTA_H_FACTOR 来鼓励解场；如果是快攻卡组则反之
+OPPO_MINION_DELTA_H_FACTOR = 1
+MY_MINION_DELTA_H_FACTOR = 1
+# OPPO_HERO_DELTA_H_FACTOR 越高就越喜欢打脸
+OPPO_HERO_DELTA_H_FACTOR = 2
 
 # 对于没有单独建一个类去描述的卡牌, 如果它的法力值花费大于这个值,
 # 就在留牌阶段被换掉
