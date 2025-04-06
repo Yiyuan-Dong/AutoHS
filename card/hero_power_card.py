@@ -55,9 +55,9 @@ class MindSpike(HeroPowerCard):
             return 0,
 
         # 如果手牌中有纸艺天使，则直接返回0
-        if any(card.card_id == "TOY_381" for card in state.my_hand_cards):
+        if state.if_card_in_hand("TOY_381"):
             return 0,
-            
+
         best_index = -1
         best_delta_h = state.oppo_hero.delta_h_after_damage(2)
 
@@ -73,24 +73,6 @@ class MindSpike(HeroPowerCard):
         # 二费打二不赚
         if state.my_hero_power.current_cost >= 2:
             best_delta_h /= state.my_hero_power.current_cost
-
-        # 统计手牌中可用的随从数量
-        available_minion_count = sum(
-            1 for card in state.my_hand_cards
-            if card.cardtype == CARD_MINION and card.current_cost <= state.my_remaining_mana and card.card_id != "YOD_032"
-        )
-
-        # 如果剩余法力 >= 2 且手牌中没有可用随从，则增加 bonus
-        if state.my_remaining_mana >= 2 and available_minion_count == 0:
-            bonus = 5  # 此数值可根据实际调优需要修改
-        else:
-            bonus = 0
-
-        # 如果敌方英雄的生命值低于15，则增加 bonus，默认敌方英雄
-        if state.oppo_hero.health < 15:
-            bonus = 5  # 此数值可根据实际调优需要修改
-            return best_delta_h + bonus, -1
-
 
         return best_delta_h, best_index
 
