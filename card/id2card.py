@@ -81,4 +81,5 @@ ID2CARD_DICT = {
     "CORE_SW_448": DarkbishopBenedictus,
     "SW_448": DarkbishopBenedictus,
     "DED_513": DefiasCleaner,
+    "YOD_032": FrenziedFelwing,
 }
