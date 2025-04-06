@@ -165,8 +165,11 @@ class MinionNoPoint(MinionCard):
 class MinionPointOppo(MinionCard):
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
+        if len(args) <= 1:
+            logger.warning(f"Receive {len(args)} args in using MinionPointOppo card {state.my_hand_cards[card_index].name}")
+
         gap_index = args[0] if len(args) > 0 else state.my_minion_num
-        oppo_index = args[1] if len(args) > 1 else -1 # 避免出现没有法术直接拍下去的时候的报错 IndexError
+        oppo_index = args[1] if len(args) > 1 else -1
 
 
         click.choose_card(card_index, state.my_hand_card_num)

@@ -498,6 +498,7 @@ class StrategyState:
             else:
                 res = detail_card.best_h_and_arg(self, hand_card_index) 
                 if not isinstance(res, tuple): #解决如果战吼随从没有对方可点击的随从的问题
+                    logger.warning(f"卡牌-[{hand_card_index}]({hand_card.name}) best_h_and_arg返回值格式错误: {res}")
                     res = (res,)
                 delta_h, *args = res
 
