@@ -191,6 +191,14 @@ class StrategyState:
         return len(self.oppo_minions)
 
     @property
+    def num_card_in_hand(self, name_or_id):
+        return sum(1 for hand_card in self.my_hand_cards if hand_card.name == name_or_id or hand_card.card_id == name_or_id)
+
+    @property
+    def if_card_in_hand(self, name_or_id):
+        return any(hand_card.name == name_or_id or hand_card.card_id == name_or_id for hand_card in self.my_hand_cards)
+
+    @property
     def my_minion_num(self):
         return len(self.my_minions)
 
