@@ -3,7 +3,7 @@ import time
 from abc import ABC, abstractmethod
 import click
 from constants.state_and_key import *
-from constants.number import *
+from config import autohs_config
 from autohs_logger import *
 
 class Card(ABC):
@@ -41,7 +41,7 @@ class Card(ABC):
 
 
 class SpellCard(Card):
-    wait_time = BASIC_SPELL_WAIT_TIME
+    wait_time = autohs_config.basic_spell_wait_time
 
     @classmethod
     def get_card_type(cls):
@@ -159,7 +159,7 @@ class MinionNoPoint(MinionCard):
         click.choose_card(card_index, state.my_hand_card_num)
         click.put_minion(gap_index, state.my_minion_num)
         click.cancel_click()
-        time.sleep(BASIC_MINION_PUT_INTERVAL)
+        time.sleep(autohs_config.basic_minion_put_interval)
 
 
 class MinionPointOppo(MinionCard):
@@ -179,7 +179,7 @@ class MinionPointOppo(MinionCard):
         else:
             click.choose_oppo_hero()
         click.cancel_click()
-        time.sleep(BASIC_MINION_PUT_INTERVAL)
+        time.sleep(autohs_config.basic_minion_put_interval)
 
 
 class MinionPointMine(MinionCard):
@@ -196,7 +196,7 @@ class MinionPointMine(MinionCard):
         else:
             click.choose_my_hero()
         click.cancel_click()
-        time.sleep(BASIC_MINION_PUT_INTERVAL)
+        time.sleep(autohs_config.basic_minion_put_interval)
 
 
 class WeaponCard(Card):
@@ -208,7 +208,7 @@ class WeaponCard(Card):
     def use_with_arg(cls, state, card_index, *args):
         click.choose_and_use_spell(card_index, state.my_hand_card_num)
         click.cancel_click()
-        time.sleep(BASIC_WEAPON_WAIT_TIME)
+        time.sleep(autohs_config.basic_weapon_wait_time)
 
     @classmethod
     def best_h_and_arg(cls, state, hand_card_index):

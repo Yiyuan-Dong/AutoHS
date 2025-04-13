@@ -10,7 +10,6 @@ from strategy import StrategyState
 from log_state import *
 from loguru import logger
 from config import autohs_config
-from constants.number import *
 
 FSM_state = ""
 time_begin = 0.0
@@ -121,7 +120,7 @@ def MatchingAction():
         if quitting_flag:
             return
 
-        time.sleep(STATE_CHECK_INTERVAL)
+        time.sleep(autohs_config.state_check_interval)
 
         click.commit_error_report()
 
@@ -180,7 +179,7 @@ def ChoosingCardAction():
 
             if detail_card is None:
                 should_keep_in_hand = \
-                    my_hand_card.current_cost <= REPLACE_COST_BAR
+                    my_hand_card.current_cost <= autohs_config.replace_cost_bar
             else:
                 should_keep_in_hand = \
                     detail_card.keep_in_hand(strategy_state, my_hand_index)
@@ -200,7 +199,7 @@ def ChoosingCardAction():
         if loop_count >= 60:
             logger.warning("Time out in Choosing Opponent")
             return FSM_ERROR
-        time.sleep(STATE_CHECK_INTERVAL)
+        time.sleep(autohs_config.state_check_interval)
 
 
 def Battling():
@@ -255,7 +254,7 @@ def Battling():
                 click.emoj(0)
             else:
                 # 在之后每个回合开始时有概率发表情
-                if random.random() < EMOJ_RATIO:
+                if random.random() < autohs_config.emoj_ratio:
                     click.emoj()
                 if autohs_config.give_up_with_dignity and strategy_state.should_give_up():
                     click.give_up_routine()
@@ -272,7 +271,7 @@ def Battling():
             click.end_turn()
             click.commit_error_report()
             click.cancel_click()
-            time.sleep(STATE_CHECK_INTERVAL)
+            time.sleep(autohs_config.state_check_interval)
 
         # 考虑要不要出牌
         index, args = strategy_state.best_h_index_arg()
@@ -297,7 +296,7 @@ def Battling():
                 click.give_up_routine()
             else:
                 click.end_turn()
-                time.sleep(STATE_CHECK_INTERVAL)
+                time.sleep(autohs_config.state_check_interval)
 
 
 def QuittingBattle():
@@ -329,7 +328,7 @@ def QuittingBattle():
         if loop_count >= 15:
             return FSM_ERROR
 
-        time.sleep(STATE_CHECK_INTERVAL)
+        time.sleep(autohs_config.state_check_interval)
 
 
 def GoBackHSAction():
@@ -402,7 +401,7 @@ def HandleErrorAction():
         click.give_up_routine()
 
         window_utils.terminate_HS()
-        time.sleep(STATE_CHECK_INTERVAL)
+        time.sleep(autohs_config.state_check_interval)
 
         return FSM_LEAVE_HS
 

@@ -2,10 +2,10 @@ from json_op import *
 from abc import abstractmethod
 from card.id2card import ID2CARD_DICT
 from constants.state_and_key import *
-from constants.number import *
 from autohs_logger import *
 from log_state import LogState, CardEntity
 import copy
+from config import autohs_config
 
 
 class StrategyEntity:
@@ -271,9 +271,9 @@ class StrategyMinion(StrategyEntity):
         delta = self.heuristic_val - temp_minion.heuristic_val
 
         if self.is_mine:
-            delta *= MY_MINION_DELTA_H_FACTOR
+            delta *= autohs_config.my_minion_delta_h_factor
         else:
-            delta *= OPPO_MINION_DELTA_H_FACTOR
+            delta *= autohs_config.oppo_minion_delta_h_factor
 
         return delta
 
@@ -284,9 +284,9 @@ class StrategyMinion(StrategyEntity):
         delta = temp_minion.heuristic_val - self.heuristic_val
 
         if self.is_mine:
-            delta *= MY_MINION_DELTA_H_FACTOR
+            delta *= autohs_config.my_minion_delta_h_factor
         else:
-            delta *= OPPO_MINION_DELTA_H_FACTOR
+            delta *= autohs_config.oppo_minion_delta_h_factor
 
         return delta
 
@@ -424,12 +424,12 @@ class StrategyHero(StrategyEntity):
     def delta_h_after_damage(self, damage):
         temp_hero = copy.copy(self)
         temp_hero.get_damaged(damage)
-        return (self.heuristic_val - temp_hero.heuristic_val) * (1 if self.is_mine else OPPO_HERO_DELTA_H_FACTOR)
+        return (self.heuristic_val - temp_hero.heuristic_val) * (1 if self.is_mine else autohs_config.oppo_hero_delta_h_factor)
 
     def delta_h_after_heal(self, heal):
         temp_hero = copy.copy(self)
         temp_hero.get_heal(heal)
-        return (temp_hero.heuristic_val - self.heuristic_val) * (1 if self.is_mine else OPPO_HERO_DELTA_H_FACTOR)
+        return (temp_hero.heuristic_val - self.heuristic_val) * (1 if self.is_mine else autohs_config.oppo_hero_delta_h_factor)
 
 
 class StrategySpell(StrategyEntity):

@@ -36,15 +36,15 @@ def check_hearthstone_path(path):
 
     return True
 
-def update_width(event):
-    num = is_integer(entry_width.get())
-    if num is not None:
-        autohs_config.width = num
+# def update_width(event):
+#     num = is_integer(entry_width.get())
+#     if num is not None:
+#         autohs_config.width = num
 
-def update_height(event):
-    num = is_integer(entry_height.get())
-    if num is not None:
-        autohs_config.height = num
+# def update_height(event):
+#     num = is_integer(entry_height.get())
+#     if num is not None:
+#         autohs_config.height = num
 
 def update_max_play_time(event):
     num = is_integer(entry_max_play_time.get())
@@ -73,8 +73,8 @@ def update_oppo_minion_delta_h_factor(event):
         return None
 
     if num is not None:
+        logger.info(f"设置 oppo_minion_delta_h_factor: {num}")
         autohs_config.oppo_minion_delta_h_factor = num
-        autohs_config.update_oppo_minion_delta_h_factor()
 
 def update_oppo_hero_delta_h_factor(event):
     num = None
@@ -85,8 +85,8 @@ def update_oppo_hero_delta_h_factor(event):
         return None
 
     if num is not None:
+        logger.info(f"设置 oppo_hero_delta_h_factor: {num}")
         autohs_config.oppo_hero_delta_h_factor = num
-        autohs_config.update_oppo_hero_delta_h_factor()
 
 def update_all():
     # update_width(None)
@@ -162,6 +162,7 @@ def add_label_and_entry(root, label_text, entry_text, bind_func):
     next_text_row += 1
     # entry.bind("<Leave>", bind_func)
     entry.bind("<Return>", bind_func)
+    entry.bind("<Deactivate>", bind_func)
 
     return entry
 

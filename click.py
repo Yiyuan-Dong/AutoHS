@@ -8,7 +8,6 @@ import random
 import sys
 
 from constants.state_and_key import *
-from constants.number import *
 from autohs_logger import *
 from window_utils import *
 from config import autohs_config
@@ -44,7 +43,7 @@ def right_click(x, y):
 def choose_my_minion(mine_index, mine_num):
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     x = coors[COORDINATE_MID_X] + (mine_index * 2 - mine_num + 1) * coors[COORDINATE_HALF_MINION_GAP_X]
     y = coors[COORDINATE_MY_MINION_Y]
     left_click(x, y)
@@ -53,14 +52,14 @@ def choose_my_minion(mine_index, mine_num):
 def choose_my_hero():
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_MID_X], coors[COORDINATE_MY_HERO_Y])
 
 
 def choose_opponent_minion(oppo_index, oppo_num):
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     x = coors[COORDINATE_MID_X] + (oppo_index * 2 - oppo_num + 1) * coors[COORDINATE_HALF_MINION_GAP_X]
     y = coors[COORDINATE_OPPO_MINION_Y]
     left_click(x, y)
@@ -69,21 +68,21 @@ def choose_opponent_minion(oppo_index, oppo_num):
 def choose_oppo_hero():
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_MID_X], coors[COORDINATE_OPPO_HERO_Y])
 
 
 def cancel_click():
     coors = autohs_config.click_coordinates
 
-    rand_sleep(TINY_OPERATE_INTERVAL)
+    rand_sleep(autohs_config.tiny_operate_interval)
     right_click(coors[COORDINATE_CANCEL_X], coors[COORDINATE_CANCEL_Y])
 
 
 def test_click():
     coors = autohs_config.click_coordinates
 
-    rand_sleep(TINY_OPERATE_INTERVAL)
+    rand_sleep(autohs_config.tiny_operate_interval)
     right_click(coors[COORDINATE_CANCEL_X], coors[COORDINATE_CANCEL_Y])
 
 
@@ -91,7 +90,7 @@ def choose_card(card_index, card_num):
     coors = autohs_config.click_coordinates
     hand_card_x = coors[COORDINATE_MY_HAND_X]
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
 
     # TODO: 其实最多可以有12张手牌
     assert 0 <= card_index < card_num <= 10
@@ -109,21 +108,21 @@ def replace_starting_card(card_index, hand_card_num):
     assert hand_card_num in start_card_x
     assert card_index < len(start_card_x[hand_card_num])
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(start_card_x[hand_card_num][card_index], coors[COORDINATE_START_CARD_Y])
 
 
 def click_middle():
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_MID_X], coors[COORDINATE_NO_OP_Y])
 
 
 def click_setting():
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_SETTING_X], coors[COORDINATE_SETTING_Y])
 
 
@@ -135,7 +134,7 @@ def choose_and_use_spell(card_index, card_num):
 def click_give_up():
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_GIVE_UP_X], coors[COORDINATE_GIVE_UP_Y])
 
 
@@ -143,7 +142,7 @@ def click_give_up():
 def put_minion(gap_index, minion_num):
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
 
     if minion_num >= 7:
         logger.warning(f"Try to put a minion but there has already been {minion_num} minions")
@@ -158,7 +157,7 @@ def match_opponent():
 
     # 一些奇怪的错误提示
     commit_error_report()
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_MATCH_OPPONENT_X], coors[COORDINATE_MATCH_OPPONENT_Y])
 
 
@@ -167,21 +166,21 @@ def enter_battle_mode():
 
     # 一些奇怪的错误提示
     # commit_error_report()
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_MID_X], coors[COORDINATE_ENTER_BATTLE_Y])
 
 
 def commit_choose_card():
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_MID_X], coors[COORDINATE_COMMIT_CHOOSE_START_CARD_Y])
 
 
 def end_turn():
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_END_TURN_X], coors[COORDINATE_END_TURN_Y])
 
 
@@ -200,14 +199,14 @@ def emoj(target=None):
     emoj_list = coors[COORDINATE_EMOJ_LIST]
 
     right_click(coors[COORDINATE_MID_X], coors[COORDINATE_MY_HERO_Y])
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
 
     if target is None:
         x, y = emoj_list[random.randint(1, 4)]
     else:
         x, y = emoj_list[target]
     left_click(x, y)
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
 
 
 def give_up_routine():
@@ -222,7 +221,7 @@ def give_up_routine():
 def click_skill():
     coors = autohs_config.click_coordinates
 
-    rand_sleep(OPERATE_INTERVAL)
+    rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_SKILL_X], coors[COORDINATE_SKILL_Y])
 
 
