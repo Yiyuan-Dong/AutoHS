@@ -313,6 +313,15 @@ class StrategyState:
 
         return count
 
+    @property
+    def num_mindbreaker_on_board(self):
+        count = 0
+        for minion in self.my_minions + self.oppo_minions:
+            if minion.card_id == "CORE_ICC_902" or minion.card_id == "ICC_902":
+                count += 1
+
+        return count
+
     # 我手牌里有几个空降歹徒，有的话就应该丢海盗
     @property
     def airborne_gangsters_in_hand(self):
@@ -514,7 +523,8 @@ class StrategyState:
         # 考虑使用英雄技能
         if self.my_remaining_mana >= self.my_hero_power.current_cost and \
                 self.my_detail_hero_power and \
-                not self.my_hero_power.exhausted:
+                not self.my_hero_power.exhausted \
+                and self.num_mindbreaker_on_board == 0:
             hero_power = self.my_detail_hero_power
 
             delta_h, *args = hero_power.best_h_and_arg(self, -1)
