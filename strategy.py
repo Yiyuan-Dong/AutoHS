@@ -386,7 +386,7 @@ class StrategyState:
                                 f"斩杀了")
                     return my_index, -1
 
-                tmp_delta_h = self.oppo_hero.delta_h_after_damage(my_minion.attack)
+                tmp_delta_h = self.oppo_hero.delta_h_after_damage(my_minion.attack + self.num_voidtouched_attendant_on_board)
 
                 logger.debug(f"攻击决策: [{my_index}]({my_minion.name})->"
                             f"[-1]({self.oppo_hero.name}) "
