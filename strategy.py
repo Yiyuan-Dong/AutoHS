@@ -267,7 +267,7 @@ class StrategyState:
     @property
     def oppo_has_taunt(self):
         for oppo_minion in self.oppo_minions:
-            if oppo_minion.taunt and not oppo_minion.stealth:
+            if oppo_minion.taunt and not oppo_minion.stealth and not oppo_minion.untouchable:
                 return True
 
         return False
