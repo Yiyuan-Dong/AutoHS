@@ -377,7 +377,7 @@ def WaitMainMenu():
         if quitting_flag:
             return FSM_ERROR
 
-        click.click_middle()
+        click.click_main_menu_middle()
         time.sleep(5)
 
     return FSM_MAIN_MENU

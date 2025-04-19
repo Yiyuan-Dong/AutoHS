@@ -118,6 +118,11 @@ def click_middle():
     rand_sleep(autohs_config.operate_interval)
     left_click(coors[COORDINATE_MID_X], coors[COORDINATE_NO_OP_Y])
 
+def click_main_menu_middle():
+    coors = autohs_config.click_coordinates
+
+    rand_sleep(autohs_config.operate_interval)
+    left_click(coors[COORDINATE_MID_X], coors[COORDINATE_MAIN_MENU_NO_OP_Y])
 
 def click_setting():
     coors = autohs_config.click_coordinates
