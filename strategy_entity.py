@@ -85,8 +85,11 @@ class StrategyMinion(StrategyEntity):
         self.spell_power = spell_power
         self.freeze = freeze
         self.battlecry = battlecry
+
+        # 扰魔实际上叫elusize，不过扰魔的随从出现在战场上时会设置下面两个属性
         self.not_targeted_by_spell = not_targeted_by_spell
         self.not_targeted_by_power = not_targeted_by_power
+
         self.charge = charge
         self.rush = rush
         # 当一个随从具有毛刺绿边（就是突袭随从刚出来时的绿边）的时候就会有这个属性

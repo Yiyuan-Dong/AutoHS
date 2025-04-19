@@ -66,7 +66,7 @@ class MindSpike(HeroPowerCard):
         best_delta_h = state.oppo_hero.delta_h_after_damage(2 + state.num_voidtouched_attendant_on_board)
 
         for oppo_index, oppo_minion in enumerate(state.oppo_minions):
-            if not oppo_minion.can_be_pointed_by_minion:
+            if not oppo_minion.can_be_pointed_by_hero_power:
                 continue
 
             delta_h = oppo_minion.delta_h_after_damage(2)
