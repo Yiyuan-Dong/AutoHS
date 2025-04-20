@@ -36,8 +36,14 @@ pip install -r requirements.txt
 > 
 > 每次启动炉石传说时，游戏会在`Logs/`目录下新创建一个文件夹，文件夹内包含`Power.log`以及其他文件。
 > 
-> 如果你在`Logs/`目录下没有找到`Power.log`（指对战开始后），那稍微有一些麻烦。你需要到`C:\Users\YOURUSER\AppData\Local\Blizzard\Hearthstone`目录下新建一个叫`log.config`的文件（如果已经有就不用新建了），然后把下面这段代码放进去（如果已经有`[Power]`相关则更改相关设置）:
+> 如果你在`Logs/`目录下没有找到`Power.log`（指对战开始后），那稍微有一些麻烦。你需要到`C:\Users\YOURUSER\AppData\Local\Blizzard\Hearthstone`目录下新建一个叫`log.config`的文件（如果已经有就不用新建了），然后把下面这段代码放进去（如果已经有`[Power]`或`[LoadingScreen]`相关则更改相关设置）:
 > ```
+> [LoadingScreen]
+> LogLevel=1
+> FilePrinting=True
+> ConsolePrinting=False
+> ScreenPrinting=False
+> Verbose=False
 > [Power]
 > LogLevel=1
 > FilePrinting=True
