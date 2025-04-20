@@ -26,6 +26,7 @@ LOG_LINE_BLOCK_END = "Block End"
 LOG_LINE_PLAYER_ID = "Player ID"
 LOG_LINE_TAG_CHANGE = "Tag Change"
 LOG_LINE_TAG = "Tag"
+LOG_LINE_MODE_CHANGE = "Mode Change"
 
 CARD_BASE = "BASE"
 CARD_SPELL = "SPELL"
@@ -74,3 +75,12 @@ COORDINATE_BATTLEFILED_RANGE_X = "battlefield_range_x"
 COORDINATE_BATTLEFILED_RANGE_Y = "battlefield_range_y"
 COORDINATE_GIVE_UP_X = "give_up_x"
 COORDINATE_GIVE_UP_Y = "give_up_y"
+
+SCREEN_MODE_STARTUP = "STARTUP"                           # 启动炉石
+SCREEN_MODE_LOGIN = "LOGIN"                               # 点击进入游戏
+SCREEN_MODE_HUB = "HUB"                                   # 可以选择传统对战/酒馆战旗/乱斗的地方
+SCREEN_MODE_TOURNAMENT = "TOURNAMENT"                     # 选卡组
+SCREEN_MODE_COLLECTIONMANAGER = "COLLECTIONMANAGER"       # 我的收藏
+SCREEN_MODE_GAMEPLAY = "GAMEPLAY"                         # 对战中
+SCREEN_MODE_TRAVEN_BRAWL = "TRAVENBRAWL"                  # 乱斗
+SCREEN_MODE_BACON = "BACON"                               # 酒馆战旗

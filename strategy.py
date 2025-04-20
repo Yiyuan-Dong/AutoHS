@@ -565,31 +565,3 @@ class StrategyState:
 
         self.my_hand_cards.pop(index)
         return hand_card.current_cost
-
-
-if __name__ == "__main__":
-    keyboard.add_hotkey("ctrl+q", sys.exit)
-
-    log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
-    state = LogState()
-
-    while True:
-        log_container = next(log_iter)
-        if log_container.length > 0:
-            for x in log_container.message_list:
-                update_state(state, x)
-            strategy_state = StrategyState(state)
-            strategy_state.debug_print_out()
-
-            with open("game_state_snapshot.txt", "w", encoding="utf8") as f:
-                f.write(str(state))
-
-            mine_index, oppo_index = strategy_state.get_best_attack_target()
-            logger.debug(f"我的决策是: mine_index: {mine_index}, oppo_index: {oppo_index}")
-
-            if mine_index != -1:
-                if oppo_index == -1:
-                    click.minion_beat_hero(mine_index, strategy_state.my_minion_num)
-                else:
-                    click.minion_beat_minion(mine_index, strategy_state.my_minion_num,
-                                             oppo_index, strategy_state.oppo_minion_num)

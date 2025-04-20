@@ -45,6 +45,9 @@ TAG_CHANGE_PATTERN = re.compile(r" *TAG_CHANGE Entity=(.*) tag=(.*) value=(.*) "
 # "tag=ZONE value=DECK"
 TAG_PATTERN = re.compile(r" *tag=(.*) value=(.*)")
 
+# D 18:45:52.0292623 LoadingScreen.OnSceneLoaded() - prevMode=COLLECTIONMANAGER currMode=HUB
+MODE_CHANGE_PATTERN = re.compile(r"D [\d]{2}:[\d]{2}:[\d]{2}.[\d]{7} LoadingScreen.OnSceneLoaded\(\) - prevMode=(.*) currMode=(.*)")
+
 
 class LineInfoContainer:
     def __init__(self, line_type, **kwargs):
@@ -179,10 +182,23 @@ def parse_line(line_str):
 
     return None
 
-def log_iter_func(path):
+
+def parse_line_loading_screen(line_str):
+    match_obj = MODE_CHANGE_PATTERN.match(line_str)
+    if match_obj is not None:
+        return LineInfoContainer(
+            LOG_LINE_MODE_CHANGE,
+            prev_mode=match_obj.group(1),
+            curr_mode=match_obj.group(2)
+        )
+
+    return None
+
+
+def log_iter_func(path, file_name, parse_func):
     while True:
         if not os.path.exists(path):
-            logger.error(f"未找到Power.log, 路径为: {path}")
+            logger.error(f"未找到{file_name}, 路径为: {path}")
             yield LogInfoContainer(LOG_CONTAINER_ERROR)
             continue
 
@@ -192,15 +208,15 @@ def log_iter_func(path):
             if subdirs:
                 highest_subdir = max(subdirs)
                 path = os.path.join(path, highest_subdir)
-                path = path + "/Power.log"
+                path = path + "/" + file_name
                 if not os.path.exists(path):
-                    logger.warning(f"最新文件夹下不存在Power.log, 路径为: {path}")
-                    # 创建一个空的Power.log文件
+                    logger.warning(f"最新文件夹下不存在{file_name}, 路径为: {path}")
+                    # 创建一个空的 file_name 文件
                     with open(path, "w", encoding="utf8") as f:
                         pass
-                    logger.info(f"已创建空的Power.log")
+                    logger.info(f"已创建空的{file_name} 文件, 路径为: {path}")
 
-        logger.info(f"开始读取Power.log, 路径为: {path}")
+        logger.info(f"开始读取{file_name}, 路径为: {path}")
 
         with open(path, "r", encoding="utf8") as f:
             while True:
@@ -217,14 +233,14 @@ def log_iter_func(path):
                             break
                     else:
                         empty_line_count = 0
-                        line_container = parse_line(line)
+                        line_container = parse_func(line)
                         if line_container is not None:
                             log_info_container.append_info(line_container)
 
                 yield log_info_container
 
                 if not os.path.exists(path):
-                    logger.error(f"Power.log意外失踪, 预期路径为: {path}")
+                    logger.error(f"{file_name}意外失踪, 预期路径为: {path}")
                     yield LogInfoContainer(LOG_CONTAINER_ERROR)
                     break
 

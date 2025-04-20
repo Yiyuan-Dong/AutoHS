@@ -10,6 +10,7 @@ from strategy import StrategyState
 from log_state import *
 from loguru import logger
 from config import autohs_config
+from constants.state_and_key import *
 
 FSM_state = ""
 time_begin = 0.0
@@ -18,18 +19,64 @@ win_count = 0
 quitting_flag = False
 log_state = LogState()
 log_iter = None
+log_iter_loading_screen = None
 choose_hero_count = 0
+last_state_in_log = SCREEN_MODE_STARTUP
 
 
 def init():
-    global log_state, log_iter, choose_hero_count, autohs_config
+    global log_state, log_iter, log_iter_loading_screen, choose_hero_count, autohs_config
 
     log_path = os.path.join(autohs_config.hearthstone_install_path , "Logs")
 
+    logger.debug("初始化日志状态")
     log_state = LogState()
-    log_iter = log_iter_func(log_path)
+    last_state_in_log = SCREEN_MODE_STARTUP
+    log_iter = log_iter_func(log_path, "Power.log", parse_line)
+    log_iter_loading_screen = log_iter_func(log_path, "LoadingScreen.log", parse_line_loading_screen)
     choose_hero_count = 0
 
+def get_state_from_log():
+    global log_iter_loading_screen, last_state_in_log
+
+    if not window_utils.test_hs_available():
+        return FSM_LEAVE_HS
+
+    log_container = next(log_iter_loading_screen)
+    if log_container.log_type == LOG_CONTAINER_ERROR:
+        return FSM_ERROR
+
+    for log_line_container in log_container.message_list:
+        if log_line_container.line_type == LOG_LINE_MODE_CHANGE:
+            prev_state = log_line_container.info_dict["prev_mode"]
+            curr_state = log_line_container.info_dict["curr_mode"]
+
+            if (prev_state != last_state_in_log):
+                logger.error(f"日志状态不连续，记录状态:{last_state_in_log}，日志状态{prev_state}->{curr_state}")
+
+            last_state_in_log = curr_state
+
+    screen_state_to_fsm = {
+        SCREEN_MODE_STARTUP: FSM_WAIT_MAIN_MENU,
+        SCREEN_MODE_LOGIN: FSM_WAIT_MAIN_MENU,
+        SCREEN_MODE_HUB: FSM_MAIN_MENU,
+        SCREEN_MODE_TOURNAMENT: FSM_CHOOSING_HERO,
+        SCREEN_MODE_COLLECTIONMANAGER: FSM_ERROR,
+        SCREEN_MODE_GAMEPLAY: FSM_CHOOSING_CARD,       # 如果已经留过牌了，则会进入对战状态
+        SCREEN_MODE_TRAVEN_BRAWL: FSM_ERROR,
+        SCREEN_MODE_BACON: FSM_ERROR,
+    }
+
+    if last_state_in_log in screen_state_to_fsm:
+        if screen_state_to_fsm[last_state_in_log] == FSM_ERROR:
+            logger.error(f"游戏进入错误状态: {last_state_in_log}")
+            return FSM_ERROR
+        else:
+            logger.debug(f"通过日志获取游戏状态: {last_state_in_log} -> {screen_state_to_fsm[last_state_in_log]}")
+            return screen_state_to_fsm[last_state_in_log]
+    else:
+        logger.error(f"未知的游戏状态: {last_state_in_log}")
+        return FSM_ERROR
 
 def update_log_state():
     log_container = next(log_iter)
@@ -360,7 +407,7 @@ def MainMenuAction():
         click.enter_battle_mode()
         time.sleep(5)
 
-        state = window_utils.get_state()
+        state = get_state_from_log()
 
         # 重新连接对战之类的
         if state == FSM_BATTLING:
@@ -373,7 +420,7 @@ def MainMenuAction():
 
 def WaitMainMenu():
 
-    while window_utils.get_state() != FSM_MAIN_MENU:
+    while get_state_from_log() != FSM_MAIN_MENU:
         if quitting_flag:
             return FSM_ERROR
 
@@ -438,6 +485,6 @@ def AutoHS_automata():
         if quitting_flag:
             return
         if FSM_state == "":
-            FSM_state = window_utils.get_state()
+            FSM_state = get_state_from_log()
         logger.debug("下一个状态: " + str(FSM_state))
         FSM_state = FSM_dispatch(FSM_state)
