@@ -1,7 +1,6 @@
 import random
 import sys
 import time
-import keyboard
 import click
 import window_utils
 import cv2
@@ -9,7 +8,7 @@ import time
 from strategy import StrategyState
 from log_state import *
 from loguru import logger
-from config import autohs_config
+from config import PLATFORM, autohs_config
 from constants.state_and_key import *
 
 FSM_state = ""
@@ -26,8 +25,10 @@ last_state_in_log = SCREEN_MODE_STARTUP
 
 def init():
     global log_state, log_iter, log_iter_loading_screen, choose_hero_count, autohs_config
-
-    log_path = os.path.join(autohs_config.hearthstone_install_path , "Logs")
+    if PLATFORM == "Darwin":
+        log_path = "/Applications/Hearthstone/Logs"
+    else:
+        log_path = os.path.join(autohs_config.hearthstone_install_path , "Logs")
 
     logger.debug("初始化日志状态")
     log_state = LogState()
