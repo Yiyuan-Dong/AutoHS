@@ -1,7 +1,6 @@
 import json
+import platform
 from autohs_logger import *
-
-
 # 每个回合开始发个表情的概率
 EMOJ_RATIO = 0.05
 
@@ -25,6 +24,7 @@ TINY_OPERATE_INTERVAL = 0.1
 BASIC_MINION_PUT_INTERVAL = 0.8
 BASIC_SPELL_WAIT_TIME = 1.5
 BASIC_WEAPON_WAIT_TIME = 1
+PLATFORM = platform.system()
 
 
 class AutoHSConfig:
@@ -74,5 +74,6 @@ class AutoHSConfig:
                 logger.info(f"配置文件加载成功，配置：{self.__dict__}")
         except FileNotFoundError:
             logger.error("配置文件 configs.json 未找到")
+
 
 autohs_config = AutoHSConfig()
