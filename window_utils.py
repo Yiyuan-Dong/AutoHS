@@ -2,19 +2,46 @@
 主体代码引自 Demon_Hunter 的CSDN博客, 博客URL:https://blog.csdn.net/zhuisui_woxin/article/details/84345036
 """
 
-import win32gui
-import win32ui
-import win32con
-import win32com.client
-import win32api
-import win32process
-import numpy
+import mss
 import cv2
 import time
+import pyautogui
+import numpy as np
+
 from autohs_logger import *
 from constants.state_and_key import *
 from constants.pixel_coordinate import *
 from skimage.metrics import structural_similarity as ssim
+from config import PLATFORM
+
+# 导入平台相关的模块
+if PLATFORM == "Darwin":
+    USE_PYOBJC = True
+    try:
+        import macos
+        import Quartz
+        import signal
+        logger.info("使用 pyobjc API (macOS)")
+    except ImportError:
+        logger.error("在macOS上缺少必要的pyobjc库，请安装：pip install pyobjc pyobjc-core pyobjc-framework-Cocoa pyobjc-framework-Quartz")
+        sys.exit(1)
+else:
+    USE_PYOBJC = False
+    try:
+        import win32gui
+        import win32ui
+        import win32con
+        import win32com.client
+        import win32api
+        import win32process
+        logger.info("使用 pywin32 API (Windows)")
+    except ImportError:
+        if PLATFORM == "Windows":
+            logger.error("在Windows上缺少必要的pywin32库，请安装：pip install pywin32")
+            sys.exit(1)
+        else:
+            logger.error("不支持的平台")
+            sys.exit(1)
 
 current_file_path = os.path.abspath(__file__)
 current_dir_path = os.path.dirname(current_file_path)
@@ -29,25 +56,33 @@ choose_hero_img_1080 = cv2.imread(os.path.join(figs_dir_path, "choose_hero_1080.
 matching_img_1080 = cv2.imread(os.path.join(figs_dir_path, "matching_1080.png"))
 main_menu_img_1080 = cv2.imread(os.path.join(figs_dir_path, "main_menu_1080.png"))
 
+
 def get_HS_hwnd():
-    hwnd = win32gui.FindWindow(None, "炉石传说")
-    if hwnd != 0:
-        return hwnd
-
-    hwnd = win32gui.FindWindow(None, "《爐石戰記》")
-    if hwnd != 0:
-        return hwnd
-
-    hwnd = win32gui.FindWindow(None, "Hearthstone")
+    app_names = ["Hearthstone", "炉石传说", "《爐石戰記》"]
+    hwnd = 0
+    for app_name in app_names:
+        if USE_PYOBJC:
+            app = macos.find_running_application(app_name=app_name)
+            if not app:
+                continue
+            hwnd = app.processIdentifier()
+        else:
+            hwnd = win32gui.FindWindow(None, app_name)
+    
     return hwnd
 
 
 def get_battlenet_hwnd():
-    hwnd = win32gui.FindWindow(None, "战网")
-    if hwnd != 0:
-        return hwnd
-
-    hwnd = win32gui.FindWindow(None, "Battle.net")
+    app_names = ["Battle.net", "战网"]
+    hwnd = 0
+    for app_name in app_names:
+        if USE_PYOBJC:
+            app = macos.find_running_application(app_name=app_name)
+            if not app:
+                continue
+            hwnd = app.processIdentifier()
+        else:
+            hwnd = win32gui.FindWindow(None, app_name)
     return hwnd
 
 
@@ -58,19 +93,21 @@ def test_battlenet_available():
     return get_battlenet_hwnd() != 0
 
 def move_window_foreground(hwnd, name=""):
-    try:
-        win32gui.BringWindowToTop(hwnd)
-        shell = win32com.client.Dispatch("WScript.Shell")
-        shell.SendKeys('%')
-        win32gui.SetForegroundWindow(hwnd)
-    except Exception as e:
-        if name != "":
-            logger.warning(f"Open {name}: {e}")
-        else:
-            logger.warning(e)
+    if USE_PYOBJC:
+        macos.move_window_foreground(app_name=name, pid=hwnd)
+    else:
+        try:
+            win32gui.BringWindowToTop(hwnd)
+            shell = win32com.client.Dispatch("WScript.Shell")
+            shell.SendKeys('%')
+            win32gui.SetForegroundWindow(hwnd)
+        except Exception as e:
+            if name != "":
+                logger.warning(f"Open {name}: {e}")
+            else:
+                logger.warning(e)
 
-    win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
-
+        win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
 
 def max_diff(img, pixel_list):
     ans = 0
@@ -88,32 +125,46 @@ def max_diff(img, pixel_list):
 def take_snapshot():
     width = WIDTH
     height = HEIGHT
+    if USE_PYOBJC:
+        with mss.mss() as sct:
+            monitor = sct.monitors[1]  # 通常 monitors[1] 是主屏幕
+            screenshot = pyautogui.screenshot(
+                region=(monitor["left"], monitor["top"], monitor["width"], monitor["height"])
+            )
 
-    # Get the snapshot of the desktop
-    hwnd = win32gui.GetDesktopWindow()
-    hwndDC = win32gui.GetWindowDC(hwnd)
-    mfcDC = win32ui.CreateDCFromHandle(hwndDC)
-    saveDC = mfcDC.CreateCompatibleDC()
-    saveBitMap = win32ui.CreateBitmap()
-    saveBitMap.CreateCompatibleBitmap(mfcDC, width, height)
-    saveDC.SelectObject(saveBitMap)
-    saveDC.BitBlt((0, 0), (width, height), mfcDC, (0, 0), win32con.SRCCOPY)
+        # PyAutoGUI的截图颜色通道顺序是RGB，而OpenCV通常使用BGR
+        im_opencv = np.array(screenshot)
+        # 使用cv2.cvtColor()转换颜色通道顺序
+        im_opencv = cv2.cvtColor(im_opencv, cv2.COLOR_RGB2BGR)
+        return im_opencv
+    else:
+        # This function used to take the snapshot of a specific process,
+        # but I found it does not work well now. So now it just take the
+        # snapshot of the frontend window.
+        # Get the snapshot of the desktop
+        hwnd = win32gui.GetDesktopWindow()
+        hwndDC = win32gui.GetWindowDC(hwnd)
+        mfcDC = win32ui.CreateDCFromHandle(hwndDC)
+        saveDC = mfcDC.CreateCompatibleDC()
+        saveBitMap = win32ui.CreateBitmap()
+        saveBitMap.CreateCompatibleBitmap(mfcDC, width, height)
+        saveDC.SelectObject(saveBitMap)
+        saveDC.BitBlt((0, 0), (width, height), mfcDC, (0, 0), win32con.SRCCOPY)
 
-    signedIntsArray = saveBitMap.GetBitmapBits(True)
+        signedIntsArray = saveBitMap.GetBitmapBits(True)
 
-    # Release the resources
-    win32gui.DeleteObject(saveBitMap.GetHandle())
-    saveDC.DeleteDC()
-    mfcDC.DeleteDC()
-    win32gui.ReleaseDC(hwnd, hwndDC)
+        # Release the resources
+        win32gui.DeleteObject(saveBitMap.GetHandle())
+        saveDC.DeleteDC()
+        mfcDC.DeleteDC()
+        win32gui.ReleaseDC(hwnd, hwndDC)
 
-    im_opencv = numpy.frombuffer(signedIntsArray, dtype='uint8')
-    im_opencv.shape = (height, width, 4)
+        im_opencv = np.frombuffer(signedIntsArray, dtype='uint8')
+        im_opencv.shape = (height, width, 4)
 
-    # Create a writable copy of the array
-    im_opencv = im_opencv.copy()
-
-    return im_opencv
+        # Create a writable copy of the array
+        im_opencv = im_opencv.copy()
+        return im_opencv
 
 
 def wait_battlefield_stable(autohs_config, wait_count = 3, max_try = 40):
@@ -205,7 +256,22 @@ def terminate_HS():
     hwnd = get_HS_hwnd()
     if hwnd == 0:
         return
-    _, process_id = win32process.GetWindowThreadProcessId(hwnd)
-    handle = win32api.OpenProcess(win32con.PROCESS_TERMINATE, 0, process_id)
-    win32api.TerminateProcess(handle, 0)
-    win32api.CloseHandle(handle)
+    if USE_PYOBJC:
+        # 使用os.kill终止进程 (macOS)
+        try:
+            os.kill(hwnd, signal.SIGTERM)
+        except Exception as e:
+            logger.warning(f"终止炉石传说进程失败: {e}")
+    else:
+        _, process_id = win32process.GetWindowThreadProcessId(hwnd)
+        handle = win32api.OpenProcess(win32con.PROCESS_TERMINATE, 0, process_id)
+        win32api.TerminateProcess(handle, 0)
+        win32api.CloseHandle(handle)
+
+
+def get_window_pos(battlenet_hwnd):
+    if USE_PYOBJC:
+        left, top, right, bottom = macos.get_window_rect(battlenet_hwnd)
+    else:
+        left, top, right, bottom = win32gui.GetWindowRect(battlenet_hwnd)
+    return left, top, right, bottom
