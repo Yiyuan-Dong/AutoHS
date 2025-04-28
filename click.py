@@ -1,7 +1,3 @@
-import win32gui
-import win32api
-import win32con
-import pywintypes
 import time
 from pynput.mouse import Button, Controller
 import random
@@ -296,5 +292,5 @@ def enter_HS():
 
     rand_sleep(1)
 
-    left, top, right, bottom = win32gui.GetWindowRect(battlenet_hwnd)
+    left, top, right, bottom = get_window_pos(battlenet_hwnd)
     left_click(left + 180, bottom - 110)
