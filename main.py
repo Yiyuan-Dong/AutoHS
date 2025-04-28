@@ -1,6 +1,5 @@
 import tkinter as tk
 import os
-import keyboard
 from FSM_action import system_exit, AutoHS_automata
 from FSM_action import init
 from autohs_logger import logger_init
@@ -22,17 +21,33 @@ def is_integer(s):
         return None
 
 def check_hearthstone_path(path):
-    if not os.path.exists(path):
-        messagebox.showinfo("Warning", "炉石安装路径不存在")
-        return False
+    if PLATFORM == "Darwin":  # macOS
+        # 在macOS上，炉石传说是一个应用程序包（.app）
+        path = '/Applications/Hearthstone/Hearthstone.app'
+        if not path.endswith(".app") and not os.path.exists(path):
+            app_path = path if path.endswith(".app") else os.path.join(path, "Hearthstone.app")
+            messagebox.showinfo("Warning", f"未找到炉石传说应用程序包: {app_path}")
+            return False
+        
+        # 检查Logs文件夹路径
+        logs_path = os.path.join(os.path.expanduser("/Applications/Hearthstone/Logs"))
+        if not os.path.exists(logs_path):
+            messagebox.showinfo("Warning", f"未找到炉石传说日志文件夹: {logs_path}")
+            return False
+        
+        return True
+    else:  # Windows 或其他平台
+        if not os.path.exists(path):
+            messagebox.showinfo("Warning", "炉石安装路径不存在")
+            return False
 
-    if not os.path.exists(os.path.join(path, "Hearthstone.exe")):
-        messagebox.showinfo("Warning", "安装路径下未找到Hearthstone.exe")
-        return False
+        if not os.path.exists(os.path.join(path, "Hearthstone.exe")):
+            messagebox.showinfo("Warning", "安装路径下未找到Hearthstone.exe")
+            return False
 
-    if not os.path.exists(os.path.join(path, "logs")):
-        messagebox.showinfo("Warning", "安装路径下未找到logs文件夹")
-        return False
+        if not os.path.exists(os.path.join(path, "logs")):
+            messagebox.showinfo("Warning", "安装路径下未找到logs文件夹")
+            return False
 
     return True
 
@@ -180,8 +195,11 @@ def toggle_give_up_with_dignity():
     autohs_config.give_up_with_dignity = not autohs_config.give_up_with_dignity
     give_up_button.config(text=f"快攻智能投降：{'启用' if autohs_config.give_up_with_dignity else '未启用'}")
 
+
 if __name__ == "__main__":
-    keyboard.add_hotkey("ctrl+q", close_gui)
+    if PLATFORM != "Darwin":  # macOS
+        import keyboard
+        keyboard.add_hotkey("ctrl+q", close_gui)
 
     logger_init()
 
