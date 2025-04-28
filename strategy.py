@@ -1,6 +1,4 @@
 import click
-import keyboard
-import sys
 import random
 
 from card.basic_card import MinionNoPoint
