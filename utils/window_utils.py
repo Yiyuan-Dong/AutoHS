@@ -17,7 +17,7 @@ from config import PLATFORM
 if PLATFORM == "Darwin":
     USE_PYOBJC = True
     try:
-        import macos
+        from utils import macos
         import Quartz
         import signal
         logger.info("使用 pyobjc API (macOS)")
