@@ -1,7 +1,6 @@
-import click
 import random
-
-from card.basic_card import MinionNoPoint
+from card.basic import MinionNoPoint
+from controller import controller
 from log_state import *
 from log_op import *
 from strategy_entity import *
@@ -459,15 +458,18 @@ class StrategyState:
     def my_entity_attack_oppo(self, my_index, oppo_index):
         if my_index == -1:
             if oppo_index == -1:
-                click.hero_beat_hero()
+                controller.attack.myHeroAttackEnemyHero()
+                # click.hero_beat_hero()
             else:
-                click.hero_beat_minion(oppo_index, self.oppo_minion_num)
+                controller.attack.myHeroAttackEnemyMinion(oppo_index, self.oppo_minion_num)
+                # click.hero_beat_minion(oppo_index, self.oppo_minion_num)
         else:
             if oppo_index == -1:
-                click.minion_beat_hero(my_index, self.my_minion_num)
+                controller.attack.minionAttackEnemyHero(my_index, self.my_minion_num)
+                # click.minion_beat_hero(my_index, self.my_minion_num)
             else:
-                click.minion_beat_minion(my_index, self.my_minion_num,
-                                         oppo_index, self.oppo_minion_num)
+                controller.attack.minionAttackEnemyMinion(my_index, self.my_minion_num, oppo_index, self.oppo_minion_num)
+                # click.minion_beat_minion(my_index, self.my_minion_num, oppo_index, self.oppo_minion_num)
 
     def copy_new_one(self):
         # TODO: 有必要deepcopy吗
