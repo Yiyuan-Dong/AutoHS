@@ -1,14 +1,11 @@
-import sys
-import time
 import random
-import window_utils
+from utils import window_utils
 import cv2
-import time
 from controller import controller
-from strategy import StrategyState
-from log_state import *
+from strategy.strategy import StrategyState
+from utils.log_state import *
 from loguru import logger
-from config import PLATFORM, autohs_config
+from config import PLATFORM
 from constants.state_and_key import *
 
 FSM_state = ""

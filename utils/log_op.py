@@ -3,8 +3,8 @@ import re
 import time
 import copy
 from constants.state_and_key import *
-from autohs_logger import *
-import sys
+from utils.autohs_logger import *
+
 
 # "D 04:23:18.0000001 GameState.DebugPrintPower() -     GameEntity EntityID=1"
 GAME_STATE_PATTERN = re.compile(r"D [\d]{2}:[\d]{2}:[\d]{2}.[\d]{7} GameState.DebugPrint(Game|Power)\(\) - (.+)")

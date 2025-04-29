@@ -8,8 +8,7 @@ import time
 import pyautogui
 import numpy as np
 
-from autohs_logger import *
-from constants.state_and_key import *
+from utils.autohs_logger import *
 from constants.pixel_coordinate import *
 from skimage.metrics import structural_similarity as ssim
 from config import PLATFORM
@@ -44,7 +43,7 @@ else:
             sys.exit(1)
 
 current_file_path = os.path.abspath(__file__)
-current_dir_path = os.path.dirname(current_file_path)
+current_dir_path = os.path.dirname(os.path.dirname(current_file_path))
 figs_dir_path = os.path.join(current_dir_path, "figs")
 
 choose_card_img_2k = cv2.imread(os.path.join(figs_dir_path, "choose_card_2k.png"))

@@ -3,8 +3,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from strategy import *
-from autohs_logger import *
+from strategy.strategy import *
+from utils.autohs_logger import *
 from config import autohs_config
 
 HEARTHSTONE_POWER_LOG_PATH = "D:/HearthStone/Logs"

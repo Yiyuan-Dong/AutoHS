@@ -1,9 +1,7 @@
-import sys
 
-from log_op import *
-from json_op import *
-from autohs_logger import *
-import constants.state_and_key
+from utils.log_op import *
+from utils.json_op import *
+from utils.autohs_logger import *
 from config import autohs_config
 
 class LogState:

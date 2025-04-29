@@ -2,7 +2,7 @@ import time
 from abc import ABC, abstractmethod
 from constants.state_and_key import *
 from config import autohs_config
-from autohs_logger import *
+from utils.autohs_logger import *
 from controller import controller
 
 

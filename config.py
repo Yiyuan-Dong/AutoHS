@@ -1,6 +1,6 @@
 import json
 import platform
-from autohs_logger import *
+from utils.autohs_logger import *
 from constants.pixel_coordinate import COORDINATES_1920_1080, COORDINATES_2560_1440, get_screen_resolution
 # 每个回合开始发个表情的概率
 EMOJ_RATIO = 0.05

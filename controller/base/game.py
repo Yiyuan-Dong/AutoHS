@@ -13,7 +13,7 @@ import random
 from config import coors, logger
 from constants.state_and_key import *
 from controller.base.mouse import MouseController
-from window_utils import get_HS_hwnd, get_battlenet_hwnd, get_window_pos, move_window_foreground, test_hs_available
+from utils.window_utils import get_HS_hwnd, get_battlenet_hwnd, get_window_pos, move_window_foreground, test_hs_available
 
 
 class GameController(MouseController):

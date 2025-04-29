@@ -2,7 +2,7 @@ from card.basic import *
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from strategy import StrategyState
+    from strategy.strategy import StrategyState
 
 
 class TotemicCall(HeroPowerCard):
