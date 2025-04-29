@@ -1,9 +1,7 @@
 import random
 from card.basic import MinionNoPoint
 from controller import controller
-from log_state import *
-from log_op import *
-from strategy_entity import *
+from strategy.strategy_entity import *
 from typing import List
 
 
