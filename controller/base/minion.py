@@ -8,7 +8,7 @@ class MinionController(MouseController):
         x = coors[COORDINATE_MID_X] + (mine_index * 2 - mine_num + 1) * coors[COORDINATE_HALF_MINION_GAP_X]
         y = coors[COORDINATE_MY_MINION_Y]
         return [x, y]
-    
+
     def getEnemyMinionPosition(self, oppo_index, oppo_num):
         x = coors[COORDINATE_MID_X] + (oppo_index * 2 - oppo_num + 1) * coors[COORDINATE_HALF_MINION_GAP_X]
         y = coors[COORDINATE_OPPO_MINION_Y]

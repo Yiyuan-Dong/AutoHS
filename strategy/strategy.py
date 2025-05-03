@@ -457,17 +457,13 @@ class StrategyState:
         if my_index == -1:
             if oppo_index == -1:
                 controller.attack.myHeroAttackEnemyHero()
-                # click.hero_beat_hero()
             else:
                 controller.attack.myHeroAttackEnemyMinion(oppo_index, self.oppo_minion_num)
-                # click.hero_beat_minion(oppo_index, self.oppo_minion_num)
         else:
             if oppo_index == -1:
                 controller.attack.minionAttackEnemyHero(my_index, self.my_minion_num)
-                # click.minion_beat_hero(my_index, self.my_minion_num)
             else:
                 controller.attack.minionAttackEnemyMinion(my_index, self.my_minion_num, oppo_index, self.oppo_minion_num)
-                # click.minion_beat_minion(my_index, self.my_minion_num, oppo_index, self.oppo_minion_num)
 
     def copy_new_one(self):
         # TODO: 有必要deepcopy吗

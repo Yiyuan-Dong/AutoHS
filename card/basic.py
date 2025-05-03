@@ -51,10 +51,8 @@ class SpellCard(Card):
 class SpellNoPoint(SpellCard):
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
-
         controller.cards.useHandCard(card_index, state.my_hand_card_num)
-        # click.choose_and_use_spell(card_index, state.my_hand_card_num)
-        # click.cancel_click()
+        controller.game.cancelClick()
         time.sleep(cls.wait_time)
 
 
@@ -68,15 +66,11 @@ class SpellPointOppo(SpellCard):
 
         oppo_index = args[0]
         controller.cards.chooseHandCard(card_index, state.my_hand_card_num)
-        # click.choose_card(card_index, state.my_hand_card_num)
         if oppo_index >= 0:
             controller.minion.chooseEnemyMinion(oppo_index, state.oppo_minion_num)
-            # click.choose_opponent_minion(oppo_index, state.oppo_minion_num)
         else:
             controller.hero.chooseEnemyHero()
-            # click.choose_oppo_hero()
         controller.game.cancelClick()
-        # click.cancel_click()
         time.sleep(cls.wait_time)
 
 
@@ -93,9 +87,6 @@ class SpellPointMine(SpellCard):
         controller.minion.chooseMyMinion(mine_index, state.my_minion_num)
         controller.game.cancelClick()
 
-        # click.choose_card(card_index, state.my_hand_card_num)
-        # click.choose_my_minion(mine_index, state.my_minion_num)
-        # click.cancel_click()
         time.sleep(cls.wait_time)
 
 
@@ -168,9 +159,6 @@ class MinionNoPoint(MinionCard):
         gap_index = args[0]
         controller.cards.putMinionOnBattleGround(card_index, state.my_hand_card_num, gap_index, state.my_minion_num)
         controller.game.cancelClick()
-        # click.choose_card(card_index, state.my_hand_card_num)
-        # click.put_minion(gap_index, state.my_minion_num)
-        # click.cancel_click()
         time.sleep(autohs_config.basic_minion_put_interval)
 
 
@@ -184,16 +172,11 @@ class MinionPointOppo(MinionCard):
         oppo_index = args[1] if len(args) > 1 else -1
 
         controller.cards.putMinionOnBattleGround(card_index, state.my_hand_card_num, gap_index, state.my_minion_num)
-        # click.choose_card(card_index, state.my_hand_card_num)
-        # click.put_minion(gap_index, state.my_minion_num)
         if oppo_index >= 0:
             controller.minion.chooseEnemyMinion(oppo_index, state.oppo_minion_num)
-            # click.choose_opponent_minion(oppo_index, state.oppo_minion_num)
         else:
             controller.hero.chooseEnemyHero()
-            # click.choose_oppo_hero()
         controller.game.cancelClick()
-        # click.cancel_click()
         time.sleep(autohs_config.basic_minion_put_interval)
 
 
@@ -203,16 +186,11 @@ class MinionPointMine(MinionCard):
         gap_index = args[0]
         my_index = args[1]
         controller.cards.putMinionOnBattleGround(card_index, state.my_hand_card_num, gap_index, state.my_minion_num)
-        # click.choose_card(card_index, state.my_hand_card_num)
-        # click.put_minion(gap_index, state.my_minion_num)
         if my_index >= 0:
             # 这时这个随从已经在场上了, 其他随从已经移位了
             controller.minion.chooseMyMinion(my_index, state.my_minion_num + 1)
-            # click.choose_my_minion(my_index, state.my_minion_num + 1)
         else:
             controller.hero.chooseMyHero()
-            # click.choose_my_hero()
-        # click.cancel_click()
         controller.game.cancelClick()
         time.sleep(autohs_config.basic_minion_put_interval)
 
@@ -225,8 +203,7 @@ class WeaponCard(Card):
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
         controller.cards.useHandCard(card_index, state.my_hand_card_num)
-        # click.choose_and_use_spell(card_index, state.my_hand_card_num)
-        # click.cancel_click()
+        controller.game.cancelClick()
         time.sleep(autohs_config.basic_weapon_wait_time)
 
     @classmethod

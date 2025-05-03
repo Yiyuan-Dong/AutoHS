@@ -39,8 +39,7 @@ class LesserHeal(HeroPowerCard):
 
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
-        controller.attack.useSkillToTarget(args[0], state.my_minion_num)
-        # click.use_skill_point_mine(args[0], state.my_minion_num)
+        controller.attack.useSkillToTarget(args[0], state.my_minion_num, SkillType.POINT_TO_NONE)
         time.sleep(1)
 
 
@@ -86,6 +85,5 @@ class MindSpike(HeroPowerCard):
 
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
-        controller.attack.useSkillToTarget(args[0], state.oppo_minion_num)
-        # click.use_skill_point_oppo(args[0], state.oppo_minion_num)
+        controller.attack.useSkillToTarget(args[0], state.oppo_minion_num, SkillType.POINT_TO_OPPONENT)
         time.sleep(1)

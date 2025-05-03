@@ -6,7 +6,7 @@ from controller.base.mouse import MouseController
 class HeroController(MouseController):
     def getMyHeroSkillPosition(self):
         return [coors[COORDINATE_SKILL_X], coors[COORDINATE_SKILL_Y]]
-    
+
     def getMyHeroPosition(self):
         return [coors[COORDINATE_MID_X], coors[COORDINATE_MY_HERO_Y]]
 
@@ -16,7 +16,7 @@ class HeroController(MouseController):
     def useSkill(self):
         skill_pos = self.getMyHeroSkillPosition()
         self.mouseClickPosition(skill_pos)
-    
+
     def chooseMyHero(self):
         my_hero_pos = self.getMyHeroPosition()
         self.mouseClickPosition(my_hero_pos)
@@ -28,4 +28,3 @@ class HeroController(MouseController):
     def myHeroAttackEnemyHero(self):
         self.chooseMyHero()
         self.chooseEnemyHero()
-

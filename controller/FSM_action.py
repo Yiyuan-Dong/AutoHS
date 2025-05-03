@@ -154,7 +154,6 @@ def ChoosingHeroAction():
 
     time.sleep(2)
     controller.game.matchOpponent()
-    # click.match_opponent()
     time.sleep(1)
     return FSM_MATCHING_OPPONENT
 
@@ -236,11 +235,9 @@ def ChoosingCardAction():
 
             if not should_keep_in_hand:
                 controller.cards.replaceStartingCard(my_hand_index, hand_card_num)
-                # click.replace_starting_card(my_hand_index, hand_card_num)
 
         has_print = 1
 
-        # click.commit_choose_card()
         controller.game.commitChooseCard()
 
         loop_count += 1
@@ -305,10 +302,8 @@ def Battling():
                 # 在之后每个回合开始时有概率发表情
                 if random.random() < autohs_config.emoj_ratio:
                     controller.game.useEmoj()
-                    # click.emoj()
                 if autohs_config.give_up_with_dignity and strategy_state.should_give_up():
                     controller.game.giveUpRoutine()
-                    # click.give_up_routine()
                     # 脚本应通过读取日志进入FSM_QUITTING_BATTLE状态
                     continue
 
@@ -322,9 +317,6 @@ def Battling():
             controller.game.endTurn()
             controller.game.commitErrorReport()
             controller.game.cancelClick()
-            # click.end_turn()
-            # click.commit_error_report()
-            # click.cancel_click()
             time.sleep(autohs_config.state_check_interval)
 
         # 考虑要不要出牌
@@ -348,10 +340,8 @@ def Battling():
         else:
             if autohs_config.give_up_with_dignity and strategy_state.will_die_next_turn():
                 controller.game.giveUpRoutine()
-                # click.give_up_routine()
             else:
                 controller.game.endTurn()
-                # click.end_turn()
                 time.sleep(autohs_config.state_check_interval)
 
 
@@ -378,9 +368,6 @@ def QuittingBattle():
             return state
         controller.game.cancelClick()
         controller.game.commitErrorReport()
-        # click.cancel_click()
-        # click.test_click()
-        # click.commit_error_report()
 
         loop_count += 1
         if loop_count >= 15:
@@ -417,7 +404,6 @@ def MainMenuAction():
             return FSM_ERROR
 
         controller.game.enterBattleMode()
-        # click.enter_battle_mode()
         time.sleep(5)
 
         state = window_utils.get_state()
@@ -437,8 +423,7 @@ def WaitMainMenu():
         if quitting_flag:
             return FSM_ERROR
 
-        controller.game.clickMiddle()
-        # click.click_main_menu_middle()
+        controller.game.clickMainMenuMiddle()
         time.sleep(5)
 
     return FSM_MAIN_MENU
@@ -460,8 +445,6 @@ def HandleErrorAction():
     else:
         controller.game.commitErrorReport()
         controller.game.giveUpRoutine()
-        # click.commit_error_report()
-        # click.give_up_routine()
 
         window_utils.terminate_HS()
         time.sleep(autohs_config.state_check_interval)

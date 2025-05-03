@@ -19,10 +19,10 @@ from utils.window_utils import get_HS_hwnd, get_battlenet_hwnd, get_window_pos, 
 class GameController(MouseController):
     def setting(self):
         self.mouseClickPosition([coors[COORDINATE_SETTING_X], coors[COORDINATE_SETTING_Y]])
-    
+
     def surrender(self):
         self.mouseClickPosition([coors[COORDINATE_GIVE_UP_X], coors[COORDINATE_GIVE_UP_Y]])
-    
+
     def matchOpponent(self):
         self.mouseClickPosition([coors[COORDINATE_MATCH_OPPONENT_X], coors[COORDINATE_MATCH_OPPONENT_Y]])
 
@@ -82,3 +82,6 @@ class GameController(MouseController):
 
     def clickMiddle(self):
         self.mouseClickPosition([coors[COORDINATE_MID_X], coors[COORDINATE_NO_OP_Y]])
+
+    def clickMainMenuMiddle(self):
+        self.mouseClickPosition([coors[COORDINATE_MID_X], coors[COORDINATE_MAIN_MENU_NO_OP_Y]])

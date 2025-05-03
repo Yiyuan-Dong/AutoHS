@@ -84,6 +84,8 @@ def get_battlenet_hwnd():
             hwnd = app.processIdentifier()
         else:
             hwnd = win32gui.FindWindow(None, app_name)
+            if hwnd:
+                break
     return hwnd
 
 

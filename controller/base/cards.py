@@ -13,7 +13,6 @@ from controller.base.mouse import MouseController
 from config import coors
 
 
-
 class CardsController(MouseController):
     def chooseHandCard(self, card_index, card_num, click=True):
         """ 选择手牌 """
@@ -61,8 +60,3 @@ class CardsController(MouseController):
         x = coors[COORDINATE_MID_X] + (2 * gap_index - minion_num) * coors[COORDINATE_HALF_MINION_GAP_X]
         y = coors[COORDINATE_MY_MINION_Y]
         self.useHandCard(card_index, card_num, [x, y])
-
-    def useMagicCard(self, hand_card_index, target_pos=None):
-        self.useHandCard(hand_card_index, target_pos=target_pos)
-
-    # endregion

@@ -1,4 +1,4 @@
-# 我认为这个文件不需要被修改
+from enum import Enum
 
 FSM_LEAVE_HS = "Leave Hearth Stone"
 FSM_MAIN_MENU = "Main Menu"
@@ -84,3 +84,8 @@ SCREEN_MODE_COLLECTIONMANAGER = "COLLECTIONMANAGER"       # 我的收藏
 SCREEN_MODE_GAMEPLAY = "GAMEPLAY"                         # 对战中
 SCREEN_MODE_TRAVEN_BRAWL = "TRAVENBRAWL"                  # 乱斗
 SCREEN_MODE_BACON = "BACON"                               # 酒馆战旗
+
+class SkillType(Enum):
+    POINT_TO_NONE = 0
+    POINT_TO_MINE = 1
+    POINT_TO_OPPONENT = 2
