@@ -3,6 +3,7 @@ from controller.base.cards import CardsController
 from controller.base.hero import HeroController
 from controller.base.minion import MinionController
 from constants.state_and_key import SkillType
+from time import sleep
 
 
 class AttackController(CardsController, HeroController, MinionController, GameController):
@@ -10,11 +11,13 @@ class AttackController(CardsController, HeroController, MinionController, GameCo
         my_minion_pos = self.getMyMinionPosition(mine_index, mine_number)
         enemy_minion_pos = self.getEnemyMinionPosition(oppo_index, oppo_num)
         self.positionClickPosition(my_minion_pos, enemy_minion_pos)
+        sleep(0.1)
 
     def minionAttackEnemyHero(self, mine_index, mine_number):
         my_minion_pos = self.getMyMinionPosition(mine_index, mine_number)
         enemy_hero_pos = self.getEnemyHeroPosition()
         self.positionClickPosition(my_minion_pos, enemy_hero_pos)
+        sleep(0.1)
 
     def useSkillToTarget(self, index, num, skill_type : SkillType):
         self.useSkill()

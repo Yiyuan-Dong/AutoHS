@@ -369,7 +369,7 @@ class StrategyState:
         has_taunt = self.oppo_has_taunt
         beat_face_win = self.my_total_attack >= self.oppo_hero.health
 
-        max_delta_h_val = 0
+        max_delta_h_val = -999999   # 如果设成0，会出现一个嘲讽卡住所有随从的情况
         max_my_index = -2
         max_oppo_index = -2
         min_attack = 0

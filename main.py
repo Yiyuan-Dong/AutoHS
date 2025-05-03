@@ -132,6 +132,7 @@ def close_gui():
 def check_before_start():
     if not check_power_config():
         messagebox.showinfo("Warning", "未在炉石设置中找到Power.log相关配置，脚本无法运行")
+        return False
 
     autohs_config.has_loading_screen = check_loading_screen_config()
     logger.info(f"has_loading_screen: {autohs_config.has_loading_screen}")
