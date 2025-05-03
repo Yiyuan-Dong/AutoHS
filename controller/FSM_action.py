@@ -34,6 +34,12 @@ def init():
     log_iter_loading_screen = log_iter_func(log_path, "LoadingScreen.log", parse_line_loading_screen)
     choose_hero_count = 0
 
+def get_state():
+    if autohs_config.has_loading_screen:
+        return get_state_from_log()
+    else:
+        return window_utils.get_state()
+
 def get_state_from_log():
     global log_iter_loading_screen, last_state_in_log
 
@@ -423,7 +429,7 @@ def MainMenuAction():
 
 def WaitMainMenu():
 
-    while get_state_from_log() != FSM_MAIN_MENU:
+    while get_state() != FSM_MAIN_MENU:
         if quitting_flag:
             return FSM_ERROR
 
@@ -488,6 +494,6 @@ def AutoHS_automata():
         if quitting_flag:
             return
         if FSM_state == "":
-            FSM_state = get_state_from_log()
+            FSM_state = get_state()
         logger.debug("下一个状态: " + str(FSM_state))
         FSM_state = FSM_dispatch(FSM_state)

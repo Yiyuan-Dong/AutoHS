@@ -3,7 +3,7 @@ from controller.FSM_action import init
 from tkinter import messagebox
 from constants.pixel_coordinate import *
 from config import *
-from utils.window_utils import test_hs_available, test_battlenet_available
+from utils.window_utils import test_hs_available, test_battlenet_available, check_power_config, check_loading_screen_config
 from utils.json_op import JSON_LAST_MODIFIED_TIME
 
 ABNORMAL_WIDTH_HEIGHT_LIST = [(1707, 960), (2048, 1152), (1306, 720), (1536, 864)]
@@ -25,13 +25,13 @@ def check_hearthstone_path(path):
             app_path = path if path.endswith(".app") else os.path.join(path, "Hearthstone.app")
             messagebox.showinfo("Warning", f"未找到炉石传说应用程序包: {app_path}")
             return False
-        
+
         # 检查Logs文件夹路径
         logs_path = os.path.join(os.path.expanduser("/Applications/Hearthstone/Logs"))
         if not os.path.exists(logs_path):
             messagebox.showinfo("Warning", f"未找到炉石传说日志文件夹: {logs_path}")
             return False
-        
+
         return True
     else:  # Windows 或其他平台
         if not os.path.exists(path):
@@ -130,6 +130,12 @@ def close_gui():
     sys.exit(0)
 
 def check_before_start():
+    if not check_power_config():
+        messagebox.showinfo("Warning", "未在炉石设置中找到Power.log相关配置，脚本无法运行")
+
+    autohs_config.has_loading_screen = check_loading_screen_config()
+    logger.info(f"has_loading_screen: {autohs_config.has_loading_screen}")
+
     if gui_is_running:
         messagebox.showinfo("Warning", "程序已在运行中，请勿重复启动。")
         return False

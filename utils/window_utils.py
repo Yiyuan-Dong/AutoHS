@@ -7,6 +7,7 @@ import cv2
 import time
 import pyautogui
 import numpy as np
+from pathlib import Path
 
 from utils.autohs_logger import *
 from constants.pixel_coordinate import *
@@ -88,6 +89,41 @@ def get_battlenet_hwnd():
                 break
     return hwnd
 
+def get_win_hearthstone_config_path():
+    user_home = Path.home()
+    log_config = user_home / "AppData" / "Local" / "Blizzard" / "Hearthstone" / "log.config"
+    return log_config
+
+log_file_content = ""
+
+def read_log_file():
+    global log_file_content
+    log_path = get_win_hearthstone_config_path()
+
+    if not log_path.exists():
+        logger.error("炉石传说配置文件不存在，期望位置：%s", log_path)
+        log_file_content = "NOT_FOUND"
+        return
+
+    with open(log_path, "r", encoding="utf-8") as f:
+        log_file_content = f.read()
+        f.close()
+
+def check_power_config():
+    if USE_PYOBJC:
+        return True
+    else:
+        if log_file_content == "":
+            read_log_file()
+        return "Power" in log_file_content
+
+def check_loading_screen_config():
+    if USE_PYOBJC:
+        return True
+    else:
+        if log_file_content == "":
+            read_log_file()
+        return "LoadingScreen" in log_file_content
 
 def test_hs_available():
     return get_HS_hwnd() != 0
