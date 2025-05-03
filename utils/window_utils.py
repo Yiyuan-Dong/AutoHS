@@ -74,7 +74,7 @@ def get_HS_hwnd():
 
 
 def get_battlenet_hwnd():
-    app_names = ["Battle.net", "战网"]
+    app_names = ["战网"]
     hwnd = 0
     for app_name in app_names:
         if USE_PYOBJC:

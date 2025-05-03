@@ -529,6 +529,7 @@ class StrategyState:
 
             if delta_h > best_delta_h:
                 best_index = -1
+                best_delta_h = delta_h
                 best_args = args
         else:
             logger.debug(f"技能-[ ]({self.my_hero_power.name}) 跳过")
