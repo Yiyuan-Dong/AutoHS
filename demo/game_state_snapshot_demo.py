@@ -17,7 +17,7 @@ if __name__ == "__main__":
         logger.error("请设置PLAYER_NAME")
         sys.exit(-1)
 
-    log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
+    log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH, "Power.log", parse_line)
     autohs_config.user_name = PLAYER_NAME
 
     state = LogState()
