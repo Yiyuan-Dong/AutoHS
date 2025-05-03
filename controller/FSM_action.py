@@ -1,14 +1,11 @@
 import random
-import sys
-import time
-import click
-import window_utils
+from utils import window_utils
 import cv2
-import time
-from strategy import StrategyState
-from log_state import *
+from controller import controller
+from strategy.strategy import StrategyState
+from utils.log_state import *
 from loguru import logger
-from config import PLATFORM, autohs_config
+from config import PLATFORM
 from constants.state_and_key import *
 
 FSM_state = ""
@@ -156,7 +153,8 @@ def ChoosingHeroAction():
         return FSM_ERROR
 
     time.sleep(2)
-    click.match_opponent()
+    controller.game.matchOpponent()
+    # click.match_opponent()
     time.sleep(1)
     return FSM_MATCHING_OPPONENT
 
@@ -169,8 +167,8 @@ def MatchingAction():
             return
 
         time.sleep(autohs_config.state_check_interval)
-
-        click.commit_error_report()
+        controller.game.commitErrorReport()
+        # click.commit_error_report()
 
         ok = update_log_state()
         if ok:
@@ -237,11 +235,13 @@ def ChoosingCardAction():
                             f"是否保留: {should_keep_in_hand}")
 
             if not should_keep_in_hand:
-                click.replace_starting_card(my_hand_index, hand_card_num)
+                controller.cards.replaceStartingCard(my_hand_index, hand_card_num)
+                # click.replace_starting_card(my_hand_index, hand_card_num)
 
         has_print = 1
 
-        click.commit_choose_card()
+        # click.commit_choose_card()
+        controller.game.commitChooseCard()
 
         loop_count += 1
         if loop_count >= 60:
@@ -299,13 +299,16 @@ def Battling():
             # game_num_turns_in_play在每一个回合开始时都会加一, 即
             # 后手放第一个回合这个数是2
             if log_state.game_num_turns_in_play <= 2:
-                click.emoj(0)
+                controller.game.useEmoj(0)
+                # click.emoj(0)
             else:
                 # 在之后每个回合开始时有概率发表情
                 if random.random() < autohs_config.emoj_ratio:
-                    click.emoj()
+                    controller.game.useEmoj()
+                    # click.emoj()
                 if autohs_config.give_up_with_dignity and strategy_state.should_give_up():
-                    click.give_up_routine()
+                    controller.game.giveUpRoutine()
+                    # click.give_up_routine()
                     # 脚本应通过读取日志进入FSM_QUITTING_BATTLE状态
                     continue
 
@@ -316,9 +319,12 @@ def Battling():
         if mine_count >= 20:
             if mine_count >= 40:
                 return FSM_ERROR
-            click.end_turn()
-            click.commit_error_report()
-            click.cancel_click()
+            controller.game.endTurn()
+            controller.game.commitErrorReport()
+            controller.game.cancelClick()
+            # click.end_turn()
+            # click.commit_error_report()
+            # click.cancel_click()
             time.sleep(autohs_config.state_check_interval)
 
         # 考虑要不要出牌
@@ -341,9 +347,11 @@ def Battling():
             strategy_state.my_entity_attack_oppo(my_index, oppo_index)
         else:
             if autohs_config.give_up_with_dignity and strategy_state.will_die_next_turn():
-                click.give_up_routine()
+                controller.game.giveUpRoutine()
+                # click.give_up_routine()
             else:
-                click.end_turn()
+                controller.game.endTurn()
+                # click.end_turn()
                 time.sleep(autohs_config.state_check_interval)
 
 
@@ -368,9 +376,11 @@ def QuittingBattle():
         state = window_utils.get_state()
         if state in [FSM_CHOOSING_HERO, FSM_LEAVE_HS]:
             return state
-        click.cancel_click()
-        click.test_click()
-        click.commit_error_report()
+        controller.game.cancelClick()
+        controller.game.commitErrorReport()
+        # click.cancel_click()
+        # click.test_click()
+        # click.commit_error_report()
 
         loop_count += 1
         if loop_count >= 15:
@@ -389,7 +399,8 @@ def GoBackHSAction():
     while not window_utils.test_hs_available():
         if quitting_flag:
             return FSM_ERROR
-        click.enter_HS()
+        controller.game.enterHS()
+        # click.enter_HS()
         time.sleep(10)
 
     # 有时候炉石进程会直接重写Power.log, 这时应该重新创建文件操作句柄
@@ -405,10 +416,11 @@ def MainMenuAction():
         if quitting_flag:
             return FSM_ERROR
 
-        click.enter_battle_mode()
+        controller.game.enterBattleMode()
+        # click.enter_battle_mode()
         time.sleep(5)
 
-        state = get_state_from_log()
+        state = window_utils.get_state()
 
         # 重新连接对战之类的
         if state == FSM_BATTLING:
@@ -425,7 +437,8 @@ def WaitMainMenu():
         if quitting_flag:
             return FSM_ERROR
 
-        click.click_main_menu_middle()
+        controller.game.clickMiddle()
+        # click.click_main_menu_middle()
         time.sleep(5)
 
     return FSM_MAIN_MENU
@@ -445,8 +458,10 @@ def HandleErrorAction():
     if not window_utils.test_hs_available():
         return FSM_LEAVE_HS
     else:
-        click.commit_error_report()
-        click.give_up_routine()
+        controller.game.commitErrorReport()
+        controller.game.giveUpRoutine()
+        # click.commit_error_report()
+        # click.give_up_routine()
 
         window_utils.terminate_HS()
         time.sleep(autohs_config.state_check_interval)
