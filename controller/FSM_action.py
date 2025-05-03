@@ -189,6 +189,10 @@ def ChoosingCardAction():
     global game_count
     global time_begin
 
+    ok = update_log_state()
+    if log_state.game_num_turns_in_play > 0:
+        return FSM_BATTLING
+
     choose_hero_count = 0
 
     game_count += 1

@@ -25,7 +25,7 @@ class AttackController(CardsController, HeroController, MinionController, GameCo
                 self.chooseMyMinion(index, num)
             self.cancelClick()
 
-        elif skill_type in SkillType.POINT_TO_OPPONENT:
+        elif skill_type == SkillType.POINT_TO_OPPONENT:
             if index < 0:
                 self.chooseEnemyHero()
             else:
