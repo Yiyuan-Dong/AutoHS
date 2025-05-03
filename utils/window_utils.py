@@ -8,8 +8,7 @@ import time
 import pyautogui
 import numpy as np
 
-from autohs_logger import *
-from constants.state_and_key import *
+from utils.autohs_logger import *
 from constants.pixel_coordinate import *
 from skimage.metrics import structural_similarity as ssim
 from config import PLATFORM
@@ -18,7 +17,7 @@ from config import PLATFORM
 if PLATFORM == "Darwin":
     USE_PYOBJC = True
     try:
-        import macos
+        from utils import macos
         import Quartz
         import signal
         logger.info("使用 pyobjc API (macOS)")
@@ -44,7 +43,7 @@ else:
             sys.exit(1)
 
 current_file_path = os.path.abspath(__file__)
-current_dir_path = os.path.dirname(current_file_path)
+current_dir_path = os.path.dirname(os.path.dirname(current_file_path))
 figs_dir_path = os.path.join(current_dir_path, "figs")
 
 choose_card_img_2k = cv2.imread(os.path.join(figs_dir_path, "choose_card_2k.png"))
@@ -75,7 +74,7 @@ def get_HS_hwnd():
 
 
 def get_battlenet_hwnd():
-    app_names = ["Battle.net", "战网"]
+    app_names = ["战网"]
     hwnd = 0
     for app_name in app_names:
         if USE_PYOBJC:
@@ -85,6 +84,8 @@ def get_battlenet_hwnd():
             hwnd = app.processIdentifier()
         else:
             hwnd = win32gui.FindWindow(None, app_name)
+            if hwnd:
+                break
     return hwnd
 
 

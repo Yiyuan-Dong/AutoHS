@@ -3,12 +3,14 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from strategy import *
-from autohs_logger import *
+from strategy.strategy import *
+from utils.autohs_logger import *
+from utils.log_op import log_iter_func, parse_line
+from utils.log_state import update_state
 from config import autohs_config
 
 HEARTHSTONE_POWER_LOG_PATH = "D:/HearthStone/Logs"
-PLAYER_NAME = ""     # !!!请根据实际情况修改!!!
+PLAYER_NAME = "江海寄余生"     # !!!请根据实际情况修改!!!
 
 if __name__ == "__main__":
     logger_init("DEBUG")
@@ -17,7 +19,7 @@ if __name__ == "__main__":
         logger.error("请设置PLAYER_NAME")
         sys.exit(-1)
 
-    log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH)
+    log_iter = log_iter_func(HEARTHSTONE_POWER_LOG_PATH, "Power.log", parse_line)
     autohs_config.user_name = PLAYER_NAME
 
     state = LogState()

@@ -6,15 +6,14 @@ import cv2
 import time
 import math
 import os
-import numpy as np
 from skimage.metrics import structural_similarity as ssim
 
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import window_utils
+from utils import window_utils
 from constants.pixel_coordinate import *
-from autohs_logger import *
+from utils.autohs_logger import *
 
 
 PRINT_ALL_AREA_LIST = []

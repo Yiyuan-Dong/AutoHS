@@ -1,9 +1,8 @@
-import click
-from card.basic_card import *
+from card.basic import *
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from strategy import StrategyState
+    from strategy.strategy import StrategyState
 
 
 class TotemicCall(HeroPowerCard):
@@ -17,7 +16,8 @@ class TotemicCall(HeroPowerCard):
 
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
-        click.use_skill_no_point()
+        controller.hero.useSkill()
+        # click.use_skill_no_point()
         time.sleep(1)
 
 
@@ -39,8 +39,9 @@ class LesserHeal(HeroPowerCard):
 
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
-        click.use_skill_point_mine(args[0], state.my_minion_num)
+        controller.attack.useSkillToTarget(args[0], state.my_minion_num, SkillType.POINT_TO_NONE)
         time.sleep(1)
+
 
 class BallistaShot(HeroPowerCard):
     @classmethod
@@ -49,8 +50,10 @@ class BallistaShot(HeroPowerCard):
 
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
-        click.use_skill_no_point()
+        controller.hero.useSkill()
+        # click.use_skill_no_point()
         time.sleep(1)
+
 
 class MindSpike(HeroPowerCard):
     @classmethod
@@ -82,5 +85,5 @@ class MindSpike(HeroPowerCard):
 
     @classmethod
     def use_with_arg(cls, state, card_index, *args):
-        click.use_skill_point_oppo(args[0], state.oppo_minion_num)
+        controller.attack.useSkillToTarget(args[0], state.oppo_minion_num, SkillType.POINT_TO_OPPONENT)
         time.sleep(1)

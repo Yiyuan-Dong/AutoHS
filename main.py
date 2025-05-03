@@ -1,13 +1,10 @@
-import tkinter as tk
-import os
-from FSM_action import system_exit, AutoHS_automata
-from FSM_action import init
-from autohs_logger import logger_init
+from controller.FSM_action import system_exit, AutoHS_automata
+from controller.FSM_action import init
 from tkinter import messagebox
 from constants.pixel_coordinate import *
 from config import *
-from window_utils import test_hs_available, test_battlenet_available
-from json_op import JSON_LAST_MODIFIED_TIME
+from utils.window_utils import test_hs_available, test_battlenet_available
+from utils.json_op import JSON_LAST_MODIFIED_TIME
 
 ABNORMAL_WIDTH_HEIGHT_LIST = [(1707, 960), (2048, 1152), (1306, 720), (1536, 864)]
 gui_is_running = False

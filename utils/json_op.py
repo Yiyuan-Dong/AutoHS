@@ -1,9 +1,8 @@
-import sys
+
 import requests
 import json
-import os
 from datetime import datetime
-from autohs_logger import *
+from utils.autohs_logger import *
 
 # 来源于互联网的炉石JSON数据下载API, 更多信息可以访问 https://hearthstonejson.com/
 def download_json(json_path):
@@ -18,7 +17,7 @@ def read_json(re_download=False):
     logger.info("正在读取cards.json文件")
     dir_path = os.path.dirname(__file__)
     if dir_path == "":
-        dir_path = "."
+        dir_path = ".."
     json_path = dir_path + "/cards.json"
 
     if not os.path.exists(json_path):

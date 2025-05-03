@@ -1,10 +1,7 @@
-import click
 import random
-
-from card.basic_card import MinionNoPoint
-from log_state import *
-from log_op import *
-from strategy_entity import *
+from card.basic import MinionNoPoint
+from controller import controller
+from strategy.strategy_entity import *
 from typing import List
 
 
@@ -459,15 +456,14 @@ class StrategyState:
     def my_entity_attack_oppo(self, my_index, oppo_index):
         if my_index == -1:
             if oppo_index == -1:
-                click.hero_beat_hero()
+                controller.attack.myHeroAttackEnemyHero()
             else:
-                click.hero_beat_minion(oppo_index, self.oppo_minion_num)
+                controller.attack.myHeroAttackEnemyMinion(oppo_index, self.oppo_minion_num)
         else:
             if oppo_index == -1:
-                click.minion_beat_hero(my_index, self.my_minion_num)
+                controller.attack.minionAttackEnemyHero(my_index, self.my_minion_num)
             else:
-                click.minion_beat_minion(my_index, self.my_minion_num,
-                                         oppo_index, self.oppo_minion_num)
+                controller.attack.minionAttackEnemyMinion(my_index, self.my_minion_num, oppo_index, self.oppo_minion_num)
 
     def copy_new_one(self):
         # TODO: 有必要deepcopy吗
@@ -533,6 +529,7 @@ class StrategyState:
 
             if delta_h > best_delta_h:
                 best_index = -1
+                best_delta_h = delta_h
                 best_args = args
         else:
             logger.debug(f"技能-[ ]({self.my_hero_power.name}) 跳过")

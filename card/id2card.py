@@ -1,6 +1,6 @@
-from card.basic_card import Coin
-from card.detail_card import *
-from card.hero_power_card import *
+from card.basic import Coin
+from card.detail import *
+from card.hero import *
 
 ID2CARD_DICT = {
     # 特殊项-幸运币
