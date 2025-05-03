@@ -68,7 +68,9 @@ def get_HS_hwnd():
             hwnd = app.processIdentifier()
         else:
             hwnd = win32gui.FindWindow(None, app_name)
-    
+            if hwnd:
+                break
+
     return hwnd
 
 
