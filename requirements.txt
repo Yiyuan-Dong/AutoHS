@@ -10,3 +10,4 @@ tk
 loguru
 scikit-image
 mss
+pyautogui

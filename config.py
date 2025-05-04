@@ -57,7 +57,7 @@ class AutoHSConfig:
     def save_config(self, path="configs.json"):
         try:
             with open(path, "w") as f:
-                export_dict = {k: v for k, v in self.__dict__.items() if k != ["click_coordinates", "exit_func", "has_loading_screen"]}
+                export_dict = {k: v for k, v in self.__dict__.items() if k not in ["click_coordinates", "exit_func", "has_loading_screen"]}
                 json.dump(export_dict, f)
                 logger.info(f"配置文件成功保存至{path}")
         except (IOError, OSError) as e:
