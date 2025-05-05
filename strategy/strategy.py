@@ -364,6 +364,30 @@ class StrategyState:
             if minion.get_damaged(damage):
                 self.my_minions.pop(my_index)
 
+    def get_best_location_trigger(self):
+        best_delta_h = 0
+        best_location_index = -1
+        best_args = []
+
+        logger.debug("考虑触发地标")
+
+        for my_index, my_minion in enumerate(self.my_minions):
+            if my_minion.cardtype != CARD_LOCATION:
+                continue
+
+            if my_minion.exhausted:
+                continue
+
+            delta_h, *args = my_minion.detail_card.location_trigger_h_and_arg(self, my_index)
+            logger.debug(f"地标-[{my_index}]({my_minion.name}) 价值: {delta_h}, "
+                        f"args: {args}")
+            if delta_h > best_delta_h:
+                best_delta_h = delta_h
+                best_location_index = my_index
+                best_args = args
+
+        return best_location_index, best_args
+
     def get_best_attack_target(self):
         touchable_oppo_minions = self.touchable_oppo_minions
         has_taunt = self.oppo_has_taunt
@@ -500,7 +524,7 @@ class StrategyState:
                 else:
                     logger.debug(f"卡牌-[{hand_card_index}]({hand_card.name})无法评判")
             else:
-                res = detail_card.best_h_and_arg(self, hand_card_index) 
+                res = detail_card.best_h_and_arg(self, hand_card_index)
                 if not isinstance(res, tuple): #解决如果战吼随从没有对方可点击的随从的问题
                     logger.warning(f"卡牌-[{hand_card_index}]({hand_card.name}) best_h_and_arg返回值格式错误: {res}")
                     res = (res,)

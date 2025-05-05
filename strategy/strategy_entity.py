@@ -6,6 +6,9 @@ from utils.autohs_logger import *
 from utils.log_state import LogState, CardEntity
 import copy
 from config import autohs_config
+from typing import TYPE_CHECKING
+from card.basic import Card
+from enum import Enum
 
 
 class StrategyEntity:
@@ -52,7 +55,7 @@ class StrategyEntity:
         return self.name == "幸运币"
 
     @property
-    def detail_card(self):
+    def detail_card(self) -> "Card":
         if self.is_coin:
             return ID2CARD_DICT["COIN"]
         else:
@@ -442,19 +445,16 @@ class StrategySpell(StrategyEntity):
 
 
 # TODO: 目前脚本不支持使用地标
-class StrategyLocation(StrategyEntity):
+class StrategyLocation(StrategyMinion):
     def __init__(self, card_id, zone, zone_pos,
                  current_cost, overload, is_mine, powered_up,
-                 health):
+                 max_health, exhausted):
         super().__init__(card_id, zone, zone_pos,
-                         current_cost, overload, is_mine, powered_up)
-        self.health = health
-        self.taunt = False
-        self.stealth = False
-        self.attack = 0
+                         current_cost, overload, is_mine, powered_up,
+                         0, max_health, exhausted=exhausted)
 
     def __str__(self):
-        return f"[{self.zone_pos}] {self.name} 耐久:{self.health}"
+        return f"[{self.zone_pos}] {self.name} 耐久:{self.max_health}"
 
     @property
     def cardtype(self):
@@ -486,7 +486,10 @@ class StrategyLocation(StrategyEntity):
 
     @property
     def heuristic_val(self):
-        return 0
+        if self.detail_card is None:
+            return 0
+
+        return self.detail_card.value
 
     def get_damaged(self, damage):
         return False
@@ -626,7 +629,8 @@ def generate_strategy_entity(input_card_entity: CardEntity, log_state : LogState
             overload=int(input_card_entity.query_tag("OVERLOAD")),
             is_mine=log_state.is_my_entity(input_card_entity),
             powered_up=int(input_card_entity.query_tag("POWERED_UP")),
-            health=int(input_card_entity.query_tag("HEALTH")),
+            max_health=int(input_card_entity.query_tag("HEALTH")),
+            exhausted=int(input_card_entity.query_tag("EXHAUSTED")),
         )
     else:
         logger.warning(f"未知卡牌类型{input_card_entity.cardtype}")

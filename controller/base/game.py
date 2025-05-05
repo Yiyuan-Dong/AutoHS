@@ -10,11 +10,12 @@ __Description__ = ""
 import sys
 import time
 import random
-from config import coors, logger
+from config import autohs_config, logger
 from constants.state_and_key import *
 from controller.base.mouse import MouseController
 from utils.window_utils import get_HS_hwnd, get_battlenet_hwnd, get_window_pos, move_window_foreground, test_hs_available
 
+coors = autohs_config.click_coordinates
 
 class GameController(MouseController):
     def setting(self):

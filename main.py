@@ -252,13 +252,6 @@ if __name__ == "__main__":
         warning_label = tk.Label(root, text=f"屏幕像素数为{WIDTH}X{HEIGHT}", fg="gray")
         warning_label.grid(row=next_text_row, column=0, padx=10, pady=5, sticky="ew")
 
-    if WIDTH == 1920 and HEIGHT == 1080:
-        autohs_config.click_coordinates = COORDINATES_1920_1080
-    elif WIDTH == 2560 and HEIGHT == 1440:
-        autohs_config.click_coordinates = COORDINATES_2560_1440
-    else:
-        logger.error(f"未找到对应分辨率的点击坐标，当前分辨率为{WIDTH}X{HEIGHT}")
-
     hint_label = tk.Label(root, text="按Ctrl+Q可退出程序", fg="gray")
     hint_label.grid(row=next_text_row, column=2, padx=10, pady=5, sticky="ew")
 

@@ -1,7 +1,8 @@
-from config import coors
+from config import autohs_config
 from constants.state_and_key import *
 from controller.base.mouse import MouseController
 
+coors = autohs_config.click_coordinates
 
 class HeroController(MouseController):
     def getMyHeroSkillPosition(self):

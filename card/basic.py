@@ -246,3 +246,31 @@ class Coin(SpellNoPoint):
             best_delta_h = max(best_delta_h, delta_h)
 
         return best_delta_h,
+
+class Location(Card):
+    @classmethod
+    def get_card_type(cls):
+        return CARD_LOCATION
+
+    @classmethod
+    def best_h_and_arg(cls, state, hand_card_index):
+        if state.my_minion_num >= 7:
+            return -20000,
+        return cls.value, 0
+
+    @classmethod
+    def use_with_arg(cls, state, card_index, *args):
+        gap_index = args[0]
+        controller.cards.putMinionOnBattleGround(card_index, state.my_hand_card_num, gap_index, state.my_minion_num)
+        controller.game.cancelClick()
+        time.sleep(autohs_config.basic_minion_put_interval)
+
+    @classmethod
+    @abstractmethod
+    def location_trigger_h_and_arg(cls, state, my_minion_index):
+        pass
+
+    @classmethod
+    @abstractmethod
+    def location_trigger(self, state, my_minion_index, args):
+        pass

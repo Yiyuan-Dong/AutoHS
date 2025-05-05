@@ -1,5 +1,6 @@
 from card.basic import *
 from typing import TYPE_CHECKING
+from controller import PositionIndex, PositionIndexType
 
 if TYPE_CHECKING:
     from strategy.strategy import StrategyState
@@ -700,9 +701,40 @@ class TwilightDeceptor(MinionNoPoint):
 
 
 # 赎罪教堂
-# 还没想好怎么写
-class ChurchOfAtonement(MinionNoPoint):
-    value = -100
+class ChurchOfAtonement(Location):
+    value = 5
+
+    @classmethod
+    def location_trigger_h_and_arg(cls, state: 'StrategyState', my_minion_index: int):
+        best_value = -1
+        best_index = -1
+        for my_index, my_minion in enumerate(state.my_minions):
+            if my_minion.cardtype != CARD_MINION:
+                continue
+
+            temp_value = 3.5
+            if my_minion.can_beat_face:
+                temp_value += 1
+            if my_minion.detail_card.live_value > 0:
+                temp_value += 0.2
+            if my_minion.health >= 3:   # 一个高血量的怪可以防AOE
+                temp_value += 0.1
+
+            if temp_value > best_value:
+                best_value = temp_value
+                best_index = my_index
+
+        if best_value > 0:
+            return best_value, PositionIndex(PositionIndexType.MY_MINION, best_index)
+        else:
+            return best_value, PositionIndex(PositionIndexType.INVALID, 0)
+
+    @classmethod
+    def location_trigger(self, state, my_minion_index, args):
+        other_minion_index = args[0]
+        controller.minion.chooseMyMinion(my_minion_index, state.my_minion_num)
+        time.sleep(0.1)
+        controller.minion.chooseMinion(other_minion_index, state.my_minion_num, state.oppo_minion_num)
 
 
 # 空降歹徒

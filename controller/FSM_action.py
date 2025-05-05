@@ -310,7 +310,7 @@ def Battling():
                 # click.emoj(0)
             else:
                 # 在之后每个回合开始时有概率发表情
-                if random.random() < autohs_config.emoj_ratio:
+                if log_state.game_num_turns_in_play > 6 and random.random() < autohs_config.emoj_ratio:
                     controller.game.useEmoj()
                 if autohs_config.give_up_with_dignity and strategy_state.should_give_up():
                     controller.game.giveUpRoutine()
@@ -328,6 +328,15 @@ def Battling():
             controller.game.commitErrorReport()
             controller.game.cancelClick()
             time.sleep(autohs_config.state_check_interval)
+
+        # 因为赎罪教堂可以抽牌，所以最先考虑使用地标
+        index, args = strategy_state.get_best_location_trigger()
+        if index != -1:
+            if check_repeat_decision(hash("location" + str(index) + str(args))):
+                return FSM_ERROR
+            logger.info(f"将触发地标[{index}], args: {args}")
+            strategy_state.my_minions[index].detail_card.location_trigger(strategy_state, index, args)
+            continue
 
         # 考虑要不要出牌
         index, args = strategy_state.best_h_index_arg()

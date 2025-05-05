@@ -82,4 +82,7 @@ ID2CARD_DICT = {
     "SW_448": DarkbishopBenedictus,
     "DED_513": DefiasCleaner,
     "YOD_032": FrenziedFelwing,
+    "REV_791": ChurchOfAtonement,
+    "CORE_REV_290": ChurchOfAtonement,
+    "REV_290": ChurchOfAtonement,
 }
