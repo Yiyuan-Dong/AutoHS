@@ -19,7 +19,9 @@
 - 支持2560x1440分辨率
 - 全新的日志模块，看着像模像样
 - GUI启动与配置界面
-- 基于SIMM相似度的游戏状态识别，相比于像素点判断更加稳定
+- 支持使用地标
+- 基于`LoadingScreen`日志文本信息的状态识别，相比于像素点判断更加稳定
+- 在热心网友的帮助下支持了`macOS`系统
 
 ### 如何运行
 
@@ -93,16 +95,16 @@ pip install -r requirements.txt
 - 2x (1) 精神灼烧
 - 2x (1) 虚触侍从
 - 2x (1) 针灸
-- 2x (1) 错误产物
 - 2x (1) 随船外科医师
 - 2x (2) 心灵震爆
 - 2x (2) 空降歹徒
 - 2x (2) 纸艺天使
 - 2x (2) 迪菲亚麻风侏儒
+- 2x (3) 赎罪教堂 
 - 2x (4) 狂暴邪翼蝠
 - 1x (5) 黑暗主教本尼迪塔斯
 
-AAEBAZ/HAgKRvAK79wMOoQSRD+mwA7q2A9fOA633A42BBN2kBZWqBcSoBvyoBte6BtXBBtzzBgAA
+AAEBAZ/HAgKRvAK79wMOoQSRD+mwA7q2A9fOA633A42BBIaDBd2kBcSoBvyoBte6BtXBBtzzBgAA
 
 
 ### 项目架构
