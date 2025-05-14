@@ -248,6 +248,8 @@ class Coin(SpellNoPoint):
         return best_delta_h,
 
 class Location(Card):
+    live_value = 0
+
     @classmethod
     def get_card_type(cls):
         return CARD_LOCATION

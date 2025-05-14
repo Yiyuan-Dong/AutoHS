@@ -715,7 +715,7 @@ class ChurchOfAtonement(Location):
             temp_value = 3.5
             if my_minion.can_beat_face:
                 temp_value += 1
-            if my_minion.detail_card.live_value > 0:
+            if my_minion.detail_card is not None and my_minion.detail_card.live_value > 0:
                 temp_value += 0.2
             if my_minion.health >= 3:   # 一个高血量的怪可以防AOE
                 temp_value += 0.1
